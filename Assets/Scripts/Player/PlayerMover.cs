@@ -31,11 +31,22 @@ public class PlayerMover : MonoBehaviour
 
     private bool facingRight = true; // Tells the direction that the player is facing
 
+    private Vector3 initialScale;
+
+    public GameObject landingEffectPrefab; // Landing Effect
+    public Transform landingEffectPoint;
+
+    private bool wasGroundedLastFrame = true;
+
     //Vector2 moveDir = Vector2.zero; // Direction of the player by vector
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+    }
+    void Start()
+    {
+        initialScale = transform.localScale;
     }
 
     void OnEnable()
@@ -56,6 +67,13 @@ public class PlayerMover : MonoBehaviour
         // Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
 
+        if (isGrounded && !wasGroundedLastFrame)
+        {
+            Instantiate(landingEffectPrefab, landingEffectPoint.position, Quaternion.identity);
+        }
+
+        wasGroundedLastFrame = isGrounded;
+
         // Handle jump (button pressed & grounded)
         if (jumpAction.action.triggered && isGrounded)
         {
@@ -72,9 +90,9 @@ public class PlayerMover : MonoBehaviour
 
         // Optional: Flip player based on move direction
         if (moveInput > 0.01f)
-            transform.localScale = new Vector3(1, 1, 1);
+            transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
         else if (moveInput < -0.01f)
-            transform.localScale = new Vector3(-1, 1, 1);
+            transform.localScale = new Vector3(-Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
     }
 
     private void OnDrawGizmosSelected()

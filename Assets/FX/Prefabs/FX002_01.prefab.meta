@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 2cda990e2423bbf4892e6590ba056729
-DefaultImporter:
+guid: d6d04e4b024a73147a9b9f10d607f384
+PrefabImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
@@ -10,5 +10,5 @@ AssetOrigin:
   productId: 185612
   packageName: Free Pixel Art FX Package
   packageVersion: 1.0
-  assetPath: Assets/Scenes/SampleScene.unity
+  assetPath: Assets/FX/Prefabs/FX002_01.prefab
   uploadId: 407758
