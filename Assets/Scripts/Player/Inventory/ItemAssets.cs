@@ -14,4 +14,6 @@ public class ItemAssets : MonoBehaviour
     public Transform pfItemWorld;
     public Sprite Insulin;
     public Sprite SugarBag;
+    public Sprite Apple;
+    public Sprite Bread;
 }

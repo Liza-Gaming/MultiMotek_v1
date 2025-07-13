@@ -10,6 +10,8 @@ public class Item
     {
         Insulin,
         SugarBag,
+        Apple,
+        Bread,
     }
 
     public ItemType itemType;
@@ -22,6 +24,8 @@ public class Item
             default:
             case ItemType.Insulin:  return ItemAssets.Instance.Insulin;
             case ItemType.SugarBag: return ItemAssets.Instance.SugarBag;
+            case ItemType.Apple:    return ItemAssets.Instance.Apple;
+            case ItemType.Bread: return ItemAssets.Instance.Bread;
         }
     }
 }

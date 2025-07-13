@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using TMPro;
 
 public class UI_inventory : MonoBehaviour
 {
@@ -37,9 +38,9 @@ public class UI_inventory : MonoBehaviour
             if (child == itemSlotTemplate) continue;
             Destroy(child.gameObject);
         }
-        int x = 0;
-        int y = 0;
-        float itemSlotCellSize = 23f;
+        float x = 0f;
+        float y = 0f;
+        float itemSlotCellSize = 120f;
         foreach (Item item in inventory.GetItemList())
         {
             RectTransform itemSlotRectTransform = Instantiate(itemSlotTemplate, itemSlotContainer).GetComponent<RectTransform>();
@@ -47,11 +48,21 @@ public class UI_inventory : MonoBehaviour
             itemSlotRectTransform.anchoredPosition = new Vector2(x* itemSlotCellSize, y * itemSlotCellSize);
             Image image = itemSlotRectTransform.Find("Image").GetComponent<Image>();
             image.sprite = item.GetSprite();
+            TextMeshProUGUI uiText = itemSlotRectTransform.Find("amountText").GetComponent<TextMeshProUGUI>();
+            if(item.amount > 1)
+            {
+                uiText.SetText(item.amount.ToString());
+            }
+            else
+            {
+                uiText.SetText("");
+            }
+
             x++;
-            if(x > 3)
+            if(x > 2f)
             {
                 x = 0;
-                y-=5;
+                y-=1f;
             }
         }
     }
