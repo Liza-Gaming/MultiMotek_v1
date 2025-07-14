@@ -1,22 +1,10 @@
 fileFormatVersion: 2
-guid: 70b978b2cdbf01242863970913a94ac8
+guid: ab9ff83cefea04941b605e6809c9e1b1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8005772823073087146
-    second: drop2 (1)_0
-  - first:
-      213: 2215605639327899197
-    second: drop2 (1)_1
-  - first:
-      213: -7846505339509505224
-    second: drop2 (1)_2
-  - first:
-      213: 1801388650317042592
-    second: drop2 (1)_3
-  - first:
-      213: -4333430163660346859
-    second: drop2 (1)_4
+      213: -1848622869520473714
+    second: Waves_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,16 +37,16 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -138,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: drop2 (1)_0
+      name: Waves_0
       rect:
         serializedVersion: 2
-        x: 351
-        y: 908
-        width: 74
-        height: 91
+        x: 0
+        y: 239
+        width: 1080
+        height: 140
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,96 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: aae5fb757f73a1f60800000000000000
-      internalID: 8005772823073087146
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: drop2 (1)_1
-      rect:
-        serializedVersion: 2
-        x: 453
-        y: 824
-        width: 56
-        height: 90
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d3edd7617996fbe10800000000000000
-      internalID: 2215605639327899197
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: drop2 (1)_2
-      rect:
-        serializedVersion: 2
-        x: 368
-        y: 402
-        width: 496
-        height: 445
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 833845e57fc9b1390800000000000000
-      internalID: -7846505339509505224
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: drop2 (1)_3
-      rect:
-        serializedVersion: 2
-        x: 503
-        y: 351
-        width: 91
-        height: 74
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0a3519cee61dff810800000000000000
-      internalID: 1801388650317042592
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: drop2 (1)_4
-      rect:
-        serializedVersion: 2
-        x: 419
-        y: 302
-        width: 57
-        height: 89
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 51aef04c9309cd3c0800000000000000
-      internalID: -4333430163660346859
+      spriteID: e81a19a6b4f5856e0800000000000000
+      internalID: -1848622869520473714
       vertices: []
       indices: 
       edges: []
@@ -251,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -261,11 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      drop2 (1)_0: 8005772823073087146
-      drop2 (1)_1: 2215605639327899197
-      drop2 (1)_2: -7846505339509505224
-      drop2 (1)_3: 1801388650317042592
-      drop2 (1)_4: -4333430163660346859
+      Waves_0: -1848622869520473714
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

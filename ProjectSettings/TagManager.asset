@@ -8,6 +8,7 @@ TagManager:
   - Die
   - ground
   - Item
+  - chest_one
   layers:
   - Default
   - TransparentFX

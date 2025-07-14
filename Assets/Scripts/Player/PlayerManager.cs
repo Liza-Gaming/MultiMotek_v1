@@ -3,10 +3,12 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour
 {
+
     private Transform checkpoint;
     public GameObject explosionPrefab;
     public Animator animator;
     private Inventory inventory;
+
 
     [SerializeField] private UI_inventory uiInventory;
 
@@ -68,4 +70,5 @@ public class PlayerManager : MonoBehaviour
             itemWorld.DestroySelf();
         }
     }
+
 }
