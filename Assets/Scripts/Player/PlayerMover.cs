@@ -29,7 +29,7 @@ public class PlayerMover : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    private bool facingRight = true; // Tells the direction that the player is facing
+    //private bool facingRight = true; // Tells the direction that the player is facing
 
     private Vector3 initialScale;
 

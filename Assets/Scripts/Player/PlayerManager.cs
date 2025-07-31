@@ -9,6 +9,8 @@ public class PlayerManager : MonoBehaviour
     public Animator animator;
     private Inventory inventory;
 
+    public float enemyHitCooldown = 1.0f;
+    private float lastEnemyHitTime = -999f;
 
     [SerializeField] private UI_inventory uiInventory;
 
@@ -70,5 +72,24 @@ public class PlayerManager : MonoBehaviour
             itemWorld.DestroySelf();
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (Time.time - lastEnemyHitTime >= enemyHitCooldown)
+        {
+            var enemyEffect = collision.gameObject.GetComponent<IEnemyEffect>();
+            if (enemyEffect != null)
+            {
+                enemyEffect.ApplyEffect(this.gameObject);
+                lastEnemyHitTime = Time.time;
+            }
+        }
+    }
+
+
+
+
+
+
 
 }
