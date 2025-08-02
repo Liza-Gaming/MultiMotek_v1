@@ -9,6 +9,7 @@ TagManager:
   - ground
   - Item
   - chest_one
+  - NextLevel
   layers:
   - Default
   - TransparentFX

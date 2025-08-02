@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
@@ -11,5 +12,4 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
             SugarMeter.Instance.AddSugar(sugarAmount);
         }
     }
-
 }
