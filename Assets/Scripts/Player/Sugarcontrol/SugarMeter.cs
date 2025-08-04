@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class SugarMeter : MonoBehaviour
 {
-    public static SugarMeter Instance; // Singleton
+    public static SugarMeter Instance;
 
     [Tooltip("Initial sugar level")]
     public float startSugar = 100f;
@@ -18,10 +18,11 @@ public class SugarMeter : MonoBehaviour
     public float minSugar = 70f;
     public float maxSugar = 180f;
     
-    [Header("Heart lose timing")]
     public float timeOutsideRangeToLoseHeart = 20f;
+    public float timeInsideRangeToGainHeart = 20f;
     
     private float timeOutsideSafeRange = 0f;
+    private float timeInsideSafeRange = 0f;
 
     public Image[] heartImages;
 
@@ -33,11 +34,11 @@ public class SugarMeter : MonoBehaviour
     {
         Instance = this;
     }
-
+    
     void Start()
     {
         sugarLevel = startSugar;
-        currentHearts = maxHearts;
+        currentHearts = 0;
         UpdateSugarUI();
         UpdateHeartsUI();
     }
@@ -48,19 +49,29 @@ public class SugarMeter : MonoBehaviour
         sugarLevel = Mathf.Max(sugarLevel, 0f);
         UpdateSugarUI();
 
-        // בדוק אם מחוץ לטווח
-        if (sugarLevel < minSugar || sugarLevel > maxSugar)
+        if (sugarLevel >= minSugar && sugarLevel <= maxSugar)
         {
-            timeOutsideSafeRange += Time.deltaTime;
-            if (timeOutsideSafeRange >= timeOutsideRangeToLoseHeart)
+            // בתוך הטווח
+            timeInsideSafeRange += Time.deltaTime;
+            timeOutsideSafeRange = 0f;
+
+            if (timeInsideSafeRange >= timeInsideRangeToGainHeart)
             {
-                LoseHeart();
-                timeOutsideSafeRange = 0f; // לאפס את הטיימר
+                GainHeart();
+                timeInsideSafeRange = 0f;
             }
         }
         else
         {
-            timeOutsideSafeRange = 0f; // חזר לטווח - לאפס טיימר
+            // מחוץ לטווח
+            timeOutsideSafeRange += Time.deltaTime;
+            timeInsideSafeRange = 0f;
+
+            if (timeOutsideSafeRange >= timeOutsideRangeToLoseHeart)
+            {
+                LoseHeart();
+                timeOutsideSafeRange = 0f;
+            }
         }
     }
 
@@ -89,6 +100,15 @@ public class SugarMeter : MonoBehaviour
         return sugarLevel;
     }
 
+    void GainHeart()
+    {
+        if (currentHearts < maxHearts)
+        {
+            currentHearts++;
+            UpdateHeartsUI();
+        }
+    }
+    
     void LoseHeart()
     {
         if (currentHearts > 0)
