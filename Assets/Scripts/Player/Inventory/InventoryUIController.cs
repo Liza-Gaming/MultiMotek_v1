@@ -6,12 +6,13 @@ public class InventoryUIController : MonoBehaviour
     public GameObject itemSlotContainer;
     public GameObject openInventoryButton;
 
-    void Start()
+    private bool inventoryButtonUnlocked = false;
+    void Awake()
     {
-        CloseInventory();
-        openInventoryButton.SetActive(true);
+        background.SetActive(false);
+        itemSlotContainer.SetActive(false);
+        openInventoryButton.SetActive(false);
     }
-
     public void OpenInventory()
     {
         background.SetActive(true);
@@ -23,6 +24,12 @@ public class InventoryUIController : MonoBehaviour
     {
         background.SetActive(false);
         itemSlotContainer.SetActive(false);
+        openInventoryButton.SetActive(inventoryButtonUnlocked);
+    }
+    
+    public void UnlockInventoryButton()
+    {
+        inventoryButtonUnlocked = true;
         openInventoryButton.SetActive(true);
     }
 }

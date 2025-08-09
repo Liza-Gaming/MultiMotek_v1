@@ -3,27 +3,53 @@ using UnityEngine;
 public class OpenChest : MonoBehaviour
 {
     public GameObject popupPanel;
-
-    private bool isPopUpOpened = false;
     public Animator instructionsAnimator;
+    public InventoryUIController inventoryUI;
+
+    private bool popupOpened = false;
+    private bool chestConsumed = false;
+    
+    private PlayerMover playerMover;
+
+    void Start()
+    {
+        if (popupPanel != null) popupPanel.SetActive(false);
+    }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (!isPopUpOpened)
+        if (chestConsumed) return;
+
+        if (!popupOpened && collider.CompareTag("Player"))
         {
-            if (collider.CompareTag("Player"))
-            {
-                popupPanel.SetActive(true);
-                instructionsAnimator.SetTrigger("Show");
-                isPopUpOpened = true;
-            }
+            if (playerMover == null)
+                playerMover = collider.GetComponent<PlayerMover>();
+
+            if (popupPanel != null) popupPanel.SetActive(true);
+            if (instructionsAnimator != null) instructionsAnimator.SetTrigger("Show");
+            popupOpened = true;
+            
+            if (playerMover != null) playerMover.SetInputLocked(true);
         }
+    }
+    
+    public void OnLootConfirmed()
+    {
+        if (inventoryUI != null) inventoryUI.UnlockInventoryButton();
+
+        ClosePopUp();
+        chestConsumed = true;
+
+        var col = GetComponent<Collider2D>();
+        if (col) col.enabled = false;
     }
 
     public void ClosePopUp()
     {
-        popupPanel.SetActive(false);
-        instructionsAnimator.SetTrigger("Hide");
+        if (instructionsAnimator != null) instructionsAnimator.SetTrigger("Hide");
+        if (popupPanel != null) popupPanel.SetActive(false);
+        popupOpened = false;
+        
+        if (playerMover != null) playerMover.SetInputLocked(false);
     }
-
 }
