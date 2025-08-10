@@ -122,4 +122,6 @@ public class SugarMeter : MonoBehaviour
             }
         }
     }
+    public int CurrentHearts => currentHearts;
+    
 }

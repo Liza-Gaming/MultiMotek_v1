@@ -24,7 +24,7 @@ public class SugarWarningBlinker : MonoBehaviour
         cg = target.GetComponent<CanvasGroup>();
         if (cg == null) cg = target.AddComponent<CanvasGroup>();
 
-        Show(false); // מוסתר כברירת מחדל
+        Show(false);
     }
 
     void Update()

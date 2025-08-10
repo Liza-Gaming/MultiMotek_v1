@@ -12,6 +12,8 @@ public class PlayerManager : MonoBehaviour
 
     public float enemyHitCooldown = 1.0f;
     private float lastEnemyHitTime = -999f;
+    
+    [SerializeField] private SugarSummaryUI summaryUI;
 
     [SerializeField] private UI_inventory uiInventory;
 
@@ -66,9 +68,18 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.tag.Equals("NextLevel"))
+        if (collider.CompareTag("NextLevel"))
         {
-            SceneManager.LoadScene("Level2");
+
+            if (summaryUI == null)
+                summaryUI = FindObjectOfType<SugarSummaryUI>(true);
+
+            if (summaryUI != null)
+            {
+                summaryUI.nextSceneName = "Level2";
+                summaryUI.nextSceneBuildIndex = -1;
+                summaryUI.ShowSummary();
+            }
         }
         
         ItemWorld itemWorld = collider.GetComponent<ItemWorld>();
