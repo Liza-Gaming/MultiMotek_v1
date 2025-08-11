@@ -12,7 +12,6 @@ public class SugarSummaryUI : MonoBehaviour
     public Text inRangeText;
     public Text belowText;
     public Text aboveText;
-    public Text heartsText;
 
     [Header("Bars (SquareProgress)")]
     public SquareProgress barBelow;
@@ -28,6 +27,7 @@ public class SugarSummaryUI : MonoBehaviour
     public string nextSceneName = "";
     public int nextSceneBuildIndex = -1;
 
+    public HeartsDisplay heartsDisplay;
     bool _shown;
 
     public void ShowSummary()
@@ -38,13 +38,19 @@ public class SugarSummaryUI : MonoBehaviour
         if (!stats) stats = FindObjectOfType<SugarStats>(true);
         if (!meter) meter = FindObjectOfType<SugarMeter>(true);
         
+        gameObject.SetActive(true);
+        Time.timeScale = 0f;
+        
         stats.GetPercents(out float inPct, out float abovePct, out float belowPct);
         
         if (inRangeText) inRangeText.text = $"{inPct:0}%";
         if (belowText)   belowText.text   = $"{belowPct:0}%";
         if (aboveText)   aboveText.text   = $"{abovePct:0}%";
         
-        if (heartsText && meter) heartsText.text = $"{meter.CurrentHearts}/{meter.maxHearts}";
+        if (heartsDisplay && meter)
+        {
+            heartsDisplay.SetHearts(meter.CurrentHearts, meter.maxHearts, animate:true);
+        }
         
         if (barBelow) barBelow.SetPercent(0, animated:false);
         if (barAbove) barAbove.SetPercent(0, animated:false);
@@ -74,6 +80,12 @@ public class SugarSummaryUI : MonoBehaviour
             panelGroup.alpha = 1f;
         }
         
+        if (barIn)
+        {
+            barIn.SetPercent(inPct, animated:true, fromZero:true);
+            yield return new WaitForSecondsRealtime(barIn.duration + rowDelay);
+        }
+        
         if (barBelow)
         {
             barBelow.SetPercent(belowPct, animated:true, fromZero:true);
@@ -83,13 +95,9 @@ public class SugarSummaryUI : MonoBehaviour
         if (barAbove)
         {
             barAbove.SetPercent(abovePct, animated:true, fromZero:true);
-            yield return new WaitForSecondsRealtime(barAbove.duration + rowDelay);
+            // yield return new WaitForSecondsRealtime(barAbove.duration + rowDelay);
         }
         
-        if (barIn)
-        {
-            barIn.SetPercent(inPct, animated:true, fromZero:true);
-        }
     }
 
     public void ConfirmAndContinue()
