@@ -18,7 +18,7 @@ public class SugarSummaryUI : MonoBehaviour
     public SquareProgress barAbove;
     public SquareProgress barIn;
 
-    [Header("Panel FX (optional)")]
+    [Header("Panel FX")]
     public CanvasGroup panelGroup;
     public float fadeDuration = 0.25f;
     public float rowDelay = 0.25f;
@@ -80,6 +80,12 @@ public class SugarSummaryUI : MonoBehaviour
             panelGroup.alpha = 1f;
         }
         
+        if (barAbove)
+        {
+            barAbove.SetPercent(abovePct, animated:true, fromZero:true);
+            yield return new WaitForSecondsRealtime(barAbove.duration + rowDelay);
+        }
+        
         if (barIn)
         {
             barIn.SetPercent(inPct, animated:true, fromZero:true);
@@ -89,14 +95,9 @@ public class SugarSummaryUI : MonoBehaviour
         if (barBelow)
         {
             barBelow.SetPercent(belowPct, animated:true, fromZero:true);
-            yield return new WaitForSecondsRealtime(barBelow.duration + rowDelay);
+            // yield return new WaitForSecondsRealtime(barBelow.duration + rowDelay);
         }
         
-        if (barAbove)
-        {
-            barAbove.SetPercent(abovePct, animated:true, fromZero:true);
-            // yield return new WaitForSecondsRealtime(barAbove.duration + rowDelay);
-        }
         
     }
 
