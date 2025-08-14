@@ -23,6 +23,10 @@ public class PlayerManager : MonoBehaviour
     
     [SerializeField] private Color insulinFlashColor = new Color(0.35f, 0.7f, 1f);
     [SerializeField] private Color sugarFlashColor   = new Color(1f, 0.85f, 0.3f); 
+    [SerializeField] private Color EnemyFlashColor   = new Color(1f, 0.85f, 0.3f);
+    
+    [SerializeField] private LayerMask enemyLayers;
+
 
     private void Awake()
     {
@@ -72,6 +76,27 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
         Respawn();
     }
+    
+    private static bool InMask(GameObject go, LayerMask mask) => (mask.value & (1 << go.layer)) != 0;
+
+    private void TryEnemyHit(Component hitSource)
+    {
+        bool looksLikeEnemy = InMask(hitSource.gameObject, enemyLayers);
+        var effect = hitSource.GetComponent<IEnemyEffect>()
+                     ?? hitSource.GetComponentInParent<IEnemyEffect>()
+                     ?? hitSource.GetComponentInChildren<IEnemyEffect>();
+
+        if (!looksLikeEnemy && effect == null) return;
+
+        if (Time.time - lastEnemyHitTime < enemyHitCooldown) return;
+        
+        playerFeedback?.PlayUseItemFX(EnemyFlashColor);
+        
+        effect?.ApplyEffect(this.gameObject);
+
+        lastEnemyHitTime = Time.time;
+    }
+
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
@@ -99,15 +124,7 @@ public class PlayerManager : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (Time.time - lastEnemyHitTime >= enemyHitCooldown)
-        {
-            var enemyEffect = collision.gameObject.GetComponent<IEnemyEffect>();
-            if (enemyEffect != null)
-            {
-                enemyEffect.ApplyEffect(this.gameObject);
-                lastEnemyHitTime = Time.time;
-            }
-        }
+        TryEnemyHit(collision.collider);
     }
 
     private void UseItemAction(Item item)

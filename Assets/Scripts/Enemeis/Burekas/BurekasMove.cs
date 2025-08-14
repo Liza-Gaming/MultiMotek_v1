@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class EnemyMove : MonoBehaviour
+public class BurekasMove : MonoBehaviour
 {
-    public Transform posA, posB, posC, posD;
+    public Transform posA, posB;
     public float speed = 2f;
 
     private Transform[] points;
@@ -14,7 +14,7 @@ public class EnemyMove : MonoBehaviour
 
     void Start()
     {
-        points = new Transform[] { posA, posB, posC, posD };
+        points = new Transform[] { posA, posB };
         transform.position = points[0].position;
     }
 
@@ -23,9 +23,9 @@ public class EnemyMove : MonoBehaviour
         Transform targetPoint = points[currentIndex];
         
         Vector3 moveDirection = targetPoint.position - transform.position;
-        if (moveDirection.x > 0.01f)
+        if (moveDirection.x < 0.01f)
             transform.localScale = new Vector3(size, size, size);
-        else if (moveDirection.x < -0.01f)
+        else if (moveDirection.x > -0.01f)
             transform.localScale = new Vector3(-size, size, size);
 
         transform.position = Vector2.MoveTowards(transform.position, targetPoint.position, speed * Time.deltaTime);

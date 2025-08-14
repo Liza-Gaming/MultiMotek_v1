@@ -1768,7 +1768,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 293315496}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Drop Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -3739,7 +3739,7 @@ GameObject:
   - component: {fileID: 531206747}
   - component: {fileID: 531206750}
   - component: {fileID: 531206751}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mashkit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24470,6 +24470,10 @@ MonoBehaviour:
   sugarMeter: {fileID: 1671181921}
   insulinFlashColor: {r: 0.35, g: 0.7, b: 1, a: 1}
   sugarFlashColor: {r: 1, g: 0.85, b: 0.3, a: 1}
+  EnemyFlashColor: {r: 1, g: 0.028672205, b: 0, a: 1}
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!95 &1671181919
 Animator:
   serializedVersion: 7
@@ -26667,7 +26671,7 @@ GameObject:
   - component: {fileID: 1942531840}
   - component: {fileID: 1942531841}
   - component: {fileID: 1942531842}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FlyingCnady
   m_TagString: Untagged
   m_Icon: {fileID: 0}
