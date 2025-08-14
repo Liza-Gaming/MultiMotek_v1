@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Collections;
 
 public class SugarMeter : MonoBehaviour
 {
@@ -18,6 +20,9 @@ public class SugarMeter : MonoBehaviour
     public float minSugar = 70f;
     public float maxSugar = 180f;
     
+    public float minSugarClamp = 0f;
+    public float maxSugarClamp = 400f;
+    
     public float timeOutsideRangeToLoseHeart = 20f;
     public float timeInsideRangeToGainHeart = 20f;
     
@@ -27,8 +32,13 @@ public class SugarMeter : MonoBehaviour
     public Image[] heartImages;
 
     public Text sugarText;
+    
+    [SerializeField] private WeatherManager weatherManager;
 
     private float sugarLevel;
+    
+    private class TimedRate { public float ratePerSec; public float remaining; }
+    private readonly List<TimedRate> activeRates = new List<TimedRate>();
 
     void Awake()
     {
@@ -45,13 +55,23 @@ public class SugarMeter : MonoBehaviour
 
     void Update()
     {
-        sugarLevel -= sugarDecreaseRate * Time.deltaTime;
-        sugarLevel = Mathf.Max(sugarLevel, 0f);
-        UpdateSugarUI();
+        float totalRate = -sugarDecreaseRate;
+        
+        for (int i = 0; i < activeRates.Count; i++)
+            totalRate += activeRates[i].ratePerSec;
+        
+        sugarLevel += totalRate * Time.deltaTime;
+        
+        sugarLevel = Mathf.Clamp(sugarLevel, minSugarClamp, maxSugarClamp);
 
+        UpdateSugarUI();
+        UpdateHeartsLogic();
+    }
+
+    private void UpdateHeartsLogic()
+    {
         if (sugarLevel >= minSugar && sugarLevel <= maxSugar)
         {
-            // בתוך הטווח
             timeInsideSafeRange += Time.deltaTime;
             timeOutsideSafeRange = 0f;
 
@@ -63,7 +83,6 @@ public class SugarMeter : MonoBehaviour
         }
         else
         {
-            // מחוץ לטווח
             timeOutsideSafeRange += Time.deltaTime;
             timeInsideSafeRange = 0f;
 
@@ -74,6 +93,7 @@ public class SugarMeter : MonoBehaviour
             }
         }
     }
+
 
     void UpdateSugarUI()
     {
@@ -88,12 +108,7 @@ public class SugarMeter : MonoBehaviour
             heartImages[i].enabled = i < currentHearts;
         }
     }
-
-    public void AddSugar(float amount)
-    {
-        sugarLevel += amount;
-        UpdateSugarUI();
-    }
+    
 
     public float GetSugarLevel()
     {
@@ -123,5 +138,56 @@ public class SugarMeter : MonoBehaviour
         }
     }
     public int CurrentHearts => currentHearts;
+    
+    public void AddSugar(float amount, float baseDurationSec = 0f, bool affectByWeather = true)
+    {
+        if (baseDurationSec <= 0f)
+        {
+            sugarLevel = Mathf.Clamp(sugarLevel + amount, minSugarClamp, maxSugarClamp);
+            UpdateSugarUI();
+            return;
+        }
+
+        ApplyTimedChange(+Mathf.Abs(amount), baseDurationSec, affectByWeather);
+    }
+
+    public void DecreaseSugar(float amount, float baseDurationSec = 0f, bool affectByWeather = true)
+    {
+        if (baseDurationSec <= 0f)
+        {
+            sugarLevel = Mathf.Clamp(sugarLevel - Mathf.Abs(amount), minSugarClamp, maxSugarClamp);
+            UpdateSugarUI();
+            return;
+        }
+
+        ApplyTimedChange(-Mathf.Abs(amount), baseDurationSec, affectByWeather);
+    }
+
+    private void ApplyTimedChange(float deltaTotal, float baseDurationSec, bool affectByWeather)
+    {
+        float mult = 1f;
+        if (affectByWeather && weatherManager != null)
+            mult = weatherManager.GetSpeedMultiplier();
+        
+        float actualDuration = baseDurationSec / mult;
+        
+        float ratePerSec = deltaTotal / Mathf.Max(0.0001f, actualDuration);
+
+        StartCoroutine(ApplyRateCoroutine(ratePerSec, actualDuration));
+    }
+
+    private IEnumerator ApplyRateCoroutine(float ratePerSec, float duration)
+    {
+        var r = new TimedRate { ratePerSec = ratePerSec, remaining = duration };
+        activeRates.Add(r);
+
+        while (r.remaining > 0f)
+        {
+            r.remaining -= Time.deltaTime;
+            yield return null;
+        }
+
+        activeRates.Remove(r);
+    }
     
 }

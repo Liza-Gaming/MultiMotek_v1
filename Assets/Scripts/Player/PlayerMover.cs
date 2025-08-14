@@ -88,7 +88,6 @@ public class PlayerMover : MonoBehaviour
     {
         if (inputLocked)
         {
-            // להקפיא תנועה פיזיקלית אופקית
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }

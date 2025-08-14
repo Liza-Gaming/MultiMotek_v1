@@ -13,13 +13,20 @@ public class PlayerManager : MonoBehaviour
     public float enemyHitCooldown = 1.0f;
     private float lastEnemyHitTime = -999f;
     
+    [SerializeField] private PlayerFeedback playerFeedback;
+    
     [SerializeField] private SugarSummaryUI summaryUI;
 
     [SerializeField] private UI_inventory uiInventory;
 
+    [SerializeField] private SugarMeter sugarMeter;
+    
+    [SerializeField] private Color insulinFlashColor = new Color(0.35f, 0.7f, 1f);
+    [SerializeField] private Color sugarFlashColor   = new Color(1f, 0.85f, 0.3f); 
+
     private void Awake()
     {
-        inventory = new Inventory();
+        inventory = new Inventory(UseItemAction);
         uiInventory.SetInventory(inventory);
 
         //ItemWorld.SpawnItemWorld(new Vector3(5f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
@@ -100,6 +107,23 @@ public class PlayerManager : MonoBehaviour
                 enemyEffect.ApplyEffect(this.gameObject);
                 lastEnemyHitTime = Time.time;
             }
+        }
+    }
+
+    private void UseItemAction(Item item)
+    {
+        switch (item.itemType)
+        {
+            case Item.ItemType.Insulin:
+                sugarMeter.DecreaseSugar(15f, 10f, affectByWeather: true);
+                inventory.RemoveItem(new Item {itemType = Item.ItemType.Insulin, amount = 1});
+                playerFeedback?.PlayUseItemFX(insulinFlashColor);
+                break;
+            case Item.ItemType.SugarBag:
+                sugarMeter.AddSugar(10f, 6f, affectByWeather: true);
+                inventory.RemoveItem(new Item {itemType = Item.ItemType.SugarBag, amount = 1});
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
         }
     }
     

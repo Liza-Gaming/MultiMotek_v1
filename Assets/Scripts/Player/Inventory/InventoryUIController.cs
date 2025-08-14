@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class InventoryUIController : MonoBehaviour
 {
@@ -13,6 +15,20 @@ public class InventoryUIController : MonoBehaviour
         itemSlotContainer.SetActive(false);
         openInventoryButton.SetActive(false);
     }
+    
+    void Start()
+    {
+        var scene = SceneManager.GetActiveScene();
+        bool isFirstLevel = scene.buildIndex == 0 || scene.name == "SampleScene"; 
+
+        if (!isFirstLevel)
+        {
+            UnlockInventoryButton();
+            
+        }
+    }
+
+    
     public void OpenInventory()
     {
         background.SetActive(true);
