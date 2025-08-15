@@ -6,7 +6,6 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Set this as the new checkpoint
             PlayerManager respawn = other.GetComponent<PlayerManager>();
             if (respawn != null)
                 respawn.SetCheckpoint(transform);

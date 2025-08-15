@@ -38,8 +38,11 @@ public class PlayerMover : MonoBehaviour
 
     private bool wasGroundedLastFrame = true;
     private bool inputLocked = false;
+    
+    [SerializeField] private LayerMask platformLayer;
+    [SerializeField] private float platformRayLen = 0.25f;
 
-    //Vector2 moveDir = Vector2.zero; // Direction of the player by vector
+    private MovingPlatform currentPlatform;
 
     private void Awake()
     {
@@ -65,25 +68,40 @@ public class PlayerMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (inputLocked) return;
+            if (inputLocked) return;
+            
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
+            
+            if (isGrounded)
+                UpdateCurrentPlatform();
+            else
+                currentPlatform = null;
+            
+            if (isGrounded && !wasGroundedLastFrame)
+            {
+                if (landingEffectPrefab)
+                    Instantiate(landingEffectPrefab, landingEffectPoint.position, Quaternion.identity);
+            }
+            
+            if (jumpAction.action.triggered && isGrounded)
+            {
+                float platformX = (currentPlatform != null) ? currentPlatform.Velocity.x : 0f;
+                rb.linearVelocity = new Vector2(platformX + moveAction.action.ReadValue<Vector2>().x * _speed, jumpForce);
+            }
+            
+            wasGroundedLastFrame = isGrounded;
 
-        // Ground check
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
-
-        if (isGrounded && !wasGroundedLastFrame)
-        {
-            Instantiate(landingEffectPrefab, landingEffectPoint.position, Quaternion.identity);
-        }
-
-        wasGroundedLastFrame = isGrounded;
-
-        if (jumpAction.action.triggered && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        }
+    }
+    
+    private void UpdateCurrentPlatform()
+    {
+        currentPlatform = null;
+        
+        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, platformRayLen, platformLayer);
+        if (hit.collider != null)
+            currentPlatform = hit.collider.GetComponentInParent<MovingPlatform>();
     }
 
-    // Moves the player in every frame when the user is clicking on the buttons
     void FixedUpdate()
     {
         if (inputLocked)
@@ -93,8 +111,20 @@ public class PlayerMover : MonoBehaviour
         }
 
         float moveInput = moveAction.action.ReadValue<Vector2>().x;
-        rb.linearVelocity = new Vector2(moveInput * _speed, rb.linearVelocity.y);
 
+        Vector2 v = rb.linearVelocity;
+        v.x = moveInput * _speed;
+        
+        if (isGrounded && currentPlatform != null)
+        {
+            Vector2 pv = currentPlatform.Velocity;
+            v.x += pv.x;
+            
+            if (pv.y > 0f && v.y < pv.y)
+                v.y = pv.y;
+        }
+
+        rb.linearVelocity = v;
         if (moveInput > 0.01f)
             transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
         else if (moveInput < -0.01f)
@@ -123,9 +153,10 @@ public class PlayerMover : MonoBehaviour
     {
         if (groundCheck != null)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(groundCheck.position, groundRadius);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * platformRayLen);
         }
     }
+    
 
 }

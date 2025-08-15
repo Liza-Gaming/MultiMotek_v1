@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -6,49 +7,51 @@ using System.Collections;
 public class SugarMeter : MonoBehaviour
 {
     public static SugarMeter Instance;
+    
+    private static bool s_hasSaved;
+    private static float s_savedSugar;
+    private static int   s_savedHearts;
 
     [Tooltip("Initial sugar level")]
     public float startSugar = 100f;
 
-    [Tooltip("decending rate")]
     public float sugarDecreaseRate = 1f;
-    
     public int maxHearts = 3;
     private int currentHearts;
-    
-    [Header("Sugar safe range")]
-    public float minSugar = 70f;
-    public float maxSugar = 180f;
-    
-    public float minSugarClamp = 0f;
-    public float maxSugarClamp = 400f;
-    
+
+    public float minSugar = 70f, maxSugar = 180f;
+    public float minSugarClamp = 0f, maxSugarClamp = 400f;
+
     public float timeOutsideRangeToLoseHeart = 20f;
-    public float timeInsideRangeToGainHeart = 20f;
-    
-    private float timeOutsideSafeRange = 0f;
-    private float timeInsideSafeRange = 0f;
+    public float timeInsideRangeToGainHeart  = 20f;
 
-    public Image[] heartImages;
+    private float timeOutsideSafeRange = 0f, timeInsideSafeRange = 0f;
 
-    public Text sugarText;
-    
+    public UnityEngine.UI.Image[] heartImages;
+    public UnityEngine.UI.Text sugarText;
     [SerializeField] private WeatherManager weatherManager;
 
     private float sugarLevel;
-    
+
     private class TimedRate { public float ratePerSec; public float remaining; }
     private readonly List<TimedRate> activeRates = new List<TimedRate>();
+    public event Action<bool, float> TimedChangeStarted;
 
-    void Awake()
-    {
-        Instance = this;
-    }
-    
+    void Awake() { Instance = this; }
+
     void Start()
     {
-        sugarLevel = startSugar;
-        currentHearts = 0;
+        if (s_hasSaved)
+        {
+            sugarLevel    = Mathf.Clamp(s_savedSugar,  minSugarClamp, maxSugarClamp);
+            currentHearts = Mathf.Clamp(s_savedHearts, 0,             maxHearts);
+        }
+        else
+        {
+            sugarLevel    = startSugar;
+            currentHearts = 0;
+        }
+
         UpdateSugarUI();
         UpdateHeartsUI();
     }
@@ -56,16 +59,21 @@ public class SugarMeter : MonoBehaviour
     void Update()
     {
         float totalRate = -sugarDecreaseRate;
-        
         for (int i = 0; i < activeRates.Count; i++)
             totalRate += activeRates[i].ratePerSec;
-        
+
         sugarLevel += totalRate * Time.deltaTime;
-        
-        sugarLevel = Mathf.Clamp(sugarLevel, minSugarClamp, maxSugarClamp);
+        sugarLevel  = Mathf.Clamp(sugarLevel, minSugarClamp, maxSugarClamp);
 
         UpdateSugarUI();
         UpdateHeartsLogic();
+    }
+
+    private void OnDisable()
+    {
+        s_savedSugar  = sugarLevel;
+        s_savedHearts = currentHearts;
+        s_hasSaved    = true;
     }
 
     private void UpdateHeartsLogic()
@@ -170,8 +178,11 @@ public class SugarMeter : MonoBehaviour
             mult = weatherManager.GetSpeedMultiplier();
         
         float actualDuration = baseDurationSec / mult;
-        
+
         float ratePerSec = deltaTotal / Mathf.Max(0.0001f, actualDuration);
+        
+        bool isIncrease = deltaTotal > 0f;
+        TimedChangeStarted?.Invoke(isIncrease, actualDuration);
 
         StartCoroutine(ApplyRateCoroutine(ratePerSec, actualDuration));
     }
@@ -180,14 +191,20 @@ public class SugarMeter : MonoBehaviour
     {
         var r = new TimedRate { ratePerSec = ratePerSec, remaining = duration };
         activeRates.Add(r);
-
         while (r.remaining > 0f)
         {
             r.remaining -= Time.deltaTime;
             yield return null;
         }
-
         activeRates.Remove(r);
     }
+    
+    public void SetSugarInstant(float value)
+    {
+        sugarLevel = Mathf.Clamp(value, minSugarClamp, maxSugarClamp);
+        UpdateSugarUI();
+    }
+    
+    
     
 }

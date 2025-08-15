@@ -15,6 +15,8 @@ public class SugarWarningBlinker : MonoBehaviour
 
     private Coroutine blinkRoutine;
     private CanvasGroup cg;
+    
+    private float suppressUntil = -1f;
 
     void Start()
     {
@@ -31,6 +33,14 @@ public class SugarWarningBlinker : MonoBehaviour
     {
         if (sugar == null) return;
 
+        // בזמן השתקה – לא להבהב ולא להציג
+        if (Time.time < suppressUntil)
+        {
+            if (blinkRoutine != null) { StopCoroutine(blinkRoutine); blinkRoutine = null; }
+            Show(false);
+            return;
+        }
+
         float s = sugar.GetSugarLevel();
         bool shouldBlink = (s < lowThreshold) || (s > highThreshold);
 
@@ -41,11 +51,7 @@ public class SugarWarningBlinker : MonoBehaviour
         }
         else
         {
-            if (blinkRoutine != null)
-            {
-                StopCoroutine(blinkRoutine);
-                blinkRoutine = null;
-            }
+            if (blinkRoutine != null) { StopCoroutine(blinkRoutine); blinkRoutine = null; }
             Show(false);
         }
     }
@@ -62,4 +68,11 @@ public class SugarWarningBlinker : MonoBehaviour
 
     private void Show(bool on)   { if (cg) cg.alpha = on ? 1f : 0f; }
     private void Toggle()        { if (cg) cg.alpha = (cg.alpha > 0.5f) ? 0f : 1f; }
+    
+    public void SuppressForSeconds(float seconds)
+    {
+        suppressUntil = Mathf.Max(suppressUntil, Time.time + Mathf.Max(0f, seconds));
+        if (blinkRoutine != null) { StopCoroutine(blinkRoutine); blinkRoutine = null; }
+        Show(false);
+    }
 }

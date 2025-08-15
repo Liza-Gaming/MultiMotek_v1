@@ -26,6 +26,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Color EnemyFlashColor   = new Color(1f, 0.85f, 0.3f);
     
     [SerializeField] private LayerMask enemyLayers;
+    
+    [SerializeField] private SugarChangeArrow sugarArrow;
 
 
     private void Awake()
@@ -41,6 +43,25 @@ public class PlayerManager : MonoBehaviour
         //ItemWorld.SpawnItemWorld(new Vector3(0f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
 
     }
+    
+    private void OnEnable()
+    {
+        if (sugarMeter != null)
+            sugarMeter.TimedChangeStarted += OnTimedChangeStarted;
+    }
+
+    private void OnDisable()
+    {
+        if (sugarMeter != null)
+            sugarMeter.TimedChangeStarted -= OnTimedChangeStarted;
+    }
+
+    private void OnTimedChangeStarted(bool isIncrease, float durationSec)
+    {
+        if (isIncrease) sugarArrow?.ShowUp(durationSec);
+        else            sugarArrow?.ShowDown(durationSec);
+    }
+
 
     public void SetCheckpoint(Transform newCheckpoint)
     {
@@ -66,15 +87,22 @@ public class PlayerManager : MonoBehaviour
 
     public void ExplodeAndRespawn()
     {
+        float savedSugar = sugarMeter ? sugarMeter.GetSugarLevel() : 0f;
+        
+        sugarArrow?.SuppressForSeconds(1.0f);
+
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-        StartCoroutine(ExplodeAndRespawnCoroutine());
+        StartCoroutine(ExplodeAndRespawnCoroutine(savedSugar));
     }
 
-    private IEnumerator ExplodeAndRespawnCoroutine()
+    private IEnumerator ExplodeAndRespawnCoroutine(float savedSugar)
     {
         GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSeconds(0.4f);
+
         Respawn();
+        
+        if (sugarMeter) sugarMeter.SetSugarInstant(savedSugar);
     }
     
     private static bool InMask(GameObject go, LayerMask mask) => (mask.value & (1 << go.layer)) != 0;
@@ -93,6 +121,8 @@ public class PlayerManager : MonoBehaviour
         playerFeedback?.PlayUseItemFX(EnemyFlashColor);
         
         effect?.ApplyEffect(this.gameObject);
+        
+        sugarArrow?.ShowUp(5f);
 
         lastEnemyHitTime = Time.time;
     }
@@ -100,19 +130,6 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.CompareTag("NextLevel"))
-        {
-
-            if (summaryUI == null)
-                summaryUI = FindObjectOfType<SugarSummaryUI>(true);
-
-            if (summaryUI != null)
-            {
-                summaryUI.nextSceneName = "Level2";
-                summaryUI.nextSceneBuildIndex = -1;
-                summaryUI.ShowSummary();
-            }
-        }
         
         ItemWorld itemWorld = collider.GetComponent<ItemWorld>();
         if (itemWorld != null)
@@ -133,12 +150,13 @@ public class PlayerManager : MonoBehaviour
         {
             case Item.ItemType.Insulin:
                 sugarMeter.DecreaseSugar(15f, 10f, affectByWeather: true);
-                inventory.RemoveItem(new Item {itemType = Item.ItemType.Insulin, amount = 1});
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
                 playerFeedback?.PlayUseItemFX(insulinFlashColor);
                 break;
+
             case Item.ItemType.SugarBag:
                 sugarMeter.AddSugar(10f, 6f, affectByWeather: true);
-                inventory.RemoveItem(new Item {itemType = Item.ItemType.SugarBag, amount = 1});
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
         }
