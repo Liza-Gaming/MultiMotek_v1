@@ -20,7 +20,7 @@ public class SugarMeter : MonoBehaviour
     private int currentHearts;
 
     public float minSugar = 70f, maxSugar = 180f;
-    public float minSugarClamp = 0f, maxSugarClamp = 400f;
+    public float minSugarClamp = 0f, maxSugarClamp = 250f;
 
     public float timeOutsideRangeToLoseHeart = 20f;
     public float timeInsideRangeToGainHeart  = 20f;

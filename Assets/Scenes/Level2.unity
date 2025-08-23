@@ -24576,7 +24576,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sugar: {fileID: 1223602329}
   minSugar: 20
-  maxSugar: 250
+  maxSugar: 400
   fill: {fileID: 201648920}
   gradient:
     serializedVersion: 2
@@ -24588,16 +24588,16 @@ MonoBehaviour:
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 14287
-    ctime1: 45547
+    ctime0: 8520
+    ctime1: 27525
     ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
     ctime6: 0
     ctime7: 0
-    atime0: 13647
-    atime1: 44795
+    atime0: 7787
+    atime1: 27679
     atime2: 65535
     atime3: 0
     atime4: 0
