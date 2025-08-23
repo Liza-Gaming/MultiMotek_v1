@@ -14,8 +14,11 @@ public class PlayerFeedback : MonoBehaviour
     [SerializeField] private float punchScale = 1.08f;
     [SerializeField] private float punchDuration = 0.12f;
     [SerializeField] private AnimationCurve punchCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-
-    private Coroutine flashCo, punchCo;
+    
+    [SerializeField] private SpriteRenderer eyesClosedRenderer;
+    [SerializeField] private float extraEyesTime = 0f;
+    
+    private Coroutine flashCo, punchCo, eyesCo;
     private Vector3 baseScale;
 
     void Reset()
@@ -28,15 +31,20 @@ public class PlayerFeedback : MonoBehaviour
         baseScale = transform.localScale;
         if (sprites == null || sprites.Length == 0)
             sprites = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+        if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
     }
 
-    public void PlayUseItemFX(Color flashColor)
+    public void PlayUseItemFX(Color flashColor, bool withEyesClosed = false)
     {
         if (flashCo != null) StopCoroutine(flashCo);
         if (punchCo != null) StopCoroutine(punchCo);
+        if (withEyesClosed && eyesCo != null) StopCoroutine(eyesCo);
 
         flashCo = StartCoroutine(FlashRoutine(flashColor));
         punchCo = StartCoroutine(ScalePunchRoutine());
+        
+        if (withEyesClosed && eyesClosedRenderer)
+            eyesCo = StartCoroutine(EyesClosedRoutine(flashDuration + extraEyesTime));
     }
 
     private IEnumerator FlashRoutine(Color flashColor)
@@ -71,5 +79,17 @@ public class PlayerFeedback : MonoBehaviour
             yield return null;
         }
         transform.localScale = baseScale;
+    }
+    
+    private IEnumerator EyesClosedRoutine(float duration)
+    {
+        eyesClosedRenderer.enabled = true;
+        yield return new WaitForSeconds(duration);
+        if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
+    }
+    
+    public void ForceEyesOpen()
+    {
+        if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
     }
 }

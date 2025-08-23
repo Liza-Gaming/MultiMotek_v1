@@ -26,8 +26,14 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private bool isGrounded;
+    
+    private static readonly int P_IsGrounded = Animator.StringToHash("IsGrounded");
+    private static readonly int T_Jump       = Animator.StringToHash("Jump");
+    private static readonly int T_Land       = Animator.StringToHash("Land");
 
     private Rigidbody2D rb;
+    
+    [SerializeField] private Animator animator;
 
     //private bool facingRight = true; // Tells the direction that the player is facing
 
@@ -47,6 +53,7 @@ public class PlayerMover : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (!animator) animator = GetComponent<Animator>();
     }
     void Start()
     {
@@ -77,16 +84,27 @@ public class PlayerMover : MonoBehaviour
             else
                 currentPlatform = null;
             
+            if (animator) animator.SetBool(P_IsGrounded, isGrounded);
+            
             if (isGrounded && !wasGroundedLastFrame)
             {
                 if (landingEffectPrefab)
                     Instantiate(landingEffectPrefab, landingEffectPoint.position, Quaternion.identity);
+                
+                if (animator) animator.SetTrigger(T_Land);
             }
             
             if (jumpAction.action.triggered && isGrounded)
             {
                 float platformX = (currentPlatform != null) ? currentPlatform.Velocity.x : 0f;
                 rb.linearVelocity = new Vector2(platformX + moveAction.action.ReadValue<Vector2>().x * _speed, jumpForce);
+                
+                if (animator) animator.SetTrigger(T_Jump);
+            }
+            
+            if (!isGrounded && wasGroundedLastFrame)
+            {
+                if (animator) animator.SetTrigger(T_Jump);
             }
             
             wasGroundedLastFrame = isGrounded;

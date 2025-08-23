@@ -76,6 +76,7 @@ public class PlayerManager : MonoBehaviour
             Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
             animator.SetTrigger("Respawn");
             GetComponent<SpriteRenderer>().enabled = true;
+            playerFeedback?.ForceEyesOpen();
             if (rb2d != null)
                 rb2d.linearVelocity = Vector2.zero;
         }
@@ -118,11 +119,11 @@ public class PlayerManager : MonoBehaviour
 
         if (Time.time - lastEnemyHitTime < enemyHitCooldown) return;
         
-        playerFeedback?.PlayUseItemFX(EnemyFlashColor);
+        playerFeedback?.PlayUseItemFX(EnemyFlashColor, withEyesClosed: true);
         
         effect?.ApplyEffect(this.gameObject);
         
-        sugarArrow?.ShowUp(5f);
+        sugarArrow?.ShowUp(3f);
 
         lastEnemyHitTime = Time.time;
     }

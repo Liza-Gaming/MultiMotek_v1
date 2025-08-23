@@ -28,7 +28,7 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 1
+        time: 0.53333336
         value: {x: 60.455, y: -3.1, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
@@ -45,10 +45,14 @@ AnimationClip:
   m_PPtrCurves:
   - serializedVersion: 2
     curve:
-    - time: 0
-      value: {fileID: 4447309717935694650, guid: b8acf2fd21814f742971d8c5d9198cc0, type: 3}
-    - time: 0.41666666
-      value: {fileID: 7430053275367515801, guid: b8acf2fd21814f742971d8c5d9198cc0, type: 3}
+    - time: 0.033333335
+      value: {fileID: -8732688308481021961, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
+    - time: 0.38333333
+      value: {fileID: 3181514496743589262, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
+    - time: 0.65
+      value: {fileID: -652950584030873587, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
+    - time: 0.85
+      value: {fileID: 3181514496743589262, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -80,14 +84,16 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 4447309717935694650, guid: b8acf2fd21814f742971d8c5d9198cc0, type: 3}
-    - {fileID: 7430053275367515801, guid: b8acf2fd21814f742971d8c5d9198cc0, type: 3}
+    - {fileID: -8732688308481021961, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
+    - {fileID: 3181514496743589262, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
+    - {fileID: -652950584030873587, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
+    - {fileID: 3181514496743589262, guid: 6a264d5e462bb484ba799d7d95d9a418, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1
+    m_StopTime: 0.8666667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -117,7 +123,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
+        time: 0.53333336
         value: 60.455
         inSlope: 0
         outSlope: 0
@@ -147,7 +153,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
+        time: 0.53333336
         value: -3.1
         inSlope: 0
         outSlope: 0
@@ -168,7 +174,7 @@ AnimationClip:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 1
+        time: 0.53333336
         value: 0
         inSlope: 0
         outSlope: 0
