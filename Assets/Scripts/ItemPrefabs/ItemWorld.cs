@@ -25,6 +25,7 @@ public class ItemWorld : MonoBehaviour
         itemWorld.SetItem(item);
         return itemWorld;
     }
+    
 
     private void Awake()
     {
@@ -56,6 +57,22 @@ public class ItemWorld : MonoBehaviour
         Vector3 lp = visual.localPosition;
         lp.y = y;
         visual.localPosition = lp;
+    }
+
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!other.CompareTag("Player")) return;
+        if (item == null) return;
+
+        // (אופציונלי) הוספה לאינבנטורי
+        var inventory = other.GetComponent<Inventory>();
+        if (inventory != null) inventory.AddItem(item);
+
+        // רישום לפאנל המידע לפי סוג הפריט
+        InfoPanelUI.Instance?.RegisterDiscovery(item);
+
+        DestroySelf(); // אם את רוצה להשמיד את האובייקט בעולם
     }
 
     public Item GetItem() => item;

@@ -11,6 +11,7 @@ public class Pause : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject pauseBtn;
+    [SerializeField] private GameObject infoBtn;
     [SerializeField] private GameObject resumeBtn;
     [SerializeField] private GameObject pauseShield;
 
@@ -44,6 +45,7 @@ public class Pause : MonoBehaviour
         ToggleGameplayVolumes(false);
         
         SetActiveSafe(pauseBtn, false);
+        SetActiveSafe(infoBtn, false);
         SetActiveSafe(resumeBtn, true);
         SetActiveSafe(pauseShield, true);
         
@@ -69,10 +71,10 @@ public class Pause : MonoBehaviour
 
         Time.timeScale = 1f;
         ToggleGameplayVolumes(true);
-
-        // UI: להחזיר את כפתור ה"||"
+        
         SetActiveSafe(pauseShield, false);
         SetActiveSafe(resumeBtn, false);
+        SetActiveSafe(infoBtn, true);
         SetActiveSafe(pauseBtn, true);
 
         FadePauseBlur(false);

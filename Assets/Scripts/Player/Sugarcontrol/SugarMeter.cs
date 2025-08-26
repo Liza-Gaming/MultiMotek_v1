@@ -36,6 +36,11 @@ public class SugarMeter : MonoBehaviour
     private class TimedRate { public float ratePerSec; public float remaining; }
     private readonly List<TimedRate> activeRates = new List<TimedRate>();
     public event Action<bool, float> TimedChangeStarted;
+    
+    public event System.Action<bool, float, float> TimedChangeScheduled; // isIncrease, delay, duration
+    public event System.Action<bool, float>       TimedChangeBegan;     // isIncrease, duration
+    public event System.Action<bool>              TimedChangeEnded;     // isIncrease
+
 
     void Awake() { Instance = this; }
 
@@ -147,57 +152,106 @@ public class SugarMeter : MonoBehaviour
     }
     public int CurrentHearts => currentHearts;
     
-    public void AddSugar(float amount, float baseDurationSec = 0f, bool affectByWeather = true)
+public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
+    bool affectByWeather = true, bool delayAffectedByWeather = false)
+{
+    if (durationGameMin <= 0f)
     {
-        if (baseDurationSec <= 0f)
+        // מיידי (עם/בלי דיליי)
+        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
+        if (delaySec <= 0f)
         {
-            sugarLevel = Mathf.Clamp(sugarLevel + amount, minSugarClamp, maxSugarClamp);
-            UpdateSugarUI();
-            return;
+            SetSugarInstant(sugarLevel + Mathf.Abs(amount));
         }
-
-        ApplyTimedChange(+Mathf.Abs(amount), baseDurationSec, affectByWeather);
+        else
+        {
+            StartCoroutine(ApplyInstantAfterDelay(+Mathf.Abs(amount), delaySec, delayAffectedByWeather));
+        }
+        return;
     }
 
-    public void DecreaseSugar(float amount, float baseDurationSec = 0f, bool affectByWeather = true)
-    {
-        if (baseDurationSec <= 0f)
-        {
-            sugarLevel = Mathf.Clamp(sugarLevel - Mathf.Abs(amount), minSugarClamp, maxSugarClamp);
-            UpdateSugarUI();
-            return;
-        }
+    float baseDurationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
+    float baseDelaySec    = GameTime.GameMinutesToRealSeconds(delayGameMin);
+    ApplyTimedChange(+Mathf.Abs(amount), baseDurationSec, affectByWeather, baseDelaySec, delayAffectedByWeather);
+}
 
-        ApplyTimedChange(-Mathf.Abs(amount), baseDurationSec, affectByWeather);
+public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
+    bool affectByWeather = true, bool delayAffectedByWeather = false)
+{
+    if (durationGameMin <= 0f)
+    {
+        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
+        if (delaySec <= 0f)
+        {
+            SetSugarInstant(sugarLevel - Mathf.Abs(amount));
+        }
+        else
+        {
+            StartCoroutine(ApplyInstantAfterDelay(-Mathf.Abs(amount), delaySec, delayAffectedByWeather));
+        }
+        return;
     }
 
-    private void ApplyTimedChange(float deltaTotal, float baseDurationSec, bool affectByWeather)
+    float baseDurationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
+    float baseDelaySec    = GameTime.GameMinutesToRealSeconds(delayGameMin);
+    ApplyTimedChange(-Mathf.Abs(amount), baseDurationSec, affectByWeather, baseDelaySec, delayAffectedByWeather);
+}
+
+// קורוטינה לשינוי מיידי לאחר דיליי (מכבדת pause)
+private IEnumerator ApplyInstantAfterDelay(float delta, float baseDelaySec, bool delayAffectedByWeather)
+{
+    float mult = (delayAffectedByWeather && weatherManager != null) ? weatherManager.GetSpeedMultiplier() : 1f;
+    float actualDelay = baseDelaySec / mult;
+
+    if (actualDelay > 0f) yield return new WaitForSeconds(actualDelay);
+
+    sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
+    UpdateSugarUI();
+}
+
+
+    private void ApplyTimedChange(float deltaTotal, float baseDurationSec, bool affectByWeather,
+        float baseDelaySec = 0f, bool delayAffectedByWeather = false)
     {
         float mult = 1f;
         if (affectByWeather && weatherManager != null)
             mult = weatherManager.GetSpeedMultiplier();
-        
+
         float actualDuration = baseDurationSec / mult;
+        float actualDelay    = baseDelaySec / (delayAffectedByWeather ? mult : 1f);
 
         float ratePerSec = deltaTotal / Mathf.Max(0.0001f, actualDuration);
-        
-        bool isIncrease = deltaTotal > 0f;
-        TimedChangeStarted?.Invoke(isIncrease, actualDuration);
 
-        StartCoroutine(ApplyRateCoroutine(ratePerSec, actualDuration));
+        bool isIncrease = deltaTotal > 0f;
+
+        // לפני הדיליי – רק מודיעים שתוזמן שינוי
+        TimedChangeScheduled?.Invoke(isIncrease, actualDelay, actualDuration);
+
+        StartCoroutine(ApplyRateCoroutine(ratePerSec, actualDuration, actualDelay));
     }
 
-    private IEnumerator ApplyRateCoroutine(float ratePerSec, float duration)
+    private IEnumerator ApplyRateCoroutine(float ratePerSec, float duration, float delay)
     {
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay); // מכבד Pause
+
+        bool isIncrease = ratePerSec > 0f;
+        TimedChangeBegan?.Invoke(isIncrease, duration);
+
         var r = new TimedRate { ratePerSec = ratePerSec, remaining = duration };
         activeRates.Add(r);
+
         while (r.remaining > 0f)
         {
             r.remaining -= Time.deltaTime;
             yield return null;
         }
+
         activeRates.Remove(r);
+        TimedChangeEnded?.Invoke(isIncrease);
     }
+
+
     
     public void SetSugarInstant(float value)
     {

@@ -49,6 +49,24 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private float platformRayLen = 0.25f;
 
     private MovingPlatform currentPlatform;
+    
+    
+    // --- הוסיפי למעלה במחלקה ---
+    [Header("Continuous Movement → Sugar Drain")]
+    [SerializeField] private SugarMeter sugarMeter;
+    [SerializeField, Tooltip("כמה דק׳-משחק רצופות עד הורדה")]
+    private float continuousMoveThresholdGameMinutes = 20f;
+    [SerializeField, Tooltip("כמה יחידות סוכר להוריד בכל בלוק")]
+    private float sugarDrainPerBlock = 4f;
+    [SerializeField, Tooltip("מהירות מינימלית (יחסית לפלטפורמה) שנחשבת תנועה")]
+    private float moveSpeedEpsilon = 0.1f;
+    [SerializeField, Tooltip("כמה שניות אמיתיות מותר להיות כמעט סטטית בלי לאפס רצף")]
+    private float stopForgivenessRealSeconds = 0.25f;
+
+// צוברים זמן תנועה בדקות-משחק
+    private float movingGameSecondsAccum = 0f;
+    private float idleForgivenessTimer = 0f;
+
 
     private void Awake()
     {
@@ -58,7 +76,9 @@ public class PlayerMover : MonoBehaviour
     void Start()
     {
         initialScale = transform.localScale;
+        if (!sugarMeter) sugarMeter = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
     }
+
 
     void OnEnable()
     {
@@ -108,6 +128,8 @@ public class PlayerMover : MonoBehaviour
             }
             
             wasGroundedLastFrame = isGrounded;
+            
+            TrackContinuousMovementSugar();
 
     }
     
@@ -175,6 +197,57 @@ public class PlayerMover : MonoBehaviour
             Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * platformRayLen);
         }
     }
+    
+    private void TrackContinuousMovementSugar()
+    {
+        if (inputLocked) // בזמן נעילה לא סופרים
+        {
+            movingGameSecondsAccum = 0f;
+            idleForgivenessTimer = 0f;
+            return;
+        }
+
+        // מהירות יחסית (לא נסחבת ע״י פלטפורמה)
+        Vector2 platformVel = (currentPlatform != null) ? currentPlatform.Velocity : Vector2.zero;
+        Vector2 relVel = rb.linearVelocity - platformVel;
+
+        bool isMovingNow = relVel.magnitude > moveSpeedEpsilon;
+
+        if (isMovingNow)
+        {
+            // מוסיפים זמן בדקות-משחק (שנייה אמיתית * סקייל העולם)
+            movingGameSecondsAccum += GameTime.RealSecondsToGameSeconds(Time.deltaTime);
+            idleForgivenessTimer = 0f;
+
+            float blockGameSeconds = continuousMoveThresholdGameMinutes * 60f;
+
+            // ייתכן שנצברו כמה בלוקים (אם הזמן־משחק רץ מהר)
+            if (movingGameSecondsAccum >= blockGameSeconds)
+            {
+                int blocks = Mathf.FloorToInt(movingGameSecondsAccum / blockGameSeconds);
+                movingGameSecondsAccum -= blocks * blockGameSeconds;
+
+                if (sugarMeter)
+                {
+                    
+                    sugarMeter.DecreaseSugarGame(sugarDrainPerBlock, durationGameMin: 1f);
+                }
+
+                // אם תרצי חץ למטה רגעית בזמן הורדה:
+                // GetComponentInChildren<SugarChangeArrow>()?.ShowDown(1f);
+            }
+        }
+        else
+        {
+            // סליחת רפרופים קצרה כדי לא לאפס מייד
+            idleForgivenessTimer += Time.deltaTime;
+            if (idleForgivenessTimer >= stopForgivenessRealSeconds)
+            {
+                movingGameSecondsAccum = 0f;
+            }
+        }
+    }
+
     
 
 }

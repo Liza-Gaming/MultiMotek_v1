@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Inventory
+public class Inventory:MonoBehaviour
 {
     public event EventHandler OnItemListChanged;
 

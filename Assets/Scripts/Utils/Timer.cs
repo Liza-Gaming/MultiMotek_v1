@@ -1,114 +1,106 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
-    [SerializeField] private Text timerText;
-    [SerializeField] private Image background;
-
-    [Header("Default Time (seconds)")]
-    [SerializeField] private float defaultTime = 300f;
-
-    private float remainingTime;
-    private bool timerIsActive = false;
-    private float initialTime;
-
     public static Timer Instance { get; private set; }
-    
-    private readonly System.Collections.Generic.Dictionary<string, float> levelTimes =
-        new System.Collections.Generic.Dictionary<string, float>()
-        {
-            { "SampleScene", 180f },
-            { "Level2", 300f },
-        };
 
-    void Awake()
+    [Header("UI")]
+    [SerializeField] private Text clockText;     // טקסט שמציג את השעה (HH:MM)
+    [SerializeField] private Image background;   // לא חובה – רק אם יש רקע מאחורי השעון
+
+    [Header("Clock Settings")]
+    [SerializeField] private float gameSecondsPerRealSecond = 30f; // 30 דקות/דקה
+    [SerializeField] private bool autoStart = true;
+    [SerializeField] private bool stopWhenPaused = true;
+
+    [Header("Start Time (HH:MM)")]
+    [Range(0, 23)] [SerializeField] private int startHour = 0;
+    [Range(0, 59)] [SerializeField] private int startMinute = 0;
+
+    private const float SecondsPerDay = 24f * 60f * 60f; // 86400
+    private float secondsSinceMidnight;                  // 0..86400
+    private bool isRunning;
+    private long dayCount;                               // כמה יממות חלפו (לא חובה, אך שימושי)
+
+    private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        secondsSinceMidnight = (startHour * 60f + startMinute) * 60f;
+        isRunning = autoStart;
+        UpdateClockUI();
     }
 
-    void OnDestroy()
+    private void Update()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
+        if (!isRunning) return;
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (levelTimes.ContainsKey(scene.name))
-        {
-            SetInitialTime(levelTimes[scene.name]);
-            ShowTimerUI(true);
-        }
-        else if (scene.name == "Intro")
-        {
-            timerIsActive = false;
-            ShowTimerUI(false);
-            Destroy(gameObject);
-        }
-        else
-        {
-            timerIsActive = false;
-            ShowTimerUI(false);
-        }
-    }
+        float dt = stopWhenPaused ? Time.deltaTime : Time.unscaledDeltaTime;
+        if (dt <= 0f) return;
 
-    public void SetInitialTime(float newTime)
-    {
-        initialTime = newTime;
-        remainingTime = newTime;
-        timerIsActive = true;
-        UpdateTimerUI();
-    }
+        secondsSinceMidnight += dt * gameSecondsPerRealSecond;
 
-    void Update()
-    {
-        if (timerIsActive && remainingTime > 0)
+        // לולאת יממה: חוזר ל-00:00 וממשיך לרוץ
+        if (secondsSinceMidnight >= SecondsPerDay)
         {
-            remainingTime -= Time.deltaTime;
-            if (remainingTime < 0) remainingTime = 0;
-            UpdateTimerUI();
+            dayCount += Mathf.FloorToInt(secondsSinceMidnight / SecondsPerDay);
+            secondsSinceMidnight = secondsSinceMidnight % SecondsPerDay;
+            // כאן אפשר לירות אירוע "יום חדש" אם תרצי
         }
 
-        if (remainingTime == 0 && timerIsActive)
-        {
-            timerIsActive = false;
-            SceneManager.LoadScene("Intro");
-        }
+        UpdateClockUI();
     }
 
-    private void UpdateTimerUI()
+    private void UpdateClockUI()
     {
-        int minutes = Mathf.FloorToInt(remainingTime / 60);
-        int seconds = Mathf.FloorToInt(remainingTime % 60);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        int h = Mathf.FloorToInt(secondsSinceMidnight / 3600f) % 24;
+        int m = Mathf.FloorToInt((secondsSinceMidnight % 3600f) / 60f);
+        if (clockText) clockText.text = $"{h:00}:{m:00}";
+        if (background) background.enabled = true; // לא חובה – רק אם משתמשים ברקע
     }
 
-    private void ShowTimerUI(bool show)
+    // --- API נוח לשימוש מבחוץ ---
+
+    public void PauseClock(bool pause) => isRunning = !pause;
+
+    public void SetTime(int hour, int minute)
     {
-        timerText.gameObject.SetActive(show);
-        background.gameObject.SetActive(show);
+        hour = Mathf.Clamp(hour, 0, 23);
+        minute = Mathf.Clamp(minute, 0, 59);
+        secondsSinceMidnight = (hour * 60f + minute) * 60f;
+        UpdateClockUI();
+    }
+    public float GameSecondsPerRealSecond => gameSecondsPerRealSecond;
+
+    public void SetRate_GameMinutesPerRealMinute(float gameMinutesPerRealMinute)
+    {
+        // 30 דק'/דקה -> 30 שניות-משחק בכל שנייה אמיתית
+        gameSecondsPerRealSecond = gameMinutesPerRealMinute;
     }
 
-    public float GetElapsedTime()
+    public (int hour, int minute) GetCurrentTime()
     {
-        return initialTime - remainingTime;
+        int h = Mathf.FloorToInt(secondsSinceMidnight / 3600f) % 24;
+        int m = Mathf.FloorToInt((secondsSinceMidnight % 3600f) / 60f);
+        return (h, m);
     }
 
-    public void ResetTimer()
-    {
-        remainingTime = initialTime;
-        timerIsActive = true;
-        UpdateTimerUI();
-    }
+    public long GetDayCount() => dayCount; // כמה יממות חלפו
+}
+
+public static class GameTime
+{
+    private const float FALLBACK_GSRS = 30f; // ברירת מחדל אם אין שעון בסצנה
+
+    private static float GSRS
+        => Timer.Instance ? Timer.Instance.GameSecondsPerRealSecond : FALLBACK_GSRS;
+
+    public static float GameSecondsToRealSeconds(float gameSeconds) => gameSeconds / GSRS;
+    public static float RealSecondsToGameSeconds(float realSeconds) => realSeconds * GSRS;
+
+    public static float GameMinutesToRealSeconds(float gameMinutes) => GameSecondsToRealSeconds(gameMinutes * 60f);
+    public static float GameHoursToRealSeconds  (float gameHours)   => GameSecondsToRealSeconds(gameHours * 3600f);
 }
