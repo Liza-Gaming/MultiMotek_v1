@@ -10,7 +10,7 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
         if (SugarMeter.Instance != null)
         {
             SugarMeter.Instance.AddSugarGame(sugarAmount);
-            GetComponentInChildren<SugarChangeArrow>()?.ShowUp(2f); 
+            GetComponentInChildren<SugarBlinkers>()?.ShowUp(2f); 
         }
     }
 }

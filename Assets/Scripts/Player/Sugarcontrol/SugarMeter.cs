@@ -1,23 +1,25 @@
 using System;
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class SugarMeter : MonoBehaviour
 {
     public static SugarMeter Instance;
-    
-    private static bool s_hasSaved;
+
+    // Persist
+    private static bool  s_hasSaved;
     private static float s_savedSugar;
     private static int   s_savedHearts;
 
-    [Tooltip("Initial sugar level")]
-    public float startSugar = 100f;
+    [Tooltip("Initial sugar level")] public float startSugar = 100f;
 
-    public float sugarDecreaseRate = 1f;
-    public int maxHearts = 3;
-    private int currentHearts;
+    [Tooltip("Sugar decrease per game hour (baseline)")]
+    public float sugarDecreaseRate = 1f; // יחידות לשעת-משחק
+
+    public int   maxHearts = 3;
+    private int  currentHearts;
 
     public float minSugar = 70f, maxSugar = 180f;
     public float minSugarClamp = 0f, maxSugarClamp = 250f;
@@ -27,20 +29,42 @@ public class SugarMeter : MonoBehaviour
 
     private float timeOutsideSafeRange = 0f, timeInsideSafeRange = 0f;
 
-    public UnityEngine.UI.Image[] heartImages;
-    public UnityEngine.UI.Text sugarText;
-    [SerializeField] private WeatherManager weatherManager;
+    public Image[] heartImages;
+    public Text    sugarText;
 
     private float sugarLevel;
 
-    private class TimedRate { public float ratePerSec; public float remaining; }
-    private readonly List<TimedRate> activeRates = new List<TimedRate>();
-    public event Action<bool, float> TimedChangeStarted;
-    
-    public event System.Action<bool, float, float> TimedChangeScheduled; // isIncrease, delay, duration
-    public event System.Action<bool, float>       TimedChangeBegan;     // isIncrease, duration
-    public event System.Action<bool>              TimedChangeEnded;     // isIncrease
+    // ====== Phase model ======
+    private enum Phase { None, Up, Down }
+    private Phase _phase = Phase.None;
 
+    private struct RunningEffect
+    {
+        public float ratePerSec;       // קצב קבוע למנה הזו
+        public float remaining;        // כמה יחידות נשאר לבצע (חיובי)
+        public bool  suppressBaseline; // לכבות baseline כשהיא פעילה
+    }
+
+    private struct PendingSpec
+    {
+        public float amount;
+        public float durationSec;
+        public bool  suppressBaseline;
+    }
+
+    // רצים כרגע (רק מגמה אחת תהיה פעילה)
+    private readonly List<RunningEffect> _runUp   = new();
+    private readonly List<RunningEffect> _runDown = new();
+
+    // ממתינים לפאזה ההפוכה
+    private readonly List<PendingSpec> _pendUp   = new();
+    private readonly List<PendingSpec> _pendDown = new();
+
+    // Events
+    public event Action<bool, float>        TimedChangeStarted;   // isIncrease, durationSec
+    public event Action<bool, float, float> TimedChangeScheduled; // isIncrease, delaySec, durationSec
+    public event Action<bool, float>        TimedChangeBegan;     // isIncrease, durationSec
+    public event Action<bool>               TimedChangeEnded;     // isIncrease
 
     void Awake() { Instance = this; }
 
@@ -63,12 +87,74 @@ public class SugarMeter : MonoBehaviour
 
     void Update()
     {
-        float totalRate = -sugarDecreaseRate;
-        for (int i = 0; i < activeRates.Count; i++)
-            totalRate += activeRates[i].ratePerSec;
+        float dt = Time.deltaTime;
 
-        sugarLevel += totalRate * Time.deltaTime;
-        sugarLevel  = Mathf.Clamp(sugarLevel, minSugarClamp, maxSugarClamp);
+        // Baseline (לשעת-משחק -> לשנייה אמיתית)
+        float realSecondsPerGameHour    = Mathf.Max(0.0001f, GameTime.GameHoursToRealSeconds(1f));
+        float baselinePerRealSecondDown = -(sugarDecreaseRate / realSecondsPerGameHour);
+
+        float delta = 0f;
+        bool suppressBaselineNow = false;
+
+        // מפעילים רק את רשימת הפאזה הנוכחית
+        if (_phase == Phase.Up)
+        {
+            for (int i = _runUp.Count - 1; i >= 0; i--)
+            {
+                var e = _runUp[i];
+                float apply = Mathf.Min(e.ratePerSec * dt, e.remaining);
+                e.remaining -= apply;
+                delta += apply;
+                suppressBaselineNow |= e.suppressBaseline;
+
+                if (e.remaining <= 0f)
+                {
+                    _runUp.RemoveAt(i);
+                    TimedChangeEnded?.Invoke(true);
+                }
+                else _runUp[i] = e;
+            }
+
+            // אם הסתיימו כל העליות – עוברים לפאזה הבאה (אם יש ממתינים)
+            if (_runUp.Count == 0)
+            {
+                _phase = Phase.None;
+                ActivatePendingIfExists(); // ייתכן שיעביר ל-Down
+            }
+        }
+        else if (_phase == Phase.Down)
+        {
+            for (int i = _runDown.Count - 1; i >= 0; i--)
+            {
+                var e = _runDown[i];
+                float apply = Mathf.Min(e.ratePerSec * dt, e.remaining);
+                e.remaining -= apply;
+                delta -= apply;
+                suppressBaselineNow |= e.suppressBaseline;
+
+                if (e.remaining <= 0f)
+                {
+                    _runDown.RemoveAt(i);
+                    TimedChangeEnded?.Invoke(false);
+                }
+                else _runDown[i] = e;
+            }
+
+            if (_runDown.Count == 0)
+            {
+                _phase = Phase.None;
+                ActivatePendingIfExists(); // ייתכן שיעביר ל-Up
+            }
+        }
+        else // Phase.None – אולי יש משהו ממתין להתחיל עכשיו
+        {
+            ActivatePendingIfExists();
+        }
+
+        if (!suppressBaselineNow)
+            delta += baselinePerRealSecondDown * dt;
+
+        sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
 
         UpdateSugarUI();
         UpdateHeartsLogic();
@@ -81,6 +167,44 @@ public class SugarMeter : MonoBehaviour
         s_hasSaved    = true;
     }
 
+    // ====== Phase helpers ======
+
+    private void ActivatePendingIfExists()
+    {
+        // אם אין פאזה – נעדיף להמשיך את המגמה "הבאה בתור" אם יש ממתינים
+        if (_phase != Phase.None) return;
+
+        if (_pendUp.Count > 0)
+        {
+            _phase = Phase.Up;
+            for (int i = 0; i < _pendUp.Count; i++) ActivateUp(_pendUp[i]);
+            _pendUp.Clear();
+        }
+        else if (_pendDown.Count > 0)
+        {
+            _phase = Phase.Down;
+            for (int i = 0; i < _pendDown.Count; i++) ActivateDown(_pendDown[i]);
+            _pendDown.Clear();
+        }
+    }
+
+    private void ActivateUp(PendingSpec spec)
+    {
+        float rate = spec.amount / Mathf.Max(0.0001f, spec.durationSec);
+        _runUp.Add(new RunningEffect { ratePerSec = rate, remaining = spec.amount, suppressBaseline = spec.suppressBaseline });
+        TimedChangeStarted?.Invoke(true, spec.durationSec);
+        TimedChangeBegan?.Invoke(true,  spec.durationSec);
+    }
+
+    private void ActivateDown(PendingSpec spec)
+    {
+        float rate = spec.amount / Mathf.Max(0.0001f, spec.durationSec);
+        _runDown.Add(new RunningEffect { ratePerSec = rate, remaining = spec.amount, suppressBaseline = spec.suppressBaseline });
+        TimedChangeStarted?.Invoke(false, spec.durationSec);
+        TimedChangeBegan?.Invoke(false,  spec.durationSec);
+    }
+
+    // ====== UI/Hearts ======
     private void UpdateHeartsLogic()
     {
         if (sugarLevel >= minSugar && sugarLevel <= maxSugar)
@@ -97,7 +221,7 @@ public class SugarMeter : MonoBehaviour
         else
         {
             timeOutsideSafeRange += Time.deltaTime;
-            timeInsideSafeRange = 0f;
+            timeInsideSafeRange   = 0f;
 
             if (timeOutsideSafeRange >= timeOutsideRangeToLoseHeart)
             {
@@ -107,158 +231,116 @@ public class SugarMeter : MonoBehaviour
         }
     }
 
-
-    void UpdateSugarUI()
-    {
-        if (sugarText != null)
-            sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
-    }
-    
-    void UpdateHeartsUI()
-    {
-        for (int i = 0; i < heartImages.Length; i++)
-        {
-            heartImages[i].enabled = i < currentHearts;
-        }
-    }
-    
-
-    public float GetSugarLevel()
-    {
-        return sugarLevel;
-    }
-
     void GainHeart()
     {
-        if (currentHearts < maxHearts)
-        {
-            currentHearts++;
-            UpdateHeartsUI();
-        }
+        if (currentHearts < maxHearts) { currentHearts++; UpdateHeartsUI(); }
     }
-    
+
     void LoseHeart()
     {
         if (currentHearts > 0)
         {
             currentHearts--;
             UpdateHeartsUI();
-            
-            if (currentHearts == 0)
-            {
-                Debug.Log("Game Over!");
-            }
+            if (currentHearts == 0) Debug.Log("Game Over!");
         }
     }
-    public int CurrentHearts => currentHearts;
-    
-public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
-    bool affectByWeather = true, bool delayAffectedByWeather = false)
-{
-    if (durationGameMin <= 0f)
+
+    void UpdateSugarUI() { if (sugarText) sugarText.text = Mathf.RoundToInt(sugarLevel).ToString(); }
+    void UpdateHeartsUI()
     {
-        // מיידי (עם/בלי דיליי)
-        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
-        if (delaySec <= 0f)
-        {
-            SetSugarInstant(sugarLevel + Mathf.Abs(amount));
-        }
-        else
-        {
-            StartCoroutine(ApplyInstantAfterDelay(+Mathf.Abs(amount), delaySec, delayAffectedByWeather));
-        }
-        return;
+        for (int i = 0; i < heartImages.Length; i++)
+            heartImages[i].enabled = i < currentHearts;
     }
 
-    float baseDurationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
-    float baseDelaySec    = GameTime.GameMinutesToRealSeconds(delayGameMin);
-    ApplyTimedChange(+Mathf.Abs(amount), baseDurationSec, affectByWeather, baseDelaySec, delayAffectedByWeather);
-}
+    public float GetSugarLevel() => sugarLevel;
+    public int   CurrentHearts  => currentHearts;
 
-public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
-    bool affectByWeather = true, bool delayAffectedByWeather = false)
-{
-    if (durationGameMin <= 0f)
-    {
-        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
-        if (delaySec <= 0f)
-        {
-            SetSugarInstant(sugarLevel - Mathf.Abs(amount));
-        }
-        else
-        {
-            StartCoroutine(ApplyInstantAfterDelay(-Mathf.Abs(amount), delaySec, delayAffectedByWeather));
-        }
-        return;
-    }
-
-    float baseDurationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
-    float baseDelaySec    = GameTime.GameMinutesToRealSeconds(delayGameMin);
-    ApplyTimedChange(-Mathf.Abs(amount), baseDurationSec, affectByWeather, baseDelaySec, delayAffectedByWeather);
-}
-
-// קורוטינה לשינוי מיידי לאחר דיליי (מכבדת pause)
-private IEnumerator ApplyInstantAfterDelay(float delta, float baseDelaySec, bool delayAffectedByWeather)
-{
-    float mult = (delayAffectedByWeather && weatherManager != null) ? weatherManager.GetSpeedMultiplier() : 1f;
-    float actualDelay = baseDelaySec / mult;
-
-    if (actualDelay > 0f) yield return new WaitForSeconds(actualDelay);
-
-    sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
-    UpdateSugarUI();
-}
-
-
-    private void ApplyTimedChange(float deltaTotal, float baseDurationSec, bool affectByWeather,
-        float baseDelaySec = 0f, bool delayAffectedByWeather = false)
-    {
-        float mult = 1f;
-        if (affectByWeather && weatherManager != null)
-            mult = weatherManager.GetSpeedMultiplier();
-
-        float actualDuration = baseDurationSec / mult;
-        float actualDelay    = baseDelaySec / (delayAffectedByWeather ? mult : 1f);
-
-        float ratePerSec = deltaTotal / Mathf.Max(0.0001f, actualDuration);
-
-        bool isIncrease = deltaTotal > 0f;
-
-        // לפני הדיליי – רק מודיעים שתוזמן שינוי
-        TimedChangeScheduled?.Invoke(isIncrease, actualDelay, actualDuration);
-
-        StartCoroutine(ApplyRateCoroutine(ratePerSec, actualDuration, actualDelay));
-    }
-
-    private IEnumerator ApplyRateCoroutine(float ratePerSec, float duration, float delay)
-    {
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay); // מכבד Pause
-
-        bool isIncrease = ratePerSec > 0f;
-        TimedChangeBegan?.Invoke(isIncrease, duration);
-
-        var r = new TimedRate { ratePerSec = ratePerSec, remaining = duration };
-        activeRates.Add(r);
-
-        while (r.remaining > 0f)
-        {
-            r.remaining -= Time.deltaTime;
-            yield return null;
-        }
-
-        activeRates.Remove(r);
-        TimedChangeEnded?.Invoke(isIncrease);
-    }
-
-
-    
     public void SetSugarInstant(float value)
     {
         sugarLevel = Mathf.Clamp(value, minSugarClamp, maxSugarClamp);
         UpdateSugarUI();
     }
-    
-    
-    
+
+    // ====== Public API (אותה חתימה) ======
+
+    public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
+                             bool suppressBaselineDuring = false)
+    {
+        amount = Mathf.Abs(amount);
+        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
+
+        if (durationGameMin <= 0f)
+        {
+            if (delaySec <= 0f) SetSugarInstant(sugarLevel + amount);
+            else                StartCoroutine(ApplyInstantAfterDelay(+amount, delaySec));
+            return;
+        }
+
+        float durationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
+        TimedChangeScheduled?.Invoke(true, delaySec, durationSec);
+
+        if (delaySec <= 0f) StartEffect(true, amount, durationSec, suppressBaselineDuring);
+        else                StartCoroutine(StartEffectAfterDelay(true, amount, durationSec, delaySec, suppressBaselineDuring));
+    }
+
+    public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
+                                  bool suppressBaselineDuring = false)
+    {
+        amount = Mathf.Abs(amount);
+        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
+
+        if (durationGameMin <= 0f)
+        {
+            if (delaySec <= 0f) SetSugarInstant(sugarLevel - amount);
+            else                StartCoroutine(ApplyInstantAfterDelay(-amount, delaySec));
+            return;
+        }
+
+        float durationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
+        TimedChangeScheduled?.Invoke(false, delaySec, durationSec);
+
+        if (delaySec <= 0f) StartEffect(false, amount, durationSec, suppressBaselineDuring);
+        else                StartCoroutine(StartEffectAfterDelay(false, amount, durationSec, delaySec, suppressBaselineDuring));
+    }
+
+    private IEnumerator ApplyInstantAfterDelay(float delta, float delaySec)
+    {
+        if (delaySec > 0f) yield return new WaitForSeconds(delaySec);
+        sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
+        UpdateSugarUI();
+    }
+
+    private IEnumerator StartEffectAfterDelay(bool isIncrease, float amount, float durationSec, float delaySec, bool suppress)
+    {
+        if (delaySec > 0f) yield return new WaitForSeconds(delaySec);
+        StartEffect(isIncrease, amount, durationSec, suppress);
+    }
+
+    private void StartEffect(bool isIncrease, float amount, float durationSec, bool suppress)
+    {
+        var spec = new PendingSpec { amount = amount, durationSec = durationSec, suppressBaseline = suppress };
+
+        if (_phase == Phase.None)
+        {
+            // מתחילים פאזה לפי המנה הראשונה
+            _phase = isIncrease ? Phase.Up : Phase.Down;
+            if (isIncrease) ActivateUp(spec);
+            else            ActivateDown(spec);
+        }
+        else if ((_phase == Phase.Up  && isIncrease) ||
+                 (_phase == Phase.Down && !isIncrease))
+        {
+            // אותה מגמה – מפעילים מייד (רצים במקביל)
+            if (isIncrease) ActivateUp(spec);
+            else            ActivateDown(spec);
+        }
+        else
+        {
+            // מגמה הפוכה – נכנס להמתנה עד שהפאזה הנוכחית תסתיים
+            if (isIncrease) _pendUp.Add(spec);
+            else            _pendDown.Add(spec);
+            // לא יורים Started/Began עד שזה באמת יתחיל
+        }
+    }
 }

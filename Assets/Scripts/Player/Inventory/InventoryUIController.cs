@@ -13,19 +13,14 @@ public class InventoryUIController : MonoBehaviour
     {
         background.SetActive(false);
         itemSlotContainer.SetActive(false);
-        openInventoryButton.SetActive(false);
+        openInventoryButton.SetActive(true);
     }
     
     void Start()
     {
         var scene = SceneManager.GetActiveScene();
         bool isFirstLevel = scene.buildIndex == 0 || scene.name == "SampleScene"; 
-
-        if (!isFirstLevel)
-        {
-            UnlockInventoryButton();
-            
-        }
+        
     }
 
     
@@ -40,12 +35,7 @@ public class InventoryUIController : MonoBehaviour
     {
         background.SetActive(false);
         itemSlotContainer.SetActive(false);
-        openInventoryButton.SetActive(inventoryButtonUnlocked);
-    }
-    
-    public void UnlockInventoryButton()
-    {
-        inventoryButtonUnlocked = true;
         openInventoryButton.SetActive(true);
     }
+    
 }

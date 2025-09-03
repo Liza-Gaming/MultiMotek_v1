@@ -27,7 +27,7 @@ public class PlayerManager : MonoBehaviour
     
     [SerializeField] private LayerMask enemyLayers;
     
-    [SerializeField] private SugarChangeArrow sugarArrow;
+    [SerializeField] private SugarBlinkers sugarArrow;
 
 
     private void Awake()
@@ -151,61 +151,61 @@ public class PlayerManager : MonoBehaviour
         switch (item.itemType)
         {
             case Item.ItemType.Insulin:
-                sugarMeter.DecreaseSugarGame(30f, durationGameMin: 180f, delayGameMin: 0f, affectByWeather: true);
+                sugarMeter.DecreaseSugarGame(30f, durationGameMin: 180f, delayGameMin: 0f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
                 playerFeedback?.PlayUseItemFX(insulinFlashColor);
                 break;
 
             case Item.ItemType.SugarBag:
-                sugarMeter.AddSugarGame(4f, durationGameMin: 60f, delayGameMin: 15f, affectByWeather: false);
+                sugarMeter.AddSugarGame(4f, durationGameMin: 60f, delayGameMin: 15f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
 
             case Item.ItemType.Banana:
-                sugarMeter.AddSugarGame(25f, durationGameMin: 120f, delayGameMin: 15f, affectByWeather: false);
+                sugarMeter.AddSugarGame(25f, durationGameMin: 120f, delayGameMin: 15f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Banana, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
 
             case Item.ItemType.WaterMelon:
-                sugarMeter.AddSugarGame(11f, durationGameMin: 120f, delayGameMin:15f, affectByWeather: false);
+                sugarMeter.AddSugarGame(11f, durationGameMin: 120f, delayGameMin:15f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.WaterMelon, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
             
             case Item.ItemType.ChickenLeg:
-                sugarMeter.AddSugarGame(0f, durationGameMin: 0f, delayGameMin:0f, affectByWeather: false);
+                sugarMeter.AddSugarGame(0f, durationGameMin: 0f, delayGameMin:0f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.ChickenLeg, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
             
             case Item.ItemType.Bamba:
-                sugarMeter.AddSugarGame(12f, durationGameMin:120f, delayGameMin:20f, affectByWeather: false);
+                sugarMeter.AddSugarGame(12f, durationGameMin:120f, delayGameMin:20f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Bamba, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
             
             case Item.ItemType.Apple:
-                sugarMeter.AddSugarGame(15f, durationGameMin:120f, delayGameMin:15f, affectByWeather: false);
+                sugarMeter.AddSugarGame(15f, durationGameMin:120f, delayGameMin:15f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Apple, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
             
             case Item.ItemType.Bread:
-                sugarMeter.AddSugarGame(15f, durationGameMin:120f, delayGameMin:30f, affectByWeather: false);
+                sugarMeter.AddSugarGame(15f, durationGameMin:120f, delayGameMin:30f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Bread, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
             
             case Item.ItemType.Fish:
-                sugarMeter.AddSugarGame(0f, durationGameMin:0f, delayGameMin:0f, affectByWeather: false);
+                sugarMeter.AddSugarGame(0f, durationGameMin:0f, delayGameMin:0f, suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Fish, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
             
             case Item.ItemType.Sausages:
-                sugarMeter.AddSugarGame(0f, durationGameMin:0f, delayGameMin:0f, affectByWeather: false);
+                sugarMeter.AddSugarGame(0f, durationGameMin:0f, delayGameMin:0f,suppressBaselineDuring: true);
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Sausages, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;

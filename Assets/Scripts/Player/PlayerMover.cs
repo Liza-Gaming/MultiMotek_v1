@@ -39,7 +39,7 @@ public class PlayerMover : MonoBehaviour
 
     private Vector3 initialScale;
 
-    public GameObject landingEffectPrefab; // Landing Effect
+    public GameObject landingEffectPrefab;
     public Transform landingEffectPoint;
 
     private bool wasGroundedLastFrame = true;
@@ -51,7 +51,6 @@ public class PlayerMover : MonoBehaviour
     private MovingPlatform currentPlatform;
     
     
-    // --- הוסיפי למעלה במחלקה ---
     [Header("Continuous Movement → Sugar Drain")]
     [SerializeField] private SugarMeter sugarMeter;
     [SerializeField, Tooltip("כמה דק׳-משחק רצופות עד הורדה")]
@@ -206,8 +205,7 @@ public class PlayerMover : MonoBehaviour
             idleForgivenessTimer = 0f;
             return;
         }
-
-        // מהירות יחסית (לא נסחבת ע״י פלטפורמה)
+        
         Vector2 platformVel = (currentPlatform != null) ? currentPlatform.Velocity : Vector2.zero;
         Vector2 relVel = rb.linearVelocity - platformVel;
 
@@ -215,13 +213,12 @@ public class PlayerMover : MonoBehaviour
 
         if (isMovingNow)
         {
-            // מוסיפים זמן בדקות-משחק (שנייה אמיתית * סקייל העולם)
+
             movingGameSecondsAccum += GameTime.RealSecondsToGameSeconds(Time.deltaTime);
             idleForgivenessTimer = 0f;
 
             float blockGameSeconds = continuousMoveThresholdGameMinutes * 60f;
-
-            // ייתכן שנצברו כמה בלוקים (אם הזמן־משחק רץ מהר)
+            
             if (movingGameSecondsAccum >= blockGameSeconds)
             {
                 int blocks = Mathf.FloorToInt(movingGameSecondsAccum / blockGameSeconds);
