@@ -10,6 +10,7 @@ TagManager:
   - Item
   - chest_one
   - NextLevel
+  - PlayerSpawn
   layers:
   - Default
   - TransparentFX

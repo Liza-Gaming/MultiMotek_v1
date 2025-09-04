@@ -6,12 +6,12 @@ using UnityEngine.UI;
 public class HeartsDisplay : MonoBehaviour
 {
     [Header("Prefabs & Sprites")]
-    public Image heartPrefab;       // אייקון לב (UI Image) – גררי פריפאב קטן של Image
-    public Sprite fullHeart;        // ספרייט לב מלא
-    public Sprite emptyHeart;       // ספרייט לב ריק/אפור
+    public Image heartPrefab;
+    public Sprite fullHeart;
+    public Sprite emptyHeart;
 
     [Header("Layout")]
-    public float spacing = 8f;      // ריווח בין לבבות (אם אין HorizontalLayoutGroup)
+    public float spacing = 8f;
 
     [Header("Animation")]
     public bool animatePop = true;
@@ -26,8 +26,7 @@ public class HeartsDisplay : MonoBehaviour
     {
         if (max < 0) max = 0;
         if (builtForMax == max) return;
-
-        // ננקה ונבנה מחדש
+        
         foreach (var h in hearts) if (h) Destroy(h.gameObject);
         hearts.Clear();
 

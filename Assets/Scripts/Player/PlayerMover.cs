@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 /**
  *  I learned about 2D animation changing from here: https://www.youtube.com/watch?v=hkaysu1Z-N8&t=147s&ab_channel=Brackeys
@@ -79,17 +80,33 @@ public class PlayerMover : MonoBehaviour
     }
 
 
-    void OnEnable()
-    {
+    void OnEnable() {
         moveAction.action.Enable();
         jumpAction.action.Enable();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
-
-    void OnDisable()
-    {
+    void OnDisable() {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         moveAction.action.Disable();
         jumpAction.action.Disable();
     }
+    void OnSceneLoaded(Scene s, LoadSceneMode m) {
+        // ודא שתמיד נפתח קלט אחרי טעינת סצנה
+        SetInputLocked(false);
+        // (נשתמש כאן גם לבעיה #2 כדי להצמיד לנקודת ספאון)
+        SnapToSpawnIfExists();
+    }
+    
+    void SnapToSpawnIfExists() {
+        GameObject spawn = GameObject.FindWithTag("PlayerSpawn");
+        if (spawn == null) spawn = GameObject.Find("PlayerSpawn");
+        if (spawn != null) {
+            transform.position = spawn.transform.position;
+            if (rb == null) rb = GetComponent<Rigidbody2D>();
+            if (rb) rb.linearVelocity = Vector2.zero;
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -244,6 +261,9 @@ public class PlayerMover : MonoBehaviour
             }
         }
     }
+    
+    
+    
 
     
 

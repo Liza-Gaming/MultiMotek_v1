@@ -32,6 +32,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        if (sugarMeter == null) sugarMeter = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         inventory = new Inventory(UseItemAction);
         uiInventory.SetInventory(inventory);
 
@@ -47,14 +48,14 @@ public class PlayerManager : MonoBehaviour
     
     private void OnEnable()
     {
-        if (sugarMeter != null)
-            sugarMeter.TimedChangeStarted += OnTimedChangeStarted;
+        var sm = SugarMeter.Instance ?? sugarMeter;
+        if (sm != null) sm.TimedChangeStarted += OnTimedChangeStarted;
     }
 
     private void OnDisable()
     {
-        if (sugarMeter != null)
-            sugarMeter.TimedChangeStarted -= OnTimedChangeStarted;
+        var sm = SugarMeter.Instance ?? sugarMeter;
+        if (sm != null) sm.TimedChangeStarted -= OnTimedChangeStarted;
     }
 
     private void OnTimedChangeStarted(bool isIncrease, float durationSec)

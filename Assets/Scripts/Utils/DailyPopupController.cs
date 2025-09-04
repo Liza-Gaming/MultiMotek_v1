@@ -27,6 +27,8 @@ public class DailyPopupController : MonoBehaviour
     private bool isShowing = false;
     
     private bool pausedTimerByMe = false;
+    
+    private float? savedBaselineRate;
 
     private void Awake()
     {
@@ -114,6 +116,22 @@ public class DailyPopupController : MonoBehaviour
         }
 
         isShowing = true;
+        
+        if (IsFirstScene()) {
+            var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
+            if (sm != null) {
+                savedBaselineRate = sm.sugarDecreaseRate;
+                sm.sugarDecreaseRate = 0f;
+            }
+        }
+    }
+    
+    private void TryRestore() {
+        var sm = SugarMeter.Instance;
+        if (sm != null && savedBaselineRate.HasValue) {
+            sm.sugarDecreaseRate = savedBaselineRate.Value; // שחזור
+            savedBaselineRate = null;
+        }
     }
 
     public void ClosePopup()
@@ -126,6 +144,8 @@ public class DailyPopupController : MonoBehaviour
 
         TryUnpauseTimer();
         isShowing = false;
+        
+        TryRestore();
     }
 
     private void TryUnpauseTimer()

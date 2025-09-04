@@ -16,7 +16,7 @@ public class SugarMeter : MonoBehaviour
     [Tooltip("Initial sugar level")] public float startSugar = 100f;
 
     [Tooltip("Sugar decrease per game hour (baseline)")]
-    public float sugarDecreaseRate = 1f; // יחידות לשעת-משחק
+    public float sugarDecreaseRate = 1f;
 
     public int   maxHearts = 3;
     private int  currentHearts;
@@ -66,7 +66,18 @@ public class SugarMeter : MonoBehaviour
     public event Action<bool, float>        TimedChangeBegan;     // isIncrease, durationSec
     public event Action<bool>               TimedChangeEnded;     // isIncrease
 
-    void Awake() { Instance = this; }
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -261,8 +272,7 @@ public class SugarMeter : MonoBehaviour
         sugarLevel = Mathf.Clamp(value, minSugarClamp, maxSugarClamp);
         UpdateSugarUI();
     }
-
-    // ====== Public API (אותה חתימה) ======
+    
 
     public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
                              bool suppressBaselineDuring = false)
@@ -323,7 +333,7 @@ public class SugarMeter : MonoBehaviour
 
         if (_phase == Phase.None)
         {
-            // מתחילים פאזה לפי המנה הראשונה
+
             _phase = isIncrease ? Phase.Up : Phase.Down;
             if (isIncrease) ActivateUp(spec);
             else            ActivateDown(spec);
@@ -331,16 +341,16 @@ public class SugarMeter : MonoBehaviour
         else if ((_phase == Phase.Up  && isIncrease) ||
                  (_phase == Phase.Down && !isIncrease))
         {
-            // אותה מגמה – מפעילים מייד (רצים במקביל)
+
             if (isIncrease) ActivateUp(spec);
             else            ActivateDown(spec);
         }
         else
         {
-            // מגמה הפוכה – נכנס להמתנה עד שהפאזה הנוכחית תסתיים
+
             if (isIncrease) _pendUp.Add(spec);
             else            _pendDown.Add(spec);
-            // לא יורים Started/Began עד שזה באמת יתחיל
+
         }
     }
 }
