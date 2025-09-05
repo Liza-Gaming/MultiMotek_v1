@@ -33,10 +33,13 @@ public class SugarMeter : MonoBehaviour
     public Text    sugarText;
 
     private float sugarLevel;
+    
+    [SerializeField] private bool heartsPaused = false;
 
     // ====== Phase model ======
     private enum Phase { None, Up, Down }
     private Phase _phase = Phase.None;
+    
 
     private struct RunningEffect
     {
@@ -218,6 +221,7 @@ public class SugarMeter : MonoBehaviour
     // ====== UI/Hearts ======
     private void UpdateHeartsLogic()
     {
+        if (heartsPaused) return;
         if (sugarLevel >= minSugar && sugarLevel <= maxSugar)
         {
             timeInsideSafeRange += Time.deltaTime;
@@ -262,6 +266,17 @@ public class SugarMeter : MonoBehaviour
     {
         for (int i = 0; i < heartImages.Length; i++)
             heartImages[i].enabled = i < currentHearts;
+    }
+    
+    public void SetHeartsPaused(bool paused, bool resetProgress = true)
+    {
+        heartsPaused = paused;
+        if (paused && resetProgress)
+        {
+            // לא לצבור "כמעט לב" בזמן פאוז
+            timeInsideSafeRange = 0f;
+            timeOutsideSafeRange = 0f;
+        }
     }
 
     public float GetSugarLevel() => sugarLevel;

@@ -54,18 +54,27 @@ public class PlayerMover : MonoBehaviour
     
     [Header("Continuous Movement → Sugar Drain")]
     [SerializeField] private SugarMeter sugarMeter;
-    [SerializeField, Tooltip("כמה דק׳-משחק רצופות עד הורדה")]
+    [SerializeField, Tooltip("minutes of continuous play before sugar decrease")]
     private float continuousMoveThresholdGameMinutes = 20f;
-    [SerializeField, Tooltip("כמה יחידות סוכר להוריד בכל בלוק")]
+    [SerializeField, Tooltip("How many units of sugar to reduce in each block")]
     private float sugarDrainPerBlock = 4f;
-    [SerializeField, Tooltip("מהירות מינימלית (יחסית לפלטפורמה) שנחשבת תנועה")]
-    private float moveSpeedEpsilon = 0.1f;
-    [SerializeField, Tooltip("כמה שניות אמיתיות מותר להיות כמעט סטטית בלי לאפס רצף")]
+    [SerializeField] private float moveSpeedEpsilon = 0.1f;
+    [SerializeField, Tooltip("How many real seconds is it allowed to be almost static without resetting the sequence")]
     private float stopForgivenessRealSeconds = 0.25f;
 
-// צוברים זמן תנועה בדקות-משחק
+
     private float movingGameSecondsAccum = 0f;
     private float idleForgivenessTimer = 0f;
+    
+    [SerializeField] private float drinkOnSugar  = 250f;
+    [SerializeField] private float drinkOffSugar = 249f;
+    [SerializeField, Range(0.1f, 1f)] private float drinkSlowFactor = 0.5f;
+    [SerializeField] private string animDrinkBool = "IsDrinking";
+    
+    [SerializeField] private bool blockJumpWhenHighSugar = true;
+
+    private bool  isDrinking;
+    private float speedFactor = 1f;
 
 
     private void Awake()
@@ -77,6 +86,28 @@ public class PlayerMover : MonoBehaviour
     {
         initialScale = transform.localScale;
         if (!sugarMeter) sugarMeter = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
+    }
+    
+    private void SetDrinking(bool on) {
+        if (isDrinking == on) return;
+        isDrinking = on;
+        if (animator) animator.SetBool(animDrinkBool, on);
+        speedFactor = isDrinking ? drinkSlowFactor : 1f;
+    }
+    
+
+    private void SyncDrinkStateNow() {
+        if (!sugarMeter) return;
+        float s = sugarMeter.GetSugarLevel();
+        bool shouldDrink = (!isDrinking && s >= drinkOnSugar) || (isDrinking && s > drinkOffSugar);
+        SetDrinking(shouldDrink);
+    }
+    
+    private bool CanJumpNow() {
+        if (!isGrounded || inputLocked) return false;
+        if (blockJumpWhenHighSugar && sugarMeter && sugarMeter.GetSugarLevel() >= drinkOnSugar)
+            return false; // נועל קפיצה מעל 250
+        return true;
     }
 
 
@@ -91,10 +122,10 @@ public class PlayerMover : MonoBehaviour
         jumpAction.action.Disable();
     }
     void OnSceneLoaded(Scene s, LoadSceneMode m) {
-        // ודא שתמיד נפתח קלט אחרי טעינת סצנה
         SetInputLocked(false);
-        // (נשתמש כאן גם לבעיה #2 כדי להצמיד לנקודת ספאון)
         SnapToSpawnIfExists();
+        if (!sugarMeter) sugarMeter = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
+        SyncDrinkStateNow();     // ← חישוב מיידי בסצנה החדשה
     }
     
     void SnapToSpawnIfExists() {
@@ -130,13 +161,14 @@ public class PlayerMover : MonoBehaviour
                 if (animator) animator.SetTrigger(T_Land);
             }
             
-            if (jumpAction.action.triggered && isGrounded)
+            if (jumpAction.action.triggered && CanJumpNow())
             {
                 float platformX = (currentPlatform != null) ? currentPlatform.Velocity.x : 0f;
-                rb.linearVelocity = new Vector2(platformX + moveAction.action.ReadValue<Vector2>().x * _speed, jumpForce);
-                
+                float inputX = moveAction.action.ReadValue<Vector2>().x;
+                rb.linearVelocity = new Vector2(platformX + inputX * _speed * speedFactor, jumpForce);
                 if (animator) animator.SetTrigger(T_Jump);
             }
+
             
             if (!isGrounded && wasGroundedLastFrame)
             {
@@ -144,6 +176,12 @@ public class PlayerMover : MonoBehaviour
             }
             
             wasGroundedLastFrame = isGrounded;
+            
+            if (sugarMeter) {
+                float s = sugarMeter.GetSugarLevel();
+                if (!isDrinking && s >= drinkOnSugar) SetDrinking(true);
+                else if (isDrinking && s <= drinkOffSugar) SetDrinking(false);
+            }
             
             TrackContinuousMovementSugar();
 
@@ -169,7 +207,7 @@ public class PlayerMover : MonoBehaviour
         float moveInput = moveAction.action.ReadValue<Vector2>().x;
 
         Vector2 v = rb.linearVelocity;
-        v.x = moveInput * _speed;
+        v.x = moveInput * _speed * speedFactor; 
         
         if (isGrounded && currentPlatform != null)
         {
@@ -216,7 +254,7 @@ public class PlayerMover : MonoBehaviour
     
     private void TrackContinuousMovementSugar()
     {
-        if (inputLocked) // בזמן נעילה לא סופרים
+        if (inputLocked)
         {
             movingGameSecondsAccum = 0f;
             idleForgivenessTimer = 0f;
@@ -246,14 +284,11 @@ public class PlayerMover : MonoBehaviour
                     
                     sugarMeter.DecreaseSugarGame(sugarDrainPerBlock, durationGameMin: 1f);
                 }
-
-                // אם תרצי חץ למטה רגעית בזמן הורדה:
-                // GetComponentInChildren<SugarChangeArrow>()?.ShowDown(1f);
+                
             }
         }
         else
         {
-            // סליחת רפרופים קצרה כדי לא לאפס מייד
             idleForgivenessTimer += Time.deltaTime;
             if (idleForgivenessTimer >= stopForgivenessRealSeconds)
             {

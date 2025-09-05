@@ -30,6 +30,15 @@ public class Timer : MonoBehaviour
     private float secondsSinceMidnight;
     private bool  isRunning;
     private long  dayCount;
+    
+    [Header("Daily Alarm")]
+    [SerializeField, Range(0,23)] private int alarmHour   = 7;
+    [SerializeField, Range(0,59)] private int alarmMinute = 0;
+
+    public event Action<long> OnDailyAlarm; // dayCount
+    
+    private double nextAlarmAbs;
+
 
     public event Action<long> OnNewDay;
 
@@ -59,6 +68,7 @@ public class Timer : MonoBehaviour
         else
         {
             secondsSinceMidnight = (startHour * 60f + startMinute) * 60f;
+            RecomputeNextAlarm();
             isRunning = autoStart;
         }
 
@@ -82,18 +92,18 @@ public class Timer : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) // <<< חדש
     {
-        // דילוג על הפריים הראשון + דיכוי אירוע חצות ממש אחרי טעינה
         skipFramesAfterLoad          = 1;
         suppressNewDayUntilUnscaled  = Time.unscaledTime + newDayGraceAfterLoad;
-
-        // (אופציונלי) כאן אפשר לרענן רפרנסים ל־clockText/background מהסצנה החדשה
+        
     }
 
     private void Update()
     {
-        if (!isRunning) return;
+        if (!isRunning) { CheckAndFireAlarm(); return; }
+        
+        CheckAndFireAlarm();
 
-        if (skipFramesAfterLoad > 0) // <<< חדש – לא מתקדמים בפריים הראשון אחרי Load
+        if (skipFramesAfterLoad > 0)
         {
             skipFramesAfterLoad--;
             UpdateClockUI();
@@ -101,9 +111,8 @@ public class Timer : MonoBehaviour
         }
 
         float dt = stopWhenPaused ? Time.deltaTime : Time.unscaledDeltaTime;
-        dt = Mathf.Min(dt, maxRealDeltaClamp); // <<< חדש – Clamping לדלתא
-
-        if (dt <= 0f) return;
+        dt = Mathf.Min(dt, maxRealDeltaClamp);
+        if (dt <= 0f) { UpdateClockUI(); return; }
 
         secondsSinceMidnight += dt * gameSecondsPerRealSecond;
 
@@ -115,14 +124,18 @@ public class Timer : MonoBehaviour
             for (int i = 0; i < daysPassed; i++)
             {
                 dayCount++;
-                // <<< חדש – לא לירות OnNewDay מייד אחרי טעינה
                 if (Time.unscaledTime >= suppressNewDayUntilUnscaled)
                     OnNewDay?.Invoke(dayCount);
             }
+            
+            RecomputeNextAlarm();
         }
+        
+        CheckAndFireAlarm();
 
         UpdateClockUI();
     }
+
 
     private void UpdateClockUI()
     {
@@ -140,6 +153,26 @@ public class Timer : MonoBehaviour
         minute = Mathf.Clamp(minute, 0, 59);
         secondsSinceMidnight = (hour * 60f + minute) * 60f;
         UpdateClockUI();
+    }
+    
+    private double AbsNow() => dayCount * SecondsPerDay + secondsSinceMidnight;
+
+    private void RecomputeNextAlarm()
+    {
+        double alarmSec = alarmHour * 3600.0 + alarmMinute * 60.0;
+        double now      = AbsNow();
+        double today    = dayCount * SecondsPerDay + alarmSec;
+        nextAlarmAbs    = (now <= today) ? today : today + SecondsPerDay;
+    }
+
+    private void CheckAndFireAlarm()
+    {
+        double now = AbsNow();
+        if (now + 1e-6 >= nextAlarmAbs)
+        {
+            OnDailyAlarm?.Invoke(dayCount);
+            nextAlarmAbs += SecondsPerDay; // האלארם הבא – מחר ב-07:00
+        }
     }
 
     public float GameSecondsPerRealSecond => gameSecondsPerRealSecond;

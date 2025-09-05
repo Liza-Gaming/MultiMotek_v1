@@ -18,7 +18,7 @@ public class DailyPopupController : MonoBehaviour
     [SerializeField] private bool pauseTimerOnlyInFirstScene = true;
 
     [Tooltip("איזו סצנה נחשבת 'ראשונה' לפי Build Index")]
-    [SerializeField] private int firstSceneBuildIndex = 0;
+    [SerializeField] private int firstSceneBuildIndex = 1;
 
     // אם מעדיפים לפי שם:
     //[SerializeField] private string firstSceneName = "Intro";
@@ -29,6 +29,11 @@ public class DailyPopupController : MonoBehaviour
     private bool pausedTimerByMe = false;
     
     private float? savedBaselineRate;
+    
+    private bool pausedHeartsByMe = false;
+    
+    private static bool s_didGlobalPauseOnce = false;
+    private bool didGlobalPauseThisShow = false;
 
     private void Awake()
     {
@@ -37,32 +42,45 @@ public class DailyPopupController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (Timer.Instance != null)
-        {
-            Timer.Instance.OnNewDay += HandleNewDay;
-        }
-        else
-        {
-            StartCoroutine(WaitForTimerThenSubscribe());
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (Timer.Instance != null)
-        {
-            Timer.Instance.OnNewDay -= HandleNewDay;
-        }
-
-        // אם האובייקט כובה/הושמד בזמן שהפופאפ פתוח – נשחרר את הפאוזה אם אנחנו יצרנו אותה
-        TryUnpauseTimer();
+        if (Timer.Instance != null) Timer.Instance.OnDailyAlarm += HandleDailyAlarm;
+        else StartCoroutine(WaitForTimerThenSubscribe());
     }
 
     private IEnumerator WaitForTimerThenSubscribe()
     {
         while (Timer.Instance == null) yield return null;
-        Timer.Instance.OnNewDay += HandleNewDay;
+        Timer.Instance.OnDailyAlarm += HandleDailyAlarm;
     }
+
+    private void OnDisable()
+    {
+        if (Timer.Instance != null) Timer.Instance.OnDailyAlarm -= HandleDailyAlarm;
+        TryUnpauseTimer();
+        TryRestore();
+        if (pausedHeartsByMe) {
+            var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
+            if (sm != null) sm.SetHeartsPaused(false);
+            pausedHeartsByMe = false;
+        }
+    }
+
+    private void HandleDailyAlarm(long dayCount)
+    {
+        ShowPopup();
+    }
+    
+    private bool IsFirstScene()
+    {
+        var scene = SceneManager.GetActiveScene();
+        return scene.buildIndex == firstSceneBuildIndex;
+    }
+
+    private bool ShouldDoGlobalPauseNow()
+    {
+
+        return pauseTimerOnlyInFirstScene && IsFirstScene() && !s_didGlobalPauseOnce;
+    }
+    
 
     private void Start()
     {
@@ -83,14 +101,6 @@ public class DailyPopupController : MonoBehaviour
         ShowPopup();
     }
 
-    private bool IsFirstScene()
-    {
-        var scene = SceneManager.GetActiveScene();
-        return scene.buildIndex == 1;
-        // אם מעדיפים לפי שם:
-        // return scene.name == firstSceneName;
-    }
-
     private bool ShouldPauseTimer()
     {
         if (!pauseTimerOnlyInFirstScene) return false; // ביקשת שלא לעצור בכלל
@@ -104,27 +114,60 @@ public class DailyPopupController : MonoBehaviour
         if (playerMover == null)
             playerMover = FindObjectOfType<PlayerMover>();
 
-        if (popupPanel != null) popupPanel.SetActive(true);
-        if (instructionsAnimator != null) instructionsAnimator.SetTrigger("Show");
-        if (playerMover != null) playerMover.SetInputLocked(true);
+        if (popupPanel) popupPanel.SetActive(true);
+        if (instructionsAnimator) instructionsAnimator.SetTrigger("Show");
+        if (playerMover) playerMover.SetInputLocked(true); // אם תרצי – אפשר לנעול תמיד, גם בלי פאוז
 
-        // עצירת השעון – רק אם זו הסצנה הראשונה ולפי המדיניות
-        if (Timer.Instance != null && ShouldPauseTimer())
+        didGlobalPauseThisShow = ShouldDoGlobalPauseNow();
+
+        if (didGlobalPauseThisShow && Timer.Instance != null)
         {
             Timer.Instance.PauseClock(true);
             pausedTimerByMe = true;
         }
 
         isShowing = true;
-        
-        if (IsFirstScene()) {
+
+        if (didGlobalPauseThisShow)
+        {
             var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
-            if (sm != null) {
+            if (sm != null)
+            {
                 savedBaselineRate = sm.sugarDecreaseRate;
                 sm.sugarDecreaseRate = 0f;
+                sm.SetHeartsPaused(true, resetProgress:true);
+                pausedHeartsByMe = true;
             }
         }
     }
+
+
+    public void ClosePopup()
+    {
+        if (!isShowing) return;
+
+        if (instructionsAnimator) instructionsAnimator.SetTrigger("Hide");
+        if (popupPanel) popupPanel.SetActive(false);
+        if (playerMover) playerMover.SetInputLocked(false);
+
+        TryUnpauseTimer();
+        isShowing = false;
+
+        TryRestore();
+
+        if (pausedHeartsByMe) {
+            var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
+            if (sm != null) sm.SetHeartsPaused(false);
+            pausedHeartsByMe = false;
+        }
+
+        if (didGlobalPauseThisShow) {
+            s_didGlobalPauseOnce = true;   // מעכשיו – לא נעשה פאוז גלובלי יותר
+            didGlobalPauseThisShow = false;
+        }
+    }
+
+    
     
     private void TryRestore() {
         var sm = SugarMeter.Instance;
@@ -133,20 +176,7 @@ public class DailyPopupController : MonoBehaviour
             savedBaselineRate = null;
         }
     }
-
-    public void ClosePopup()
-    {
-        if (!isShowing) return;
-
-        if (instructionsAnimator != null) instructionsAnimator.SetTrigger("Hide");
-        if (popupPanel != null) popupPanel.SetActive(false);
-        if (playerMover != null) playerMover.SetInputLocked(false);
-
-        TryUnpauseTimer();
-        isShowing = false;
-        
-        TryRestore();
-    }
+    
 
     private void TryUnpauseTimer()
     {

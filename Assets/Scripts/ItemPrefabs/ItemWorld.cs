@@ -29,7 +29,6 @@ public class ItemWorld : MonoBehaviour
 
     private void Awake()
     {
-        // תופס SpriteRenderer (גם אם הוא בילד)
         spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
         if (visual == null)
             visual = spriteRenderer != null ? spriteRenderer.transform : transform;
@@ -65,14 +64,14 @@ public class ItemWorld : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         if (item == null) return;
 
-        // (אופציונלי) הוספה לאינבנטורי
+        
         var inventory = other.GetComponent<Inventory>();
         if (inventory != null) inventory.AddItem(item);
 
-        // רישום לפאנל המידע לפי סוג הפריט
+        
         InfoPanelUI.Instance?.RegisterDiscovery(item);
 
-        DestroySelf(); // אם את רוצה להשמיד את האובייקט בעולם
+        DestroySelf();
     }
 
     public Item GetItem() => item;

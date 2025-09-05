@@ -29,12 +29,32 @@ public class Pause : MonoBehaviour
 
     void Start()
     {
-        SetActiveSafe(pauseBtn, true);
+        SetActiveSafe(pauseBtn,  true);
+        SetActiveSafe(infoBtn,   true);
         SetActiveSafe(resumeBtn, false);
         SetActiveSafe(pauseShield, false);
-        if (pauseBlurVolume) pauseBlurVolume.weight = 0f;
-        Resume();
+        
+
+        if (pauseBlurVolume) pauseBlurVolume.weight = IsPaused ? 1f : 0f;
+
+        if (IsPaused)
+        {
+            Time.timeScale = 0f;
+            RefreshVolumesToMute();
+            ToggleGameplayVolumes(false);
+
+            SetActiveSafe(pauseBtn,   false);
+            SetActiveSafe(infoBtn,    false);
+            SetActiveSafe(resumeBtn,  true);
+            SetActiveSafe(pauseShield, true);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            ToggleGameplayVolumes(true);
+        }
     }
+    
     
     public void PausGeame()
     {
@@ -81,13 +101,45 @@ public class Pause : MonoBehaviour
         // if (pauseAudio) AudioListener.pause = false;
     }
 
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        
+        if (pauseBlurVolume) DontDestroyOnLoad(pauseBlurVolume.gameObject);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
     void OnDestroy()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         Time.timeScale = 1f;
         AudioListener.pause = false;
         if (pauseBlurVolume) pauseBlurVolume.weight = 0f;
         RestoreMutedVolumes();
     }
+
+    void OnSceneLoaded(Scene s, LoadSceneMode m)
+    {
+        RefreshVolumesToMute();
+
+        if (IsPaused)
+        {
+            Time.timeScale = 0f;
+            ToggleGameplayVolumes(false);
+
+            if (pauseBlurVolume) pauseBlurVolume.weight = 1f;
+            SetActiveSafe(pauseBtn,   false);
+            SetActiveSafe(infoBtn,    false);
+            SetActiveSafe(resumeBtn,  true);
+            SetActiveSafe(pauseShield, true);
+        }
+        else
+        {
+            if (pauseBlurVolume) pauseBlurVolume.weight = 0f;
+        }
+    }
+
 
     private void ToggleGameplayVolumes(bool restore)
     {
@@ -140,5 +192,17 @@ public class Pause : MonoBehaviour
     private static void SetActiveSafe(GameObject go, bool active)
     {
         if (go && go.activeSelf != active) go.SetActive(active);
+    }
+    
+    private void RefreshVolumesToMute()
+    {
+        var list = new System.Collections.Generic.List<PostProcessVolume>();
+        var all = FindObjectsByType<PostProcessVolume>(FindObjectsSortMode.None);
+        foreach (var v in all)
+        {
+            if (!v || v == pauseBlurVolume) continue;
+            list.Add(v);
+        }
+        volumesToMute = list.ToArray();
     }
 }

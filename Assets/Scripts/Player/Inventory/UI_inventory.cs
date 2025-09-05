@@ -65,7 +65,7 @@ public class UI_inventory : MonoBehaviour
             }
 
             x++;
-            if(x > 2f)
+            if(x > 3f)
             {
                 x = 0;
                 y-=1f;

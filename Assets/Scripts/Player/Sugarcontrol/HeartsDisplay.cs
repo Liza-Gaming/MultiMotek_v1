@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HeartsDisplay : MonoBehaviour
 {
+    public static HeartsDisplay Instance;
     [Header("Prefabs & Sprites")]
     public Image heartPrefab;
     public Sprite fullHeart;
@@ -96,8 +97,7 @@ public class HeartsDisplay : MonoBehaviour
             rt.localScale = new Vector3(s, s, 1f);
             yield return null;
         }
-
-        // down
+        
         t = 0f;
         while (t < dur)
         {
