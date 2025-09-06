@@ -741,6 +741,7 @@ GameObject:
   - component: {fileID: 120609660}
   - component: {fileID: 120609661}
   - component: {fileID: 120609662}
+  - component: {fileID: 120609663}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -877,6 +878,18 @@ MonoBehaviour:
   newDayGraceAfterLoad: 0.2
   alarmHour: 7
   alarmMinute: 0
+--- !u!114 &120609663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120609655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9773bc9ee22548da954a90d4f3f07004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &130254104
 GameObject:
   m_ObjectHideFlags: 0
@@ -4901,6 +4914,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 10
+  buffetAmount: 16
+  buffetDurationGameMin: 180
+  buffetDelayGameMin: 15
 --- !u!1001 &536518310
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24719,9 +24735,10 @@ MonoBehaviour:
   openStateName: Open
   fallbackOpenDuration: 0
   summaryUI: {fileID: 181814003}
-  nextSceneName: Level2
-  nextSceneBuildIndex: -1
+  nextSceneBuildIndex: 2
+  nextSceneName: Level
   lockPlayerDuringOpen: 1
+  unlockPlayerAfterOpen: 0
 --- !u!95 &1119371602
 Animator:
   serializedVersion: 7
@@ -27463,6 +27480,7 @@ GameObject:
   - component: {fileID: 1438279396}
   - component: {fileID: 1438279397}
   - component: {fileID: 1438279398}
+  - component: {fileID: 1438279399}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -27614,6 +27632,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe9e8b992e91478f9f8ccd3b3e271feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1438279399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438279390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9773bc9ee22548da954a90d4f3f07004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1458438484 stripped
@@ -28751,6 +28781,7 @@ GameObject:
   - component: {fileID: 1671181920}
   - component: {fileID: 1671181921}
   - component: {fileID: 1671181922}
+  - component: {fileID: 1671181923}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -29096,6 +29127,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   eyesClosedRenderer: {fileID: 208710308}
   extraEyesTime: 0
+--- !u!114 &1671181923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671181912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9773bc9ee22548da954a90d4f3f07004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1676788871
 GameObject:
   m_ObjectHideFlags: 0
@@ -31703,6 +31746,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  buffetAmount: 16
+  buffetDurationGameMin: 180
+  buffetDelayGameMin: 15
 --- !u!4 &1952240113 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1049023302621363165, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}

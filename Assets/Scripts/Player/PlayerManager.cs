@@ -133,7 +133,7 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        
+        TryEnemyHit(collider);
         ItemWorld itemWorld = collider.GetComponent<ItemWorld>();
         if (itemWorld != null)
         {
@@ -146,6 +146,12 @@ public class PlayerManager : MonoBehaviour
     {
         TryEnemyHit(collision.collider);
     }
+    
+    public void SuppressSugarArrowRealSeconds(float realSeconds)
+    {
+        sugarArrow?.SuppressForSeconds(realSeconds);
+    }
+
 
     private void UseItemAction(Item item)
     {
