@@ -8,6 +8,8 @@ public class DieZone : MonoBehaviour
         {
             PlayerManager player = other.GetComponent<PlayerManager>();
             player.ExplodeAndRespawn();
+            var mover = player.GetComponent<PlayerMover>();
+            if (mover != null) mover.SetInputLocked(true);
         }
     }
 }

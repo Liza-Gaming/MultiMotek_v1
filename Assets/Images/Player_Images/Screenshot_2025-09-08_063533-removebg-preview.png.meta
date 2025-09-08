@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 6a264d5e462bb484ba799d7d95d9a418
+guid: 4e6e9c2afbaee0e4788f706329c15e97
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8732688308481021961
-    second: Drawing 19_0
+      213: 6406066146554191476
+    second: Screenshot_2025-09-08_063533-removebg-preview_0
   - first:
-      213: 3181514496743589262
-    second: Drawing 19_1
+      213: -3512675581948598283
+    second: Screenshot_2025-09-08_063533-removebg-preview_1
   - first:
-      213: -652950584030873587
-    second: Drawing 19_2
+      213: 1068937766056406395
+    second: Screenshot_2025-09-08_063533-removebg-preview_2
   - first:
-      213: 3477470572445298649
-    second: Drawing 19_3
+      213: -1407518605268135141
+    second: Screenshot_2025-09-08_063533-removebg-preview_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Drawing 19_0
+      name: Screenshot_2025-09-08_063533-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 271
-        y: 1135
-        width: 450
-        height: 722
+        x: 10
+        y: 267
+        width: 227
+        height: 208
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,20 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7f728ce40424fc680800000000000000
-      internalID: -8732688308481021961
+      spriteID: 47e9401383be6e850800000000000000
+      internalID: 6406066146554191476
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Drawing 19_1
+      name: Screenshot_2025-09-08_063533-removebg-preview_1
       rect:
         serializedVersion: 2
-        x: 863
-        y: 1135
-        width: 450
-        height: 706
+        x: 260
+        y: 257
+        width: 217
+        height: 218
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e8548221492072c20800000000000000
-      internalID: 3181514496743589262
+      spriteID: 5f7e3ce4b28704fc0800000000000000
+      internalID: -3512675581948598283
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Drawing 19_2
+      name: Screenshot_2025-09-08_063533-removebg-preview_2
       rect:
         serializedVersion: 2
-        x: 1423
-        y: 1135
-        width: 450
-        height: 690
+        x: 20
+        y: 17
+        width: 207
+        height: 217
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d08b4fe37e040f6f0800000000000000
-      internalID: -652950584030873587
+      spriteID: b7daac81c31a5de00800000000000000
+      internalID: 1068937766056406395
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Drawing 19_3
+      name: Screenshot_2025-09-08_063533-removebg-preview_3
       rect:
         serializedVersion: 2
-        x: 255
-        y: 335
-        width: 450
-        height: 690
+        x: 269
+        y: 17
+        width: 208
+        height: 217
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,8 +216,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9dfe97baf05724030800000000000000
-      internalID: 3477470572445298649
+      spriteID: b135d3e294d777ce0800000000000000
+      internalID: -1407518605268135141
       vertices: []
       indices: 
       edges: []
@@ -236,10 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Drawing 19_0: -8732688308481021961
-      Drawing 19_1: 3181514496743589262
-      Drawing 19_2: -652950584030873587
-      Drawing 19_3: 3477470572445298649
+      Screenshot_2025-09-08_063533-removebg-preview_0: 6406066146554191476
+      Screenshot_2025-09-08_063533-removebg-preview_1: -3512675581948598283
+      Screenshot_2025-09-08_063533-removebg-preview_2: 1068937766056406395
+      Screenshot_2025-09-08_063533-removebg-preview_3: -1407518605268135141
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

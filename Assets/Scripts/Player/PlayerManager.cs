@@ -79,6 +79,8 @@ public class PlayerManager : MonoBehaviour
             animator.SetTrigger("Respawn");
             GetComponent<SpriteRenderer>().enabled = true;
             playerFeedback?.ForceEyesOpen();
+            var mover = GetComponent<PlayerMover>();
+            if (mover != null) mover.SetInputLocked(false);
             if (rb2d != null)
                 rb2d.linearVelocity = Vector2.zero;
         }

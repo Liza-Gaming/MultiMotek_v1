@@ -360,7 +360,16 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Drawing 16_0: -208201293982007924
+      Drawing 16_1: 334442348919656057
+      Drawing 16_2: 1231261942008755621
+      Drawing 16_3: -5761658374345543210
+      Drawing 16_4: -7375036325922960494
+      Drawing 16_5: -4332933617352310392
+      Drawing 16_6: -4019459107671284468
+      Drawing 16_7: -6864925797327000180
+      Drawing 16_8: 9083350252327733290
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

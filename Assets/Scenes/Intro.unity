@@ -654,6 +654,7 @@ GameObject:
   - component: {fileID: 413002113}
   - component: {fileID: 413002112}
   - component: {fileID: 413002114}
+  - component: {fileID: 413002115}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -702,7 +703,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1809be1cc2bc4c76868cf5d31b64f15a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resetPlayerPrefs: 0
+--- !u!114 &413002115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413002111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 430fe1b63e524a508f0cde82086aedbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &483106389
 GameObject:
   m_ObjectHideFlags: 0
