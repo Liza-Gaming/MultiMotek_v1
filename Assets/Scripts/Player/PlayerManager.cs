@@ -94,7 +94,7 @@ public class PlayerManager : MonoBehaviour
     {
         float savedSugar = sugarMeter ? sugarMeter.GetSugarLevel() : 0f;
         
-        sugarArrow?.SuppressForSeconds(1.0f);
+        //sugarArrow?.SuppressForSeconds(1.0f);
 
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         StartCoroutine(ExplodeAndRespawnCoroutine(savedSugar));

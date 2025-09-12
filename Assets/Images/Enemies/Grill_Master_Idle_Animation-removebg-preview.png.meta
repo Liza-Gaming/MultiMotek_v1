@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: dc5492f8e3058e446a62a7df4a2e6b2c
+guid: 5c1cb2058870cad4495a46fa3cb9ee61
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7470988470919020434
-    second: Screenshot_2025-09-08_063452-removebg-preview_0
+      213: 1651445933595634419
+    second: Grill_Master_Idle_Animation-removebg-preview_0
   - first:
-      213: 945542865872577647
-    second: Screenshot_2025-09-08_063452-removebg-preview_1
+      213: -554661643488453405
+    second: Grill_Master_Idle_Animation-removebg-preview_1
   - first:
-      213: -584321185589437399
-    second: Screenshot_2025-09-08_063452-removebg-preview_2
+      213: -9016145368409477198
+    second: Grill_Master_Idle_Animation-removebg-preview_2
   - first:
-      213: 1985839734071534913
-    second: Screenshot_2025-09-08_063452-removebg-preview_3
+      213: 2093126082019441205
+    second: Grill_Master_Idle_Animation-removebg-preview_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -60,7 +60,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 26
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -135,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Screenshot_2025-09-08_063452-removebg-preview_0
+      name: Grill_Master_Idle_Animation-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 17
-        y: 271
-        width: 216
-        height: 199
+        x: 64
+        y: 269
+        width: 187
+        height: 209
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,20 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 29fba2a6e684ea760800000000000000
-      internalID: 7470988470919020434
+      spriteID: 3fa2bbda35d1be610800000000000000
+      internalID: 1651445933595634419
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screenshot_2025-09-08_063452-removebg-preview_1
+      name: Grill_Master_Idle_Animation-removebg-preview_1
       rect:
         serializedVersion: 2
-        x: 255
-        y: 263
-        width: 217
-        height: 207
+        x: 267
+        y: 269
+        width: 192
+        height: 209
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f646d301a3e3f1d00800000000000000
-      internalID: 945542865872577647
+      spriteID: 3ec16598c227d48f0800000000000000
+      internalID: -554661643488453405
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screenshot_2025-09-08_063452-removebg-preview_2
+      name: Grill_Master_Idle_Animation-removebg-preview_2
       rect:
         serializedVersion: 2
-        x: 26
-        y: 33
-        width: 198
-        height: 208
+        x: 64
+        y: 31
+        width: 187
+        height: 209
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 92cd4324af214e7f0800000000000000
-      internalID: -584321185589437399
+      spriteID: 2bf6ba89e8730e280800000000000000
+      internalID: -9016145368409477198
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screenshot_2025-09-08_063452-removebg-preview_3
+      name: Grill_Master_Idle_Animation-removebg-preview_3
       rect:
         serializedVersion: 2
-        x: 265
-        y: 33
-        width: 207
-        height: 208
+        x: 267
+        y: 31
+        width: 192
+        height: 209
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,8 +216,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 145a03a77be1f8b10800000000000000
-      internalID: 1985839734071534913
+      spriteID: 53abfdce4174c0d10800000000000000
+      internalID: 2093126082019441205
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Screenshot_2025-09-08_063452-removebg-preview_0: 7470988470919020434
-      Screenshot_2025-09-08_063452-removebg-preview_1: 945542865872577647
-      Screenshot_2025-09-08_063452-removebg-preview_2: -584321185589437399
-      Screenshot_2025-09-08_063452-removebg-preview_3: 1985839734071534913
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -40,6 +40,16 @@ public class SugarMeter : MonoBehaviour
     private enum Phase { None, Up, Down }
     private Phase _phase = Phase.None;
     
+    [Serializable]
+    private struct TrendsState {
+        public Phase phase;
+        public List<RunningEffect> runUp, runDown;
+        public List<PendingSpec>   pendUp, pendDown;
+        public float sugar;
+        public bool  has;
+    }
+    
+    private static TrendsState s_trends;
 
     private struct RunningEffect
     {
@@ -173,13 +183,36 @@ public class SugarMeter : MonoBehaviour
         UpdateSugarUI();
         UpdateHeartsLogic();
     }
+    
+    void OnEnable() {
+        if (s_trends.has) {
+            _phase = s_trends.phase;
+            _runUp.Clear();   if (s_trends.runUp  != null) _runUp.AddRange(s_trends.runUp);
+            _runDown.Clear(); if (s_trends.runDown!= null) _runDown.AddRange(s_trends.runDown);
+            _pendUp.Clear();  if (s_trends.pendUp != null) _pendUp.AddRange(s_trends.pendUp);
+            _pendDown.Clear();if (s_trends.pendDown!=null) _pendDown.AddRange(s_trends.pendDown);
 
-    private void OnDisable()
-    {
+            // אם את רוצה גם את הערך עצמו – החזירי אותו:
+            // SetSugarInstant(s_trends.sugar);
+        }
+    }
+
+    void OnDisable() {
         s_savedSugar  = sugarLevel;
         s_savedHearts = currentHearts;
         s_hasSaved    = true;
+
+        s_trends = new TrendsState {
+            phase    = _phase,
+            runUp    = new List<RunningEffect>(_runUp),
+            runDown  = new List<RunningEffect>(_runDown),
+            pendUp   = new List<PendingSpec>(_pendUp),
+            pendDown = new List<PendingSpec>(_pendDown),
+            sugar    = sugarLevel,
+            has      = true
+        };
     }
+    
 
     // ====== Phase helpers ======
 
@@ -369,3 +402,4 @@ public class SugarMeter : MonoBehaviour
         }
     }
 }
+

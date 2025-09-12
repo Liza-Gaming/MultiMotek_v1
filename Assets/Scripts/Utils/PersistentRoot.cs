@@ -7,7 +7,7 @@ public class PersistentRoot : MonoBehaviour
 
     protected virtual void Awake()
     {
-        // דואג שאובייקט זה יעבור בין סצנות
+
         if (transform.parent != null) transform.SetParent(null, true);
         DontDestroyOnLoad(gameObject);
         registry.Add(this);
@@ -20,7 +20,7 @@ public class PersistentRoot : MonoBehaviour
 
     public static void DestroyAll()
     {
-        // מעתיקים לרשימה כדי לא להרוס תוך כדי איטרציה
+
         var arr = new List<PersistentRoot>(registry);
         registry.Clear();
         foreach (var r in arr)

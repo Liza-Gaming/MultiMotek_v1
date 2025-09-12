@@ -12,6 +12,7 @@ TagManager:
   - NextLevel
   - PlayerSpawn
   - Buffe
+  - GrillMaster
   layers:
   - Default
   - TransparentFX

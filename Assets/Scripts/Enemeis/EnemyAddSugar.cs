@@ -6,16 +6,16 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
     public float sugarAmount = 10f;
 
     // ערכים בשביל הבופה (כמו שהגדרת)
-    [SerializeField] private float buffetAmount = 16f;
-    [SerializeField] private float buffetDurationGameMin = 180f; // שעתיים
-    [SerializeField] private float buffetDelayGameMin    = 15f;
+    [SerializeField] private float EnemyAmount = 16f;
+    [SerializeField] private float EnemyDurationGameMin = 180f; // שעתיים
+    [SerializeField] private float EnemyDelayGameMin    = 15f;
 
     public void ApplyEffect(GameObject playerObj)
     {
-        if (this.CompareTag("Buffe"))
+        if (this.CompareTag("Buffe") || this.CompareTag("GrillMaster") )
         {
     
-            float totalGameMin = buffetDelayGameMin + buffetDurationGameMin;
+            float totalGameMin = EnemyDelayGameMin + EnemyDurationGameMin;
             float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
 
             var pm = playerObj.GetComponent<PlayerManager>();
@@ -23,9 +23,9 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
 
             // מפעילים את האפקט המדורג (ללא חץ)
             SugarMeter.Instance?.AddSugarGame(
-                buffetAmount,
-                durationGameMin: buffetDurationGameMin,
-                delayGameMin: buffetDelayGameMin,
+                EnemyAmount,
+                durationGameMin: EnemyDurationGameMin,
+                delayGameMin: EnemyDelayGameMin,
                 suppressBaselineDuring: true
             );
             return;
