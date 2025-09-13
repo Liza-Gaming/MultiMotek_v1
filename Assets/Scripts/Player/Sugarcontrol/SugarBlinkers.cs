@@ -132,7 +132,7 @@ public class SugarBlinkers : MonoBehaviour
 
     private void OnTimedChangeEnded(bool isIncrease)
     {
-        // לא חובה לעשות כלום – הניהול לפי upUntil/downUntil
+        
     }
 
     private bool ShouldWarn()

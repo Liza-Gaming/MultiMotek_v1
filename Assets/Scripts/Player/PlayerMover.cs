@@ -106,7 +106,7 @@ public class PlayerMover : MonoBehaviour
     private bool CanJumpNow() {
         if (!isGrounded || inputLocked) return false;
         if (blockJumpWhenHighSugar && sugarMeter && sugarMeter.GetSugarLevel() >= drinkOnSugar)
-            return false; // נועל קפיצה מעל 250
+            return false;
         return true;
     }
 

@@ -16616,7 +16616,7 @@ GameObject:
   - component: {fileID: 386039234}
   - component: {fileID: 386039236}
   - component: {fileID: 386039235}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (5)
   m_TagString: Die
   m_Icon: {fileID: 0}
@@ -43778,7 +43778,7 @@ GameObject:
   - component: {fileID: 640351400}
   - component: {fileID: 640351402}
   - component: {fileID: 640351401}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44215,7 +44215,7 @@ GameObject:
   - component: {fileID: 692115626}
   - component: {fileID: 692115628}
   - component: {fileID: 692115627}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death
   m_TagString: Die
   m_Icon: {fileID: 0}
@@ -45355,7 +45355,7 @@ GameObject:
   - component: {fileID: 757617849}
   - component: {fileID: 757617851}
   - component: {fileID: 757617850}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46530,7 +46530,7 @@ GameObject:
   - component: {fileID: 916549809}
   - component: {fileID: 916549811}
   - component: {fileID: 916549810}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (2)
   m_TagString: Die
   m_Icon: {fileID: 0}
@@ -49295,7 +49295,7 @@ Transform:
   m_GameObject: {fileID: 1132682724}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.48, y: -1.1, z: -0.9169444}
+  m_LocalPosition: {x: -8.38, y: -1.17, z: -0.9169444}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -50311,7 +50311,7 @@ GameObject:
   - component: {fileID: 1262762611}
   - component: {fileID: 1262762613}
   - component: {fileID: 1262762612}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52818,7 +52818,7 @@ GameObject:
   - component: {fileID: 1544967258}
   - component: {fileID: 1544967260}
   - component: {fileID: 1544967259}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53075,7 +53075,7 @@ GameObject:
   - component: {fileID: 1558722774}
   - component: {fileID: 1558722776}
   - component: {fileID: 1558722775}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Death (6)
   m_TagString: Die
   m_Icon: {fileID: 0}

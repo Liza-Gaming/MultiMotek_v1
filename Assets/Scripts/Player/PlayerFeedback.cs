@@ -20,11 +20,14 @@ public class PlayerFeedback : MonoBehaviour
     
     private Coroutine flashCo, punchCo, eyesCo;
     private Vector3 baseScale;
+    private Color[] originalColors; // שמירת הצבעים המקוריים
+    
 
     void Reset()
     {
         sprites = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
     }
+    
 
     void Awake()
     {
@@ -32,11 +35,26 @@ public class PlayerFeedback : MonoBehaviour
         if (sprites == null || sprites.Length == 0)
             sprites = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
         if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
+        
+        // שמירת הצבעים המקוריים
+        StoreOriginalColors();
+    }
+
+    private void StoreOriginalColors()
+    {
+        originalColors = new Color[sprites.Length];
+        for (int i = 0; i < sprites.Length; i++)
+            originalColors[i] = sprites[i] ? sprites[i].color : Color.white;
     }
 
     public void PlayUseItemFX(Color flashColor, bool withEyesClosed = false)
     {
-        if (flashCo != null) StopCoroutine(flashCo);
+        if (flashCo != null) 
+        {
+            StopCoroutine(flashCo);
+            RestoreOriginalColors(); // מחזיר את הצבעים המקוריים
+        }
+        
         if (punchCo != null) StopCoroutine(punchCo);
         if (withEyesClosed && eyesCo != null) StopCoroutine(eyesCo);
 
@@ -47,45 +65,59 @@ public class PlayerFeedback : MonoBehaviour
             eyesCo = StartCoroutine(EyesClosedRoutine(flashDuration + extraEyesTime));
     }
 
+    private void RestoreOriginalColors()
+    {
+        for (int i = 0; i < sprites.Length && i < originalColors.Length; i++)
+            if (sprites[i]) sprites[i].color = originalColors[i];
+    }
+
     private IEnumerator FlashRoutine(Color flashColor)
     {
-        var original = new Color[sprites.Length];
-        for (int i = 0; i < sprites.Length; i++)
-            original[i] = sprites[i] ? sprites[i].color : Color.white;
-
         float t = 0f;
         while (t < flashDuration)
         {
             t += Time.deltaTime;
             float a = flashCurve.Evaluate(Mathf.Clamp01(t / flashDuration));
             for (int i = 0; i < sprites.Length; i++)
-                if (sprites[i]) sprites[i].color = Color.Lerp(original[i], flashColor, a);
+                if (sprites[i]) sprites[i].color = Color.Lerp(originalColors[i], flashColor, a);
             yield return null;
         }
 
-        for (int i = 0; i < sprites.Length; i++)
-            if (sprites[i]) sprites[i].color = original[i];
+        // מחזיר את הצבעים המקוריים בסוף
+        RestoreOriginalColors();
+        flashCo = null; // מנקה את הרפרנס
     }
 
     private IEnumerator ScalePunchRoutine()
     {
         float t = 0f;
+
+        float signX = Mathf.Sign(transform.localScale.x);
+        Vector3 baseAbs = new Vector3(Mathf.Abs(baseScale.x), Mathf.Abs(baseScale.y), Mathf.Abs(baseScale.z));
+
         while (t < punchDuration)
         {
             t += Time.deltaTime;
             float a = punchCurve.Evaluate(Mathf.Clamp01(t / punchDuration));
             float s = Mathf.Lerp(1f, punchScale, a);
-            transform.localScale = baseScale * s;
+            
+            transform.localScale = new Vector3(signX * baseAbs.x * s,
+                baseAbs.y * s,
+                baseAbs.z);
             yield return null;
         }
-        transform.localScale = baseScale;
+
+        transform.localScale = new Vector3(signX * baseAbs.x, baseAbs.y, baseAbs.z);
+        punchCo = null; // מנקה את הרפרנס
     }
+
     
     private IEnumerator EyesClosedRoutine(float duration)
     {
         eyesClosedRenderer.enabled = true;
         yield return new WaitForSeconds(duration);
         if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
+        eyesCo = null; // מנקה את הרפרנס
     }
     
     public void ForceEyesOpen()

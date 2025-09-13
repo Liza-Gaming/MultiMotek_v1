@@ -342,8 +342,7 @@ public class SugarMeter : MonoBehaviour
         else                StartCoroutine(StartEffectAfterDelay(true, amount, durationSec, delaySec, suppressBaselineDuring));
     }
 
-    public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
-                                  bool suppressBaselineDuring = false)
+    public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f, bool suppressBaselineDuring = false)
     {
         amount = Mathf.Abs(amount);
         float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
