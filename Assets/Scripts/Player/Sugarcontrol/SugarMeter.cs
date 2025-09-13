@@ -45,6 +45,10 @@ public class SugarMeter : MonoBehaviour
         public Phase phase;
         public List<RunningEffect> runUp, runDown;
         public List<PendingSpec>   pendUp, pendDown;
+
+        // חדש: אפקטים מיידיים
+        public List<ImmediateEffect> immediate;
+
         public float sugar;
         public bool  has;
     }
@@ -64,6 +68,15 @@ public class SugarMeter : MonoBehaviour
         public float durationSec;
         public bool  suppressBaseline;
     }
+    
+    // ==== Immediate effects (always applied, independent of phases) ====
+    private struct ImmediateEffect {
+        public float deltaPerSec;      // יכול להיות חיובי (עלייה) או שלילי (ירידה)
+        public float remainingAbs;     // כמה יחידות מוחלטות נשארו להחיל (abs)
+        public bool  suppressBaseline; // האם לכבות baseline בזמן שהאפקט רץ
+    }
+    private readonly List<ImmediateEffect> _immediate = new();
+
 
     // רצים כרגע (רק מגמה אחת תהיה פעילה)
     private readonly List<RunningEffect> _runUp   = new();
@@ -119,6 +132,23 @@ public class SugarMeter : MonoBehaviour
 
         float delta = 0f;
         bool suppressBaselineNow = false;
+
+// === Immediate effects (apply first, always) ===
+        for (int i = _immediate.Count - 1; i >= 0; i--)
+        {
+            var e = _immediate[i];
+            float step = Mathf.Min(Mathf.Abs(e.deltaPerSec) * dt, e.remainingAbs);
+            float signedStep = Mathf.Sign(e.deltaPerSec) * step;
+
+            e.remainingAbs -= step;
+            suppressBaselineNow |= e.suppressBaseline;
+
+            if (e.remainingAbs <= 0f) _immediate.RemoveAt(i);
+            else                      _immediate[i] = e;
+
+            delta += signedStep; // מצטבר לדלתא
+        }
+
 
         // מפעילים רק את רשימת הפאזה הנוכחית
         if (_phase == Phase.Up)
@@ -187,13 +217,13 @@ public class SugarMeter : MonoBehaviour
     void OnEnable() {
         if (s_trends.has) {
             _phase = s_trends.phase;
-            _runUp.Clear();   if (s_trends.runUp  != null) _runUp.AddRange(s_trends.runUp);
-            _runDown.Clear(); if (s_trends.runDown!= null) _runDown.AddRange(s_trends.runDown);
-            _pendUp.Clear();  if (s_trends.pendUp != null) _pendUp.AddRange(s_trends.pendUp);
-            _pendDown.Clear();if (s_trends.pendDown!=null) _pendDown.AddRange(s_trends.pendDown);
+            _runUp.Clear();    if (s_trends.runUp != null)    _runUp.AddRange(s_trends.runUp);
+            _runDown.Clear();  if (s_trends.runDown != null)  _runDown.AddRange(s_trends.runDown);
+            _pendUp.Clear();   if (s_trends.pendUp != null)   _pendUp.AddRange(s_trends.pendUp);
+            _pendDown.Clear(); if (s_trends.pendDown != null) _pendDown.AddRange(s_trends.pendDown);
 
-            // אם את רוצה גם את הערך עצמו – החזירי אותו:
-            // SetSugarInstant(s_trends.sugar);
+            _immediate.Clear(); if (s_trends.immediate != null) _immediate.AddRange(s_trends.immediate);
+            // אם תרצי גם את ערך הסוכר: SetSugarInstant(s_trends.sugar);
         }
     }
 
@@ -203,16 +233,44 @@ public class SugarMeter : MonoBehaviour
         s_hasSaved    = true;
 
         s_trends = new TrendsState {
-            phase    = _phase,
-            runUp    = new List<RunningEffect>(_runUp),
-            runDown  = new List<RunningEffect>(_runDown),
-            pendUp   = new List<PendingSpec>(_pendUp),
-            pendDown = new List<PendingSpec>(_pendDown),
-            sugar    = sugarLevel,
-            has      = true
+            phase     = _phase,
+            runUp     = new List<RunningEffect>(_runUp),
+            runDown   = new List<RunningEffect>(_runDown),
+            pendUp    = new List<PendingSpec>(_pendUp),
+            pendDown  = new List<PendingSpec>(_pendDown),
+            immediate = new List<ImmediateEffect>(_immediate), // חדש
+            sugar     = sugarLevel,
+            has       = true
         };
     }
     
+    public void AddImmediateGame(float amountSigned, float durationGameMin, bool suppressBaselineDuring = false)
+    {
+        // amountSigned > 0 → עלייה ; amountSigned < 0 → ירידה
+        if (Mathf.Approximately(durationGameMin, 0f)) {
+            // אפקט מיידי לגמרי (בלי משך) — נכתוב ישירות
+            sugarLevel = Mathf.Clamp(sugarLevel + amountSigned, minSugarClamp, maxSugarClamp);
+            UpdateSugarUI();
+            return;
+        }
+
+        float durationSec = GameTime.GameMinutesToRealSeconds(Mathf.Abs(durationGameMin));
+        float rate = amountSigned / Mathf.Max(0.0001f, durationSec);
+
+        _immediate.Add(new ImmediateEffect {
+            deltaPerSec     = rate,
+            remainingAbs    = Mathf.Abs(amountSigned),
+            suppressBaseline = suppressBaselineDuring
+        });
+    }
+
+// אם נוח לך נגיש גם Helpers ייעודיים:
+    public void AddImmediateIncreaseGame(float amount, float durationGameMin, bool suppressBaselineDuring = false)
+        => AddImmediateGame(+Mathf.Abs(amount), durationGameMin, suppressBaselineDuring);
+
+    public void AddImmediateDecreaseGame(float amount, float durationGameMin, bool suppressBaselineDuring = false)
+        => AddImmediateGame(-Mathf.Abs(amount), durationGameMin, suppressBaselineDuring);
+
 
     // ====== Phase helpers ======
 

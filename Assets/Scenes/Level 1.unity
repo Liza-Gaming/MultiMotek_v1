@@ -869,7 +869,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clockText: {fileID: 367880307}
   background: {fileID: 2043461361}
-  gameSecondsPerRealSecond: 360
+  gameSecondsPerRealSecond: 240
   autoStart: 1
   stopWhenPaused: 1
   startHour: 7
@@ -29151,6 +29151,7 @@ MonoBehaviour:
   drinkSlowFactor: 0.4
   animDrinkBool: IsDrinking
   blockJumpWhenHighSugar: 1
+  sugarArrow: {fileID: 852020187}
 --- !u!114 &1671181918
 MonoBehaviour:
   m_ObjectHideFlags: 0
