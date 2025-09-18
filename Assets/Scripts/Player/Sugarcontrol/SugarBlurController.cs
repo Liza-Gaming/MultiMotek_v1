@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
+
 public class SugarBlurController : MonoBehaviour
 {
     
@@ -80,26 +81,29 @@ public class SugarBlurController : MonoBehaviour
         TryRebindAll(force:true);
     }
 
-    private void TryRebindAll(bool force=false) {
+    private void TryRebindAll(bool force = false)
+    {
+        // 1) ודאי שיש SugarMeter
         if (force || sugarMeter == null)
             sugarMeter = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>(FindObjectsInactive.Include);
 
-        if (force || volume == null) {
-            volume = GetComponent<Volume>();
-            if (!volume) {
-                foreach (var v in FindObjectsByType<Volume>(FindObjectsSortMode.None)) {
-                    if (v != null && (v.isGlobal || v.GetComponentInParent<Camera>() != null)) {
-                        volume = v; break;
-                    }
-                }
-            }
-        }
+        // 2) ודאי שלמצלמה מופעל Post Processing ושה-VolumeMask נכון
+        EnsureCameraPostFX();
 
+        // 3) השתמשי תמיד ב-Volume פרטי על המצלמה (ניצור אם אין)
+        EnsureLocalVolumeOnCamera();
+
+        // 4) ודאי שיש DoF בפרופיל
         dof = null;
-        if (volume && volume.profile) {
-            volume.profile.TryGet(out dof);
+        if (volume != null)
+        {
+            if (volume.profile == null)
+                volume.profile = ScriptableObject.CreateInstance<VolumeProfile>();
+            if (!volume.profile.TryGet(out dof))
+                dof = volume.profile.Add<DepthOfField>(true);
         }
     }
+
 
     private void Update()
     {
@@ -237,6 +241,42 @@ public class SugarBlurController : MonoBehaviour
         // אם לא מצאנו רמה מתאימה, השתמש ברמה האחרונה
         SetCustomBlurValues(customBlurLevels[customBlurLevels.Length - 1]);
         return 0;
+    }
+    
+    private void EnsureCameraPostFX()
+    {
+        var cam = GetComponent<Camera>();
+        if (!cam) cam = Camera.main;
+        if (!cam) return;
+
+        var uac = cam.GetComponent<UniversalAdditionalCameraData>();
+        if (!uac) uac = cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
+
+        // קריטי ב-URP כדי לראות אפקטים
+        uac.renderPostProcessing = true;
+
+        // תני למסכה לכלול את כל הליירים (או התאימי ללייר של ה-Volume שלך)
+        uac.volumeLayerMask = ~0;        // Everything
+        uac.volumeTrigger   = cam.transform;
+    }
+
+    private void EnsureLocalVolumeOnCamera()
+    {
+        // אם כבר הוגדר ידנית בסריאלייזד שדה – השתמשי בו
+        if (volume != null) return;
+
+        // נסי למצוא ילד בשם קבוע
+        var t = transform.Find("SugarBlurVolume");
+        if (t) volume = t.GetComponent<Volume>();
+        if (volume != null) return;
+
+        // צרי Volume גלובלי פרטי על המצלמה (נשמר כי המצלמה נשמרת)
+        var go = new GameObject("SugarBlurVolume");
+        go.transform.SetParent(transform, false);
+        volume = go.AddComponent<Volume>();
+        volume.isGlobal = true;
+        volume.priority = 999f;
+        volume.profile  = ScriptableObject.CreateInstance<VolumeProfile>();
     }
 
     private void SetCustomBlurValues(BlurLevel level)
