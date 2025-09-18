@@ -2,7 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+
 using UnityEngine.SceneManagement;
 
 public class Pause : MonoBehaviour
@@ -16,8 +18,8 @@ public class Pause : MonoBehaviour
     [SerializeField] private GameObject pauseShield;
 
     [Header("Blur")]
-    [SerializeField] private PostProcessVolume pauseBlurVolume;
-    [SerializeField] private PostProcessVolume[] volumesToMute;
+    [SerializeField] private Volume pauseBlurVolume;
+    [SerializeField] private Volume[] volumesToMute; 
     [SerializeField] private float blurInTime = 0.2f;
     [SerializeField] private float blurOutTime = 0.15f;
 
@@ -175,7 +177,7 @@ public class Pause : MonoBehaviour
         blurRoutine = StartCoroutine(AnimateWeight(pauseBlurVolume, on ? 1f : 0f, on ? blurInTime : blurOutTime));
     }
 
-    private IEnumerator AnimateWeight(PostProcessVolume v, float target, float dur)
+    private IEnumerator AnimateWeight(Volume v, float target, float dur)
     {
         float start = v.weight;
         float t = 0f;
@@ -196,8 +198,8 @@ public class Pause : MonoBehaviour
     
     private void RefreshVolumesToMute()
     {
-        var list = new System.Collections.Generic.List<PostProcessVolume>();
-        var all = FindObjectsByType<PostProcessVolume>(FindObjectsSortMode.None);
+        var list = new System.Collections.Generic.List<Volume>();
+        var all = FindObjectsByType<Volume>(FindObjectsSortMode.None);
         foreach (var v in all)
         {
             if (!v || v == pauseBlurVolume) continue;
@@ -205,4 +207,5 @@ public class Pause : MonoBehaviour
         }
         volumesToMute = list.ToArray();
     }
+
 }

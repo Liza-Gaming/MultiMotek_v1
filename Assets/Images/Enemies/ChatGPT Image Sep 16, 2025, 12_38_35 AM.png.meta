@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: 5c1cb2058870cad4495a46fa3cb9ee61
+guid: 19b3068140ee1e9448b8d3b68e82b4d1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1651445933595634419
-    second: Grill_Master_Idle_Animation-removebg-preview_0
-  - first:
-      213: -554661643488453405
-    second: Grill_Master_Idle_Animation-removebg-preview_1
-  - first:
-      213: -9016145368409477198
-    second: Grill_Master_Idle_Animation-removebg-preview_2
-  - first:
-      213: 2093126082019441205
-    second: Grill_Master_Idle_Animation-removebg-preview_3
+      213: 8263006363182802462
+    second: ChatGPT Image Sep 16, 2025, 12_38_35 AM_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -55,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 450
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -135,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Grill_Master_Idle_Animation-removebg-preview_0
+      name: ChatGPT Image Sep 16, 2025, 12_38_35 AM_0
       rect:
         serializedVersion: 2
-        x: 64
-        y: 269
-        width: 187
-        height: 209
+        x: 0
+        y: 0
+        width: 1024
+        height: 1024
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,74 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3fa2bbda35d1be610800000000000000
-      internalID: 1651445933595634419
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Grill_Master_Idle_Animation-removebg-preview_1
-      rect:
-        serializedVersion: 2
-        x: 267
-        y: 269
-        width: 192
-        height: 209
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3ec16598c227d48f0800000000000000
-      internalID: -554661643488453405
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Grill_Master_Idle_Animation-removebg-preview_2
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 31
-        width: 187
-        height: 209
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2bf6ba89e8730e280800000000000000
-      internalID: -9016145368409477198
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Grill_Master_Idle_Animation-removebg-preview_3
-      rect:
-        serializedVersion: 2
-        x: 267
-        y: 31
-        width: 192
-        height: 209
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 53abfdce4174c0d10800000000000000
-      internalID: 2093126082019441205
+      spriteID: e16ad4e02881ca270800000000000000
+      internalID: 8263006363182802462
       vertices: []
       indices: 
       edges: []
@@ -226,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -236,10 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Grill_Master_Idle_Animation-removebg-preview_0: 1651445933595634419
-      Grill_Master_Idle_Animation-removebg-preview_1: -554661643488453405
-      Grill_Master_Idle_Animation-removebg-preview_2: -9016145368409477198
-      Grill_Master_Idle_Animation-removebg-preview_3: 2093126082019441205
+      ChatGPT Image Sep 16, 2025, 12_38_35 AM_0: 8263006363182802462
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

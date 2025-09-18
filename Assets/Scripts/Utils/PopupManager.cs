@@ -94,7 +94,7 @@ public class PopupManager : MonoBehaviour
 
     private void TryShowStage3IfNeeded()
     {
-        if (SceneManager.GetActiveScene().buildIndex >= stage3BuildIndex)
+        if (SceneManager.GetActiveScene().buildIndex == stage3BuildIndex)
             TryShow(stage3Popup);
     }
 

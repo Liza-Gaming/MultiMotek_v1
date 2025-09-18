@@ -46,6 +46,20 @@ public class ChestLootSpawner : MonoBehaviour
     [SerializeField] private bool triggerByAnimEvent = false;
 
     private bool hasDropped = false;
+    
+    // בתוך ChestLootSpawner:
+
+// ---------- Question Mark (no persistence) ----------
+    [Header("Question Mark (session-only)")]
+    [SerializeField] private GameObject questionMarkPrefab;   // אפשר לשים prefab כאן
+    [SerializeField] private GameObject questionMarkInstance; // או להפנות ל-child קיים
+    [SerializeField] private Vector3 qmarkLocalOffset = new Vector3(0f, 2f, 0f);
+    [SerializeField] private float qmarkBobAmplitude = 0.08f;
+    [SerializeField] private float qmarkBobSpeed = 2.0f;
+
+    private bool _openedOnceThisSession = false;
+    private Vector3 _qmarkBaseLocalPos;
+
 
     private void Awake()
     {
@@ -56,13 +70,28 @@ public class ChestLootSpawner : MonoBehaviour
         if (col && !col.isTrigger) col.isTrigger = true;
 
         if (arcEase == null) arcEase = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        
+        SetupQuestionMark();
+        ApplyQuestionMarkVisibility(!_openedOnceThisSession);
+
     }
+    
+    private void Update()
+    {
+        if (questionMarkInstance && questionMarkInstance.activeSelf)
+        {
+            float y = Mathf.Sin(Time.time * qmarkBobSpeed) * qmarkBobAmplitude;
+            questionMarkInstance.transform.localPosition = _qmarkBaseLocalPos + new Vector3(0f, y, 0f);
+        }
+    }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
 
         if (chestAnimator) chestAnimator.SetBool("IsOpened", true);
+        HideQuestionMarkOnce();
 
         if (!triggerByAnimEvent && (!openOnce || !hasDropped))
             StartCoroutine(DropNow());
@@ -79,6 +108,7 @@ public class ChestLootSpawner : MonoBehaviour
     {
         if (!openOnce || !hasDropped)
             StartCoroutine(DropNow());
+        HideQuestionMarkOnce();
     }
 
     private IEnumerator DropNow()
@@ -218,4 +248,53 @@ public class ChestLootSpawner : MonoBehaviour
             // rb.isKinematic = true;
         }
     }
+    
+    private void SetupQuestionMark()
+    {
+        // מקרה 1: אין instance אבל יש prefab → נוציא אינסטנס תחת התיבה
+        if (!questionMarkInstance && questionMarkPrefab)
+        {
+            questionMarkInstance = Instantiate(questionMarkPrefab, transform);
+            questionMarkInstance.transform.localPosition = qmarkLocalOffset;
+        }
+        // מקרה 2: יש משהו בשדה questionMarkInstance
+        else if (questionMarkInstance)
+        {
+            // אם זה Asset (לא שייך לשום סצנה) → יש לאינסטנצֵעַ ולשמור את העותק
+            if (!questionMarkInstance.scene.IsValid())
+            {
+                var prefabAsset = questionMarkInstance; // זה ה-Asset ששמת בטעות
+                questionMarkInstance = Instantiate(prefabAsset, transform);
+                questionMarkInstance.transform.localPosition = qmarkLocalOffset;
+            }
+            else
+            {
+                // זה אובייקט סצנה. אם הוא לא ילד של התיבה—נרפאנט אותו (מותר)
+                if (questionMarkInstance.transform.parent != transform)
+                    questionMarkInstance.transform.SetParent(transform, worldPositionStays: false);
+
+                // נעדכן את המיקום המקומי אם תרצי שיישב מעל התיבה
+                questionMarkInstance.transform.localPosition = qmarkLocalOffset;
+            }
+        }
+        // אם לא הוגדר כלום – פשוט אין סימן שאלה ונמשיך
+
+        if (questionMarkInstance)
+            _qmarkBaseLocalPos = questionMarkInstance.transform.localPosition;
+    }
+
+
+    private void ApplyQuestionMarkVisibility(bool visible)
+    {
+        if (questionMarkInstance)
+            questionMarkInstance.SetActive(visible);
+    }
+
+    private void HideQuestionMarkOnce()
+    {
+        if (_openedOnceThisSession) return;
+        _openedOnceThisSession = true;
+        ApplyQuestionMarkVisibility(false);
+    }
+
 }

@@ -81,6 +81,11 @@ public class PlayerMover : MonoBehaviour
     private float speedFactor = 1f;
 
     [SerializeField] private SugarBlinkers sugarArrow;
+    
+    [Header("Jump vs. Sugar")]
+    [SerializeField] private bool scaleJumpWhenHighSugar = true;
+    [SerializeField, Range(0.1f, 1f)] private float highSugarJumpFactor = 0.5f;
+
 
     private void Awake()
     {
@@ -114,10 +119,13 @@ public class PlayerMover : MonoBehaviour
     private bool CanJumpNow()
     {
         if (!isGrounded || inputLocked) return false;
+        
         if (blockJumpWhenHighSugar && sugarMeter && sugarMeter.GetSugarLevel() >= drinkOnSugar)
             return false;
+
         return true;
     }
+
 
 
     void OnEnable()
@@ -181,9 +189,10 @@ public class PlayerMover : MonoBehaviour
         {
             float platformX = (currentPlatform != null) ? currentPlatform.Velocity.x : 0f;
             float inputX = moveAction.action.ReadValue<Vector2>().x;
-            rb.linearVelocity = new Vector2(platformX + inputX * _speed * speedFactor, jumpForce);
+            rb.linearVelocity = new Vector2(platformX + inputX * _speed * speedFactor, CurrentJumpForce());
             if (animator) animator.SetTrigger(T_Jump);
         }
+
 
 
         if (!isGrounded && wasGroundedLastFrame)
@@ -241,6 +250,32 @@ public class PlayerMover : MonoBehaviour
         else if (moveInput < -0.01f)
             transform.localScale = new Vector3(-Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
     }
+    
+    private float CurrentJumpForce()
+    {
+        float jf = jumpForce;
+
+        if (scaleJumpWhenHighSugar && sugarMeter)
+        {
+            float s = sugarMeter.GetSugarLevel();
+
+            // מעבר חלק בין drinkOff→drinkOn (למשל 249→250)
+            if (s >= drinkOnSugar)
+            {
+                jf *= highSugarJumpFactor;          // מקסימום הקטנה
+            }
+            else if (s > drinkOffSugar)             // טווח ביניים: מערבבים לינארית
+            {
+                float t = Mathf.InverseLerp(drinkOffSugar, drinkOnSugar, s);
+                float factor = Mathf.Lerp(1f, highSugarJumpFactor, t);
+                jf *= factor;
+            }
+            // מתחת ל-drinkOff → jf רגיל
+        }
+
+        return jf;
+    }
+
 
     public void SetInputLocked(bool locked)
     {

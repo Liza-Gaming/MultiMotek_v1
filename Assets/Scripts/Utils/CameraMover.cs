@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,10 +12,12 @@ public class CameraMover : MonoBehaviour
     [Header("Camera Bounds")]
     [SerializeField] private float minX = -999f;
     [SerializeField] private float maxX =  999f;
+    
 
     private void OnEnable() {
         SceneManager.sceneLoaded += OnSceneLoaded;
         TryResolvePlayer();
+        ApplyBoundsForScene(SceneManager.GetActiveScene()); // גם כשעולים פעם ראשונה
     }
 
     private void OnDisable() {
@@ -23,12 +26,49 @@ public class CameraMover : MonoBehaviour
 
     private void OnSceneLoaded(Scene s, LoadSceneMode m) {
         TryResolvePlayer();
+        ApplyBoundsForScene(s);
     }
 
     private void TryResolvePlayer() {
         if (player != null) return;
-        var go = GameObject.FindGameObjectWithTag("Player"); // וודאי שלשחקן יש Tag=Player
+        var go = GameObject.FindGameObjectWithTag("Player");
         player = go ? go.transform : null;
+    }
+    
+    private void ApplyBoundsForScene(Scene s)
+    {
+        // אופציה א: אם יש קומפוננטה בסצנה שמחזיקה גבולות – נעדיף אותה (נחמד למעצבים)
+        var marker = FindFirstObjectByType<LevelCameraBounds>(FindObjectsInactive.Include);
+        if (marker != null) {
+            minX = marker.minX;
+            maxX = marker.maxX;
+            return;
+        }
+
+        // אופציה ב: לפי שם/אינדקס סצנה (מה שבא לך)
+        switch (s.name)
+        {
+            case "Level 1":
+                minX = 0f;
+                maxX = 120f;
+                break;
+            case "Level 2":
+                minX = 0f;
+                maxX = 200f;
+                break;
+            case "Level 3":
+                minX = 0f;
+                maxX = 200f;
+                break;
+            case "Level 4":
+                minX = 0f;
+                maxX = 150f;
+                break;
+            default:
+                minX = -999f;
+                maxX =  999f;
+                break;
+        }
     }
 
     private void Update()
@@ -44,4 +84,10 @@ public class CameraMover : MonoBehaviour
         transform.position = new Vector3(targetX, player.position.y + 1f, transform.position.z);
         lookAhead = Mathf.Lerp(lookAhead, aheadDistance * player.localScale.x, Time.deltaTime * cameraSpeed);
     }
+}
+
+public class LevelCameraBounds : MonoBehaviour
+{
+    public float minX = -999f;
+    public float maxX =  999f;
 }

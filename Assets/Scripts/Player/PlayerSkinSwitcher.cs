@@ -34,7 +34,7 @@ public class PlayerSkinSwitcher : MonoBehaviour
     {
         hasSwitchedThisScene = false;
 
-        if (scene.buildIndex == stageBuildIndexToSwitch)
+        if (scene.buildIndex >= stageBuildIndexToSwitch)
             SwitchToStage3Now();
         else
             animator.runtimeAnimatorController = baseController;
