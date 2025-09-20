@@ -62,7 +62,7 @@ public class CameraMover : MonoBehaviour
                 break;
             case "Level 4":
                 minX = 0f;
-                maxX = 150f;
+                maxX = 190f;
                 break;
             default:
                 minX = -999f;

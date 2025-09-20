@@ -54539,6 +54539,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7730023291812254614, guid: d4071901789ed384389951219d1e0315, type: 3}
   m_PrefabInstance: {fileID: 1677149564}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1689445351
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1689445352}
+  m_Layer: 0
+  m_Name: Enemyhit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1689445352
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1689445351}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.1999998, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1800796069}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1690279308
 GameObject:
   m_ObjectHideFlags: 0
@@ -56153,8 +56184,8 @@ MonoBehaviour:
   EnergyDrink: {fileID: 9079280134585263027, guid: 3885f23a3c30bbc40a50d48e0dffb7e0, type: 3}
   ChocolateCup: {fileID: 2004806222685241845, guid: cac5ceb54a44c154badbdcdc8e2bf1f9, type: 3}
   CokeCup: {fileID: 0}
-  Candy: {fileID: 0}
-  LineChocolate: {fileID: 0}
+  Candy: {fileID: -5040778147885213409, guid: e90f172e99fa7614f92474d57a7c5bd6, type: 3}
+  LineChocolate: {fileID: -7803652017912114495, guid: 9af571889cad4c7428dde929114e9b27, type: 3}
   ChickenLeg: {fileID: 1518207682172366208, guid: 9ee88e6fec7e26349821874bba9bf139, type: 3}
   Fish: {fileID: 599191344211904797, guid: 68e15e11ef1811d4a81e544667ff9d7b, type: 3}
   Sausages: {fileID: 6862163376538571222, guid: a5930dc566ec91141b8c66b3b873d650, type: 3}
@@ -57063,6 +57094,7 @@ Transform:
   - {fileID: 690411772}
   - {fileID: 26070923}
   - {fileID: 977491063}
+  - {fileID: 1689445352}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1800796070

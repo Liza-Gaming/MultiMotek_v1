@@ -458,5 +458,28 @@ public class SugarMeter : MonoBehaviour
 
         }
     }
+    
+    public void ForceSetForLevel(float sugar, bool clearTrends = true)
+    {
+
+        if (clearTrends)
+        {
+            _runUp.Clear();
+            _runDown.Clear();
+            _pendUp.Clear();
+            _pendDown.Clear();
+            _immediate.Clear();
+            _phase = Phase.None;
+        }
+        
+        
+        SetSugarInstant(sugar);
+
+        
+        s_trends = new TrendsState { has = false };
+        s_savedSugar  = sugar;
+        s_savedHearts = currentHearts;
+        s_hasSaved    = true;
+    }
 }
 

@@ -3719,7 +3719,7 @@ Transform:
   m_GameObject: {fileID: 485086501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.59, y: -1.22, z: 0}
+  m_LocalPosition: {x: -4.38, y: -1.22, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -25151,8 +25151,8 @@ MonoBehaviour:
   EnergyDrink: {fileID: 9079280134585263027, guid: 3885f23a3c30bbc40a50d48e0dffb7e0, type: 3}
   ChocolateCup: {fileID: 2004806222685241845, guid: cac5ceb54a44c154badbdcdc8e2bf1f9, type: 3}
   CokeCup: {fileID: 0}
-  Candy: {fileID: 0}
-  LineChocolate: {fileID: 0}
+  Candy: {fileID: -5040778147885213409, guid: e90f172e99fa7614f92474d57a7c5bd6, type: 3}
+  LineChocolate: {fileID: -7803652017912114495, guid: 9af571889cad4c7428dde929114e9b27, type: 3}
   ChickenLeg: {fileID: 1518207682172366208, guid: 9ee88e6fec7e26349821874bba9bf139, type: 3}
   Fish: {fileID: 599191344211904797, guid: 68e15e11ef1811d4a81e544667ff9d7b, type: 3}
   Sausages: {fileID: 6862163376538571222, guid: a5930dc566ec91141b8c66b3b873d650, type: 3}
@@ -29274,6 +29274,7 @@ Transform:
   - {fileID: 216897007}
   - {fileID: 829920307}
   - {fileID: 208710307}
+  - {fileID: 1710649492}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1671181915
@@ -29705,6 +29706,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3564026850829729314, guid: 91aebb278b095f843a6d4213d7df47fd, type: 3}
   m_PrefabInstance: {fileID: 967111672}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1710649491
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1710649492}
+  m_Layer: 0
+  m_Name: Enemyhit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1710649492
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1710649491}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1671181913}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1711004409
 PrefabInstance:
   m_ObjectHideFlags: 0

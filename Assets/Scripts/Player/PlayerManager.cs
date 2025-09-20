@@ -242,6 +242,18 @@ public class PlayerManager : MonoBehaviour
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Icecream, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
+            
+            case Item.ItemType.LineChocolate:
+                sugarMeter.AddSugarGame(17f, durationGameMin:120f, delayGameMin:20f,suppressBaselineDuring: true);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.LineChocolate, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
+            
+            case Item.ItemType.Candy:
+                sugarMeter.AddSugarGame(15f, durationGameMin:60f, delayGameMin:15f,suppressBaselineDuring: true);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Candy, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
         }
     }
 
