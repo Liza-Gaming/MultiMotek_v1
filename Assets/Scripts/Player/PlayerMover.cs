@@ -25,12 +25,20 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private string animClimbBool = "IsClimbing";
+    [SerializeField] private string animClimbSpeedFloat = "ClimbSpeed";
+    [SerializeField] private float ladderDetachJumpBoost = 5f;
+    [SerializeField] private float ladderHorizontalFactor = 0.4f;  
 
     private bool isGrounded;
 
     private static readonly int P_IsGrounded = Animator.StringToHash("IsGrounded");
     private static readonly int T_Jump = Animator.StringToHash("Jump");
     private static readonly int T_Land = Animator.StringToHash("Land");
+    
+    private bool onLadder = false;
+    private LadderZone currentLadder = null;
+    private float originalGravityScale = 1f;
 
     private Rigidbody2D rb;
 
@@ -91,6 +99,8 @@ public class PlayerMover : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         if (!animator) animator = GetComponent<Animator>();
+        originalGravityScale = rb.gravityScale;
+        
     }
 
     void Start()
@@ -119,14 +129,13 @@ public class PlayerMover : MonoBehaviour
     private bool CanJumpNow()
     {
         if (!isGrounded || inputLocked) return false;
-        
+        if (onLadder) return false;
+
         if (blockJumpWhenHighSugar && sugarMeter && sugarMeter.GetSugarLevel() >= drinkOnSugar)
             return false;
 
         return true;
     }
-
-
 
     void OnEnable()
     {
@@ -175,7 +184,7 @@ public class PlayerMover : MonoBehaviour
         else
             currentPlatform = null;
 
-        if (animator) animator.SetBool(P_IsGrounded, isGrounded);
+        if (animator) animator.SetBool(P_IsGrounded, onLadder ? false : isGrounded);
 
         if (isGrounded && !wasGroundedLastFrame)
         {
@@ -192,12 +201,31 @@ public class PlayerMover : MonoBehaviour
             rb.linearVelocity = new Vector2(platformX + inputX * _speed * speedFactor, CurrentJumpForce());
             if (animator) animator.SetTrigger(T_Jump);
         }
+        
+
+        Vector2 inputVec = moveAction.action.ReadValue<Vector2>();
+        float vert = inputVec.y;
 
 
+        if (!onLadder && currentLadder != null && Mathf.Abs(vert) > 0.1f)
+        {
+            EnterLadder();
+        }
+        
+        if (onLadder && jumpAction.action.triggered)
+        {
+            ExitLadder();
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, ladderDetachJumpBoost);
+        }
 
+        
         if (!isGrounded && wasGroundedLastFrame)
         {
-            if (animator) animator.SetTrigger(T_Jump);
+            // אם נכנסנו לסולם או כבר עליו – לא להדליק קפיצה
+            if (!onLadder && currentLadder == null)
+            {
+                if (animator) animator.SetTrigger(T_Jump);
+            }
         }
 
         wasGroundedLastFrame = isGrounded;
@@ -224,6 +252,41 @@ public class PlayerMover : MonoBehaviour
 
     void FixedUpdate()
     {
+        // === LADDER: פיזיקה בזמן טיפוס
+        if (onLadder)
+        {
+            Vector2 input = moveAction.action.ReadValue<Vector2>();
+            float vx = input.x * _speed * speedFactor * ladderHorizontalFactor;
+            float vy = 0f;
+
+            // תנועת טיפוס למעלה/למטה
+            if (currentLadder != null)
+            {
+                vy = input.y * currentLadder.climbSpeed;
+            }
+
+            // אם נועלים X למרכז הסולם – נבטל כמעט לגמרי תזוזה אופקית:
+            if (currentLadder != null && currentLadder.snapXToCenter)
+            {
+                vx = 0f;
+                // להצמדה יציבה למרכז – מיישרים X בכל Fixed
+                var x = currentLadder.GetComponent<Collider2D>().bounds.center.x;
+                transform.position = new Vector3(x, transform.position.y, transform.position.z);
+            }
+
+            rb.linearVelocity = new Vector2(vx, vy);
+
+            // עדכון אנימטור
+            if (animator)
+            {
+                animator.SetBool(animClimbBool, true);
+                animator.SetFloat(animClimbSpeedFloat, Mathf.Abs(vy)); // לא חובה
+            }
+
+            // לא לבצע את שאר ה־FixedUpdate (הליכה/פלטפורמות) בזמן טיפוס
+            return;
+        }
+
         if (inputLocked)
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
@@ -347,6 +410,68 @@ public class PlayerMover : MonoBehaviour
             }
 
         }
+        
 
     }
+    // === LADDER: טריגרים על הסולם
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var ladder = other.GetComponent<LadderZone>();
+        if (ladder != null)
+        {
+            currentLadder = ladder;
+            // לא נכנסים אוטומטית לטיפוס; ניכנס רק אם יש קלט למעלה/למטה
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        var ladder = other.GetComponent<LadderZone>();
+        if (ladder != null && ladder == currentLadder)
+        {
+            ExitLadder();
+            currentLadder = null;
+        }
+    }
+
+    private void EnterLadder()
+    {
+        if (onLadder || currentLadder == null) return;
+        onLadder = true;
+
+        // מניעת קפיצה "יתומה" שנורתה בפריים הקודם
+        if (animator)
+        {
+            animator.ResetTrigger(T_Jump);
+            animator.ResetTrigger(T_Land);
+            animator.SetBool(animClimbBool, true);
+            animator.SetFloat(animClimbSpeedFloat, 0f);
+        }
+
+        rb.gravityScale = 0f;
+        rb.linearVelocity = new Vector2(0f, 0f);
+
+        if (currentLadder.snapXToCenter)
+        {
+            var x = currentLadder.GetComponent<Collider2D>().bounds.center.x;
+            transform.position = new Vector3(x, transform.position.y, transform.position.z);
+        }
+    }
+
+
+    private void ExitLadder()
+    {
+        if (!onLadder) return;
+        onLadder = false;
+        rb.gravityScale = originalGravityScale;
+
+        if (animator)
+        {
+            animator.SetBool(animClimbBool, false);
+            animator.SetFloat(animClimbSpeedFloat, 0f);
+            animator.ResetTrigger(T_Jump); // שלא יישאר "חם" לפריים הבא
+        }
+    }
+
+
 }
