@@ -7,7 +7,7 @@ public class GrillMasterShooter : MonoBehaviour
 {
     [Header("Targeting")]
     [SerializeField] private Transform player;             // ייקבע אוטומטית אם ריק
-    [SerializeField] private string playerTag = "Player";
+    [SerializeField] private string playerTag = "Hit";
     [SerializeField] private float detectRadius = 8f;
     [SerializeField] private LayerMask lineOfSightMask = ~0;
 

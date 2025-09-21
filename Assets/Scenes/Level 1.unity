@@ -29389,6 +29389,10 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  animClimbBool: IsClimbing
+  animClimbSpeedFloat: ClimbSpeed
+  ladderDetachJumpBoost: 5
+  ladderHorizontalFactor: 0.4
   animator: {fileID: 1671181919}
   landingEffectPrefab: {fileID: 5319455556290086462, guid: bc86dccc1ded2414f96752f88aeaeb44, type: 3}
   landingEffectPoint: {fileID: 829920307}
@@ -29717,7 +29721,7 @@ GameObject:
   - component: {fileID: 1710649492}
   m_Layer: 0
   m_Name: Enemyhit
-  m_TagString: Untagged
+  m_TagString: Hit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

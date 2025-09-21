@@ -13,6 +13,7 @@ TagManager:
   - PlayerSpawn
   - Buffe
   - GrillMaster
+  - Hit
   layers:
   - Default
   - TransparentFX

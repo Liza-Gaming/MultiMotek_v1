@@ -1,24 +1,30 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
-[DefaultExecutionOrder(1000)]
+[DefaultExecutionOrder(-1000)]
 public class Level4SugarStart : MonoBehaviour
 {
     [SerializeField] private float levelStartSugar = 80f;
+    [SerializeField] private float uiGraceSeconds  = 1.5f; // כמה זמן להשתיק חיצים
 
-    private IEnumerator Start()
+    private void Awake()
     {
-        // להמתין פריים כדי ש-SugarMeter יסיים את ה-Start שלו
-        yield return null;
-
         var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         if (sm != null)
         {
+            sm.StopAllCoroutines();
+            
             sm.ForceSetForLevel(levelStartSugar, clearTrends: true);
         }
         else
         {
             Debug.LogWarning("Level4SugarStart: SugarMeter not found in scene.");
+        }
+        
+        var blink = SugarBlinkers.Instance ?? FindFirstObjectByType<SugarBlinkers>();
+        if (blink != null)
+        {
+            blink.HideImmediate();
+            blink.SuppressForSeconds(uiGraceSeconds);
         }
     }
 }
