@@ -14,9 +14,6 @@ public class HamburgerProjectile : MonoBehaviour
     private float _t;
     private Transform _owner;
     
-    private float sugarAmount = 49f;
-
-    // ערכים בשביל הבופה (כמו שהגדרת)
     [SerializeField] private float EnemyAmount = 16f;
     [SerializeField] private float EnemyDurationGameMin = 180f;
     [SerializeField] private float EnemyDelayGameMin    = 15f;
@@ -92,11 +89,10 @@ public class HamburgerProjectile : MonoBehaviour
             pm?.SuppressSugarArrowRealSeconds(2f);
 
           
-            SugarMeter.Instance?.AddSugarGame(
+            SugarMeter.Instance?.ScheduleEffectGame(
                 EnemyAmount,
                 durationGameMin: EnemyDurationGameMin,
-                delayGameMin: EnemyDelayGameMin,
-                suppressBaselineDuring: true
+                entryGameMin: EnemyDelayGameMin
             );
             
         

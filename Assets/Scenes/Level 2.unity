@@ -7827,6 +7827,62 @@ RectTransform:
   m_AnchoredPosition: {x: 19.000061, y: -0.00012207031}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &297816313
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 297816315}
+  - component: {fileID: 297816314}
+  m_Layer: 0
+  m_Name: LevelBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &297816314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 297816313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1809be1cc2bc4c76868cf5d31b64f15a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyOnStandaloneOnly: 1
+  overrideSugar: 0
+  startSugar: 80
+  clearSugarTrends: 1
+  resetHeartsOnStart: 0
+  startHearts: 3
+  overrideClock: 0
+  startHour: 7
+  startMinute: 0
+  overrideClockRate: 0
+  gameMinutesPerRealMinute: 240
+  autoRunClock: 1
+--- !u!4 &297816315
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 297816313}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.538105, y: -12.965393, z: -0.389585}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &306805457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45558,7 +45614,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 0
-  EnemyAmount: 16
+  EnemyAmount: 64
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
 --- !u!4 &736090887 stripped
@@ -60490,6 +60546,7 @@ GameObject:
   - component: {fileID: 2138520536}
   - component: {fileID: 2138520535}
   - component: {fileID: 2138520542}
+  - component: {fileID: 2138520543}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -60528,8 +60585,6 @@ MonoBehaviour:
   bladeCurvature: 0.2
   bladeRotation: 0
   showDebugInfo: 1
-  useCustomLevels: 0
-  customBlurLevels: []
 --- !u!114 &2138520536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60689,6 +60744,18 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &2138520543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138520534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9773bc9ee22548da954a90d4f3f07004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2143429116
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -60779,3 +60846,4 @@ SceneRoots:
   - {fileID: 1693529253}
   - {fileID: 1713310400}
   - {fileID: 1413634399}
+  - {fileID: 297816315}

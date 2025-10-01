@@ -8,14 +8,14 @@ public class SugarMeter : MonoBehaviour
 {
     public static SugarMeter Instance;
 
-    // Persist
+    // ===== Persist basic =====
     private static bool  s_hasSaved;
     private static float s_savedSugar;
     private static int   s_savedHearts;
 
     [Tooltip("Initial sugar level")] public float startSugar = 100f;
 
-    [Tooltip("Sugar decrease per game hour (baseline)")]
+    [Tooltip("Baseline decrease per GAME HOUR (from long-acting insulin)")]
     public float sugarDecreaseRate = 1f;
 
     public int   maxHearts = 3;
@@ -31,66 +31,40 @@ public class SugarMeter : MonoBehaviour
 
     public Image[] heartImages;
     public Text    sugarText;
-
+    private static bool s_skipRestoreOnce;
     private float sugarLevel;
-    
+
     [SerializeField] private bool heartsPaused = false;
 
-    // ====== Phase model ======
-    private enum Phase { None, Up, Down }
-    private Phase _phase = Phase.None;
-    
-    [Serializable]
-    private struct TrendsState {
-        public Phase phase;
-        public List<RunningEffect> runUp, runDown;
-        public List<PendingSpec>   pendUp, pendDown;
-
-        // חדש: אפקטים מיידיים
-        public List<ImmediateEffect> immediate;
-
-        public float sugar;
-        public bool  has;
-    }
-    
-    private static TrendsState s_trends;
-
-    private struct RunningEffect
+    // ===== Superposition Model =====
+    private struct Effect
     {
-        public float ratePerSec;       // קצב קבוע למנה הזו
-        public float remaining;        // כמה יחידות נשאר לבצע (חיובי)
-        public bool  suppressBaseline; // לכבות baseline כשהיא פעילה
+        public float  ratePerGameMin;    // יחידות סוכר לדקת-משחק
+        public double startAtGameMin;    // התחלה (דקות-משחק אבסולוטי)
+        public double endAtGameMin;      // סוף (דקות-משחק אבסולוטי)
+        public int    id;                // מזהה פנימי
     }
+    private readonly List<Effect> _effects = new();
+    private int _nextEffectId = 1;
 
-    private struct PendingSpec
-    {
-        public float amount;
-        public float durationSec;
-        public bool  suppressBaseline;
-    }
-    
-    // ==== Immediate effects (always applied, independent of phases) ====
-    private struct ImmediateEffect {
-        public float deltaPerSec;      // יכול להיות חיובי (עלייה) או שלילי (ירידה)
-        public float remainingAbs;     // כמה יחידות מוחלטות נשארו להחיל (abs)
-        public bool  suppressBaseline; // האם לכבות baseline בזמן שהאפקט רץ
-    }
-    private readonly List<ImmediateEffect> _immediate = new();
+    // הבסיס - אינסולין ארוך (פועל תמיד, לא מוצג בחיצים)
+    private float BaselineRatePerGameMin => -(sugarDecreaseRate / 60f);
 
+    // זמן אבסולוטי בדקות-משחק
+    private double _absGameMinutes = 0;
 
-    // רצים כרגע (רק מגמה אחת תהיה פעילה)
-    private readonly List<RunningEffect> _runUp   = new();
-    private readonly List<RunningEffect> _runDown = new();
+    // מעקב אחר מגמה נוכחית (בלי הבסיס)
+    private int _currentTrendSign = 0; // -1, 0, +1
+    private double _currentTrendEndsAt = -1; // מתי המגמה הנוכחית מסתיימת
 
-    // ממתינים לפאזה ההפוכה
-    private readonly List<PendingSpec> _pendUp   = new();
-    private readonly List<PendingSpec> _pendDown = new();
-
-    // Events
-    public event Action<bool, float>        TimedChangeStarted;   // isIncrease, durationSec
+    // ===== Events =====
+    public event Action<bool, float> TimedChangeStarted;   // isIncrease, durationSec
     public event Action<bool, float, float> TimedChangeScheduled; // isIncrease, delaySec, durationSec
-    public event Action<bool, float>        TimedChangeBegan;     // isIncrease, durationSec
-    public event Action<bool>               TimedChangeEnded;     // isIncrease
+    public event Action<bool> TimedChangeEnded;     // isIncrease
+
+    // ===== Legacy =====
+    [Serializable] private struct TrendsState { public bool has; }
+    private static TrendsState s_trends;
 
     void Awake()
     {
@@ -107,212 +81,283 @@ public class SugarMeter : MonoBehaviour
 
     void Start()
     {
-        if (s_hasSaved)
+        bool launchedStandalone = (typeof(AppFlow) != null && AppFlow.Mode == LaunchMode.Standalone);
+        bool shouldRestore = s_hasSaved && !s_skipRestoreOnce && !launchedStandalone;
+
+        if (shouldRestore)
         {
             sugarLevel    = Mathf.Clamp(s_savedSugar,  minSugarClamp, maxSugarClamp);
-            currentHearts = Mathf.Clamp(s_savedHearts, 0,             maxHearts);
+            currentHearts = Mathf.Clamp(s_savedHearts, 0, maxHearts);
         }
         else
         {
             sugarLevel    = startSugar;
             currentHearts = 0;
+            _effects.Clear();
+            _currentTrendSign = 0;
+            _currentTrendEndsAt = -1;
+            s_trends = new TrendsState { has = false };
+            s_hasSaved = false;
+            _absGameMinutes = 0;
         }
+
+        s_skipRestoreOnce = false;
 
         UpdateSugarUI();
         UpdateHeartsUI();
     }
 
+    void OnDisable()
+    {
+        s_savedSugar  = sugarLevel;
+        s_savedHearts = currentHearts;
+        s_hasSaved    = true;
+        s_trends = new TrendsState { has = true };
+    }
+
     void Update()
     {
         float dt = Time.deltaTime;
+        if (dt <= 0f) return;
 
-        // Baseline (לשעת-משחק -> לשנייה אמיתית)
-        float realSecondsPerGameHour    = Mathf.Max(0.0001f, GameTime.GameHoursToRealSeconds(1f));
-        float baselinePerRealSecondDown = -(sugarDecreaseRate / realSecondsPerGameHour);
+        // עדכון זמן משחק
+        float gsrs = Timer.Instance ? Timer.Instance.GameSecondsPerRealSecond : 30f;
+        float gameMinutesThisFrame = dt * (gsrs / 60f);
+        _absGameMinutes += gameMinutesThisFrame;
+        double nowGM = _absGameMinutes;
 
-        float delta = 0f;
-        bool suppressBaselineNow = false;
-
-// === Immediate effects (apply first, always) ===
-        for (int i = _immediate.Count - 1; i >= 0; i--)
+        // ניקוי אפקטים שהסתיימו
+        for (int i = _effects.Count - 1; i >= 0; i--)
         {
-            var e = _immediate[i];
-            float step = Mathf.Min(Mathf.Abs(e.deltaPerSec) * dt, e.remainingAbs);
-            float signedStep = Mathf.Sign(e.deltaPerSec) * step;
-
-            e.remainingAbs -= step;
-            suppressBaselineNow |= e.suppressBaseline;
-
-            if (e.remainingAbs <= 0f) _immediate.RemoveAt(i);
-            else                      _immediate[i] = e;
-
-            delta += signedStep; // מצטבר לדלתא
+            if (nowGM >= _effects[i].endAtGameMin)
+                _effects.RemoveAt(i);
         }
 
+        // חישוב קצב השפעות (ללא בסיס)
+        float effectsRate = CalculateEffectsRate(nowGM);
+        
+        // קצב כולל (בסיס + השפעות)
+        float totalRate = BaselineRatePerGameMin + effectsRate;
 
-        // מפעילים רק את רשימת הפאזה הנוכחית
-        if (_phase == Phase.Up)
-        {
-            for (int i = _runUp.Count - 1; i >= 0; i--)
-            {
-                var e = _runUp[i];
-                float apply = Mathf.Min(e.ratePerSec * dt, e.remaining);
-                e.remaining -= apply;
-                delta += apply;
-                suppressBaselineNow |= e.suppressBaseline;
+        // עדכון רמת הסוכר
+        sugarLevel = Mathf.Clamp(
+            sugarLevel + totalRate * gameMinutesThisFrame,
+            minSugarClamp, 
+            maxSugarClamp
+        );
 
-                if (e.remaining <= 0f)
-                {
-                    _runUp.RemoveAt(i);
-                    TimedChangeEnded?.Invoke(true);
-                }
-                else _runUp[i] = e;
-            }
-
-            // אם הסתיימו כל העליות – עוברים לפאזה הבאה (אם יש ממתינים)
-            if (_runUp.Count == 0)
-            {
-                _phase = Phase.None;
-                ActivatePendingIfExists(); // ייתכן שיעביר ל-Down
-            }
-        }
-        else if (_phase == Phase.Down)
-        {
-            for (int i = _runDown.Count - 1; i >= 0; i--)
-            {
-                var e = _runDown[i];
-                float apply = Mathf.Min(e.ratePerSec * dt, e.remaining);
-                e.remaining -= apply;
-                delta -= apply;
-                suppressBaselineNow |= e.suppressBaseline;
-
-                if (e.remaining <= 0f)
-                {
-                    _runDown.RemoveAt(i);
-                    TimedChangeEnded?.Invoke(false);
-                }
-                else _runDown[i] = e;
-            }
-
-            if (_runDown.Count == 0)
-            {
-                _phase = Phase.None;
-                ActivatePendingIfExists(); // ייתכן שיעביר ל-Up
-            }
-        }
-        else // Phase.None – אולי יש משהו ממתין להתחיל עכשיו
-        {
-            ActivatePendingIfExists();
-        }
-
-        if (!suppressBaselineNow)
-            delta += baselinePerRealSecondDown * dt;
-
-        sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
+        // עדכון מגמות וחיצים (רק לפי השפעות, לא בסיס)
+        UpdateTrendArrows(effectsRate, nowGM);
 
         UpdateSugarUI();
         UpdateHeartsLogic();
     }
-    
-    void OnEnable() {
-        if (s_trends.has) {
-            _phase = s_trends.phase;
-            _runUp.Clear();    if (s_trends.runUp != null)    _runUp.AddRange(s_trends.runUp);
-            _runDown.Clear();  if (s_trends.runDown != null)  _runDown.AddRange(s_trends.runDown);
-            _pendUp.Clear();   if (s_trends.pendUp != null)   _pendUp.AddRange(s_trends.pendUp);
-            _pendDown.Clear(); if (s_trends.pendDown != null) _pendDown.AddRange(s_trends.pendDown);
 
-            _immediate.Clear(); if (s_trends.immediate != null) _immediate.AddRange(s_trends.immediate);
-            // אם תרצי גם את ערך הסוכר: SetSugarInstant(s_trends.sugar);
+    // מחשב את סכום קצבי ההשפעות (ללא בסיס) בזמן נתון
+    private float CalculateEffectsRate(double gameMinutes)
+    {
+        float totalRate = 0f;
+        foreach (var effect in _effects)
+        {
+            if (gameMinutes >= effect.startAtGameMin && gameMinutes < effect.endAtGameMin)
+            {
+                totalRate += effect.ratePerGameMin;
+            }
+        }
+        return totalRate;
+    }
+
+    // מעדכן חיצים ואירועים על בסיס ההשפעות בלבד
+    private void UpdateTrendArrows(float effectsRate, double nowGM)
+    {
+        int newSign = GetSign(effectsRate);
+
+        // אם המגמה השתנתה
+        if (newSign != _currentTrendSign)
+        {
+            // סיום המגמה הקודמת
+            if (_currentTrendSign != 0)
+            {
+                TimedChangeEnded?.Invoke(_currentTrendSign > 0);
+            }
+
+            // התחלת מגמה חדשה
+            if (newSign != 0)
+            {
+                var trendInfo = CalculateTrendDuration(nowGM, newSign);
+                float durationSec = GameTime.GameMinutesToRealSeconds(trendInfo.durationGameMin);
+                
+                // שליחת אירוע אחד בלבד - TimedChangeStarted
+                TimedChangeStarted?.Invoke(newSign > 0, durationSec);
+                
+                _currentTrendEndsAt = trendInfo.endsAtGameMin;
+            }
+            else
+            {
+                _currentTrendEndsAt = -1;
+            }
+
+            _currentTrendSign = newSign;
+        }
+        // אם נשארנו באותה מגמה אבל עברנו נקודת שינוי (משך צריך להתעדכן)
+        else if (newSign != 0 && _currentTrendEndsAt > 0 && nowGM >= _currentTrendEndsAt - 1e-6)
+        {
+            var trendInfo = CalculateTrendDuration(nowGM, newSign);
+            float durationSec = GameTime.GameMinutesToRealSeconds(trendInfo.durationGameMin);
+            
+            TimedChangeStarted?.Invoke(newSign > 0, durationSec);
+            _currentTrendEndsAt = trendInfo.endsAtGameMin;
         }
     }
 
-    void OnDisable() {
-        s_savedSugar  = sugarLevel;
-        s_savedHearts = currentHearts;
-        s_hasSaved    = true;
-
-        s_trends = new TrendsState {
-            phase     = _phase,
-            runUp     = new List<RunningEffect>(_runUp),
-            runDown   = new List<RunningEffect>(_runDown),
-            pendUp    = new List<PendingSpec>(_pendUp),
-            pendDown  = new List<PendingSpec>(_pendDown),
-            immediate = new List<ImmediateEffect>(_immediate), // חדש
-            sugar     = sugarLevel,
-            has       = true
-        };
-    }
-    
-    public void AddImmediateGame(float amountSigned, float durationGameMin, bool suppressBaselineDuring = false)
+    // מחזיר -1, 0, או 1 לפי הקצב
+    private int GetSign(float rate)
     {
-        // amountSigned > 0 → עלייה ; amountSigned < 0 → ירידה
-        if (Mathf.Approximately(durationGameMin, 0f)) {
-            // אפקט מיידי לגמרי (בלי משך) — נכתוב ישירות
-            sugarLevel = Mathf.Clamp(sugarLevel + amountSigned, minSugarClamp, maxSugarClamp);
-            UpdateSugarUI();
+        if (Mathf.Abs(rate) < 1e-6f) return 0;
+        return rate > 0 ? 1 : -1;
+    }
+
+    // מחשב כמה זמן המגמה הנוכחית תימשך
+    private (float durationGameMin, double endsAtGameMin) CalculateTrendDuration(double nowGM, int currentSign)
+    {
+        if (currentSign == 0)
+            return (0f, nowGM);
+
+        // נחפש את הזמן שבו המגמה תתהפך (הסימן ישתנה)
+        // או את הזמן שבו האפקט המנצח (החזק ביותר בכיוון הנוכחי) יסתיים
+
+        double closestFlip = nowGM + 24 * 60; // ברירת מחדל: יום משחק
+        
+        // מצא את האפקט המנצח (בעל הקצב החזק ביותר בכיוון המגמה)
+        Effect? dominantEffect = null;
+        float maxAbsRate = 0f;
+        
+        foreach (var effect in _effects)
+        {
+            if (nowGM >= effect.startAtGameMin && nowGM < effect.endAtGameMin)
+            {
+                float absRate = Mathf.Abs(effect.ratePerGameMin);
+                bool sameDirection = (currentSign > 0 && effect.ratePerGameMin > 0) || 
+                                   (currentSign < 0 && effect.ratePerGameMin < 0);
+                
+                if (sameDirection && absRate > maxAbsRate)
+                {
+                    maxAbsRate = absRate;
+                    dominantEffect = effect;
+                }
+            }
+        }
+
+        // אם יש אפקט דומיננטי, משך המגמה מוגבל לסוף שלו
+        if (dominantEffect.HasValue)
+        {
+            closestFlip = dominantEffect.Value.endAtGameMin;
+        }
+
+        // עכשיו נבדוק אם לפני שהאפקט הדומיננטי נגמר, המגמה מתהפכת
+        var changePoints = new List<double>();
+        foreach (var effect in _effects)
+        {
+            if (effect.startAtGameMin > nowGM && effect.startAtGameMin < closestFlip)
+                changePoints.Add(effect.startAtGameMin);
+            if (effect.endAtGameMin > nowGM && effect.endAtGameMin < closestFlip)
+                changePoints.Add(effect.endAtGameMin);
+        }
+        changePoints.Sort();
+
+        // בודק בכל נקודה אם הסימן משתנה
+        foreach (var point in changePoints)
+        {
+            float rateAtPoint = CalculateEffectsRate(point + 1e-5);
+            int signAtPoint = GetSign(rateAtPoint);
+            
+            if (signAtPoint != currentSign)
+            {
+                closestFlip = point;
+                break;
+            }
+        }
+
+        float duration = Mathf.Max(0f, (float)(closestFlip - nowGM));
+        return (duration, closestFlip);
+    }
+
+    // ===== API ראשי =====
+    /// <summary>
+    /// מתזמן אפקט: amountSigned יחידות סוכר מפוזרות לינארית על פני (durationGameMin - entryGameMin).
+    /// </summary>
+    public void ScheduleEffectGame(float amountSigned, float durationGameMin, float entryGameMin)
+    {
+        durationGameMin = Mathf.Max(0f, durationGameMin);
+        entryGameMin = Mathf.Max(0f, entryGameMin);
+        
+        float effectiveDuration = durationGameMin - entryGameMin;
+        if (effectiveDuration <= 0.0001f)
+        {
+            // השפעה מיידית
+            SetSugarInstant(sugarLevel + amountSigned);
             return;
         }
 
-        float durationSec = GameTime.GameMinutesToRealSeconds(Mathf.Abs(durationGameMin));
-        float rate = amountSigned / Mathf.Max(0.0001f, durationSec);
+        float ratePerGameMin = amountSigned / effectiveDuration;
 
-        _immediate.Add(new ImmediateEffect {
-            deltaPerSec     = rate,
-            remainingAbs    = Mathf.Abs(amountSigned),
-            suppressBaseline = suppressBaselineDuring
-        });
-    }
-
-// אם נוח לך נגיש גם Helpers ייעודיים:
-    public void AddImmediateIncreaseGame(float amount, float durationGameMin, bool suppressBaselineDuring = false)
-        => AddImmediateGame(+Mathf.Abs(amount), durationGameMin, suppressBaselineDuring);
-
-    public void AddImmediateDecreaseGame(float amount, float durationGameMin, bool suppressBaselineDuring = false)
-        => AddImmediateGame(-Mathf.Abs(amount), durationGameMin, suppressBaselineDuring);
-
-
-    // ====== Phase helpers ======
-
-    private void ActivatePendingIfExists()
-    {
-        // אם אין פאזה – נעדיף להמשיך את המגמה "הבאה בתור" אם יש ממתינים
-        if (_phase != Phase.None) return;
-
-        if (_pendUp.Count > 0)
+        double nowGM = _absGameMinutes;
+        var effect = new Effect
         {
-            _phase = Phase.Up;
-            for (int i = 0; i < _pendUp.Count; i++) ActivateUp(_pendUp[i]);
-            _pendUp.Clear();
-        }
-        else if (_pendDown.Count > 0)
+            ratePerGameMin = ratePerGameMin,
+            startAtGameMin = nowGM + entryGameMin,
+            endAtGameMin = nowGM + durationGameMin,
+            id = _nextEffectId++
+        };
+        _effects.Add(effect);
+
+        // אירוע תזמון
+        float realDelaySec = GameTime.GameMinutesToRealSeconds(entryGameMin);
+        float realDurSec = GameTime.GameMinutesToRealSeconds(effectiveDuration);
+        bool isIncrease = amountSigned > 0f;
+        TimedChangeScheduled?.Invoke(isIncrease, realDelaySec, realDurSec);
+    }
+
+    // ===== תאימות לאחור =====
+    public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f)
+    {
+        amount = Mathf.Abs(amount);
+        if (durationGameMin <= 0f)
+            ScheduleEffectGame(+amount, 1f, delayGameMin);
+        else
+            ScheduleEffectGame(+amount, durationGameMin, delayGameMin);
+    }
+
+    public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f)
+    {
+        amount = Mathf.Abs(amount);
+        if (durationGameMin <= 0f)
+            ScheduleEffectGame(-amount, 1f, delayGameMin);
+        else
+            ScheduleEffectGame(-amount, durationGameMin, delayGameMin);
+    }
+
+    public void AddImmediateGame(float amountSigned, float durationGameMin)
+    {
+        if (Mathf.Approximately(durationGameMin, 0f))
         {
-            _phase = Phase.Down;
-            for (int i = 0; i < _pendDown.Count; i++) ActivateDown(_pendDown[i]);
-            _pendDown.Clear();
+            SetSugarInstant(Mathf.Clamp(sugarLevel + amountSigned, minSugarClamp, maxSugarClamp));
+            return;
         }
+        ScheduleEffectGame(amountSigned, durationGameMin, 0f);
     }
 
-    private void ActivateUp(PendingSpec spec)
-    {
-        float rate = spec.amount / Mathf.Max(0.0001f, spec.durationSec);
-        _runUp.Add(new RunningEffect { ratePerSec = rate, remaining = spec.amount, suppressBaseline = spec.suppressBaseline });
-        TimedChangeStarted?.Invoke(true, spec.durationSec);
-        TimedChangeBegan?.Invoke(true,  spec.durationSec);
-    }
+    public void AddImmediateIncreaseGame(float amount, float durationGameMin)
+        => AddImmediateGame(+Mathf.Abs(amount), durationGameMin);
 
-    private void ActivateDown(PendingSpec spec)
-    {
-        float rate = spec.amount / Mathf.Max(0.0001f, spec.durationSec);
-        _runDown.Add(new RunningEffect { ratePerSec = rate, remaining = spec.amount, suppressBaseline = spec.suppressBaseline });
-        TimedChangeStarted?.Invoke(false, spec.durationSec);
-        TimedChangeBegan?.Invoke(false,  spec.durationSec);
-    }
+    public void AddImmediateDecreaseGame(float amount, float durationGameMin)
+        => AddImmediateGame(-Mathf.Abs(amount), durationGameMin);
 
-    // ====== UI/Hearts ======
+    // ===== Hearts =====
     private void UpdateHeartsLogic()
     {
         if (heartsPaused) return;
+        
         if (sugarLevel >= minSugar && sugarLevel <= maxSugar)
         {
             timeInsideSafeRange += Time.deltaTime;
@@ -327,7 +372,7 @@ public class SugarMeter : MonoBehaviour
         else
         {
             timeOutsideSafeRange += Time.deltaTime;
-            timeInsideSafeRange   = 0f;
+            timeInsideSafeRange = 0f;
 
             if (timeOutsideSafeRange >= timeOutsideRangeToLoseHeart)
             {
@@ -339,7 +384,11 @@ public class SugarMeter : MonoBehaviour
 
     void GainHeart()
     {
-        if (currentHearts < maxHearts) { currentHearts++; UpdateHeartsUI(); }
+        if (currentHearts < maxHearts)
+        {
+            currentHearts++;
+            UpdateHeartsUI();
+        }
     }
 
     void LoseHeart()
@@ -348,138 +397,75 @@ public class SugarMeter : MonoBehaviour
         {
             currentHearts--;
             UpdateHeartsUI();
-            if (currentHearts == 0) Debug.Log("Game Over!");
+            if (currentHearts == 0)
+                Debug.Log("Game Over!");
         }
     }
 
-    void UpdateSugarUI() { if (sugarText) sugarText.text = Mathf.RoundToInt(sugarLevel).ToString(); }
+    void UpdateSugarUI()
+    {
+        if (sugarText)
+            sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
+    }
+
     void UpdateHeartsUI()
     {
         for (int i = 0; i < heartImages.Length; i++)
             heartImages[i].enabled = i < currentHearts;
     }
-    
+
     public void SetHeartsPaused(bool paused, bool resetProgress = true)
     {
         heartsPaused = paused;
         if (paused && resetProgress)
         {
-            // לא לצבור "כמעט לב" בזמן פאוז
             timeInsideSafeRange = 0f;
             timeOutsideSafeRange = 0f;
         }
     }
 
     public float GetSugarLevel() => sugarLevel;
-    public int   CurrentHearts  => currentHearts;
+    public int CurrentHearts => currentHearts;
 
     public void SetSugarInstant(float value)
     {
         sugarLevel = Mathf.Clamp(value, minSugarClamp, maxSugarClamp);
         UpdateSugarUI();
     }
-    
 
-    public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f,
-                             bool suppressBaselineDuring = false)
-    {
-        amount = Mathf.Abs(amount);
-        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
-
-        if (durationGameMin <= 0f)
-        {
-            if (delaySec <= 0f) SetSugarInstant(sugarLevel + amount);
-            else                StartCoroutine(ApplyInstantAfterDelay(+amount, delaySec));
-            return;
-        }
-
-        float durationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
-        TimedChangeScheduled?.Invoke(true, delaySec, durationSec);
-
-        if (delaySec <= 0f) StartEffect(true, amount, durationSec, suppressBaselineDuring);
-        else                StartCoroutine(StartEffectAfterDelay(true, amount, durationSec, delaySec, suppressBaselineDuring));
-    }
-
-    public void DecreaseSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f, bool suppressBaselineDuring = false)
-    {
-        amount = Mathf.Abs(amount);
-        float delaySec = GameTime.GameMinutesToRealSeconds(delayGameMin);
-
-        if (durationGameMin <= 0f)
-        {
-            if (delaySec <= 0f) SetSugarInstant(sugarLevel - amount);
-            else                StartCoroutine(ApplyInstantAfterDelay(-amount, delaySec));
-            return;
-        }
-
-        float durationSec = GameTime.GameMinutesToRealSeconds(durationGameMin);
-        TimedChangeScheduled?.Invoke(false, delaySec, durationSec);
-
-        if (delaySec <= 0f) StartEffect(false, amount, durationSec, suppressBaselineDuring);
-        else                StartCoroutine(StartEffectAfterDelay(false, amount, durationSec, delaySec, suppressBaselineDuring));
-    }
-
-    private IEnumerator ApplyInstantAfterDelay(float delta, float delaySec)
-    {
-        if (delaySec > 0f) yield return new WaitForSeconds(delaySec);
-        sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
-        UpdateSugarUI();
-    }
-
-    private IEnumerator StartEffectAfterDelay(bool isIncrease, float amount, float durationSec, float delaySec, bool suppress)
-    {
-        if (delaySec > 0f) yield return new WaitForSeconds(delaySec);
-        StartEffect(isIncrease, amount, durationSec, suppress);
-    }
-
-    private void StartEffect(bool isIncrease, float amount, float durationSec, bool suppress)
-    {
-        var spec = new PendingSpec { amount = amount, durationSec = durationSec, suppressBaseline = suppress };
-
-        if (_phase == Phase.None)
-        {
-
-            _phase = isIncrease ? Phase.Up : Phase.Down;
-            if (isIncrease) ActivateUp(spec);
-            else            ActivateDown(spec);
-        }
-        else if ((_phase == Phase.Up  && isIncrease) ||
-                 (_phase == Phase.Down && !isIncrease))
-        {
-
-            if (isIncrease) ActivateUp(spec);
-            else            ActivateDown(spec);
-        }
-        else
-        {
-
-            if (isIncrease) _pendUp.Add(spec);
-            else            _pendDown.Add(spec);
-
-        }
-    }
-    
     public void ForceSetForLevel(float sugar, bool clearTrends = true)
     {
-
         if (clearTrends)
         {
-            _runUp.Clear();
-            _runDown.Clear();
-            _pendUp.Clear();
-            _pendDown.Clear();
-            _immediate.Clear();
-            _phase = Phase.None;
+            _effects.Clear();
+            _currentTrendSign = 0;
+            _currentTrendEndsAt = -1;
         }
-        
-        
         SetSugarInstant(sugar);
-
-        
         s_trends = new TrendsState { has = false };
-        s_savedSugar  = sugar;
+        s_savedSugar = sugar;
         s_savedHearts = currentHearts;
-        s_hasSaved    = true;
+        s_hasSaved = true;
+        _absGameMinutes = 0;
+    }
+
+    public static void ClearSavedState(bool clearTrends = true)
+    {
+        s_hasSaved = false;
+        s_savedSugar = 0f;
+        s_savedHearts = 0;
+        if (clearTrends)
+            s_trends = new TrendsState { has = false };
+    }
+
+    public void ResetHearts(int value)
+    {
+        currentHearts = Mathf.Clamp(value, 0, maxHearts);
+        UpdateHeartsUI();
+    }
+
+    public static void RequestSkipRestoreOnNextStart()
+    {
+        s_skipRestoreOnce = true;
     }
 }
-

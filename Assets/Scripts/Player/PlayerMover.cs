@@ -399,8 +399,7 @@ public class PlayerMover : MonoBehaviour
                     // ↓ אפקט מיידי: ירידה בזמן אמת ללא תלות בפאזות
                     sugarMeter.AddImmediateDecreaseGame(
                         amount: sugarDrainPerBlock * blocks,
-                        durationGameMin: 1f * blocks, // איך שתרצי להציג: ירידה על פני דקה-משחק
-                        suppressBaselineDuring: false
+                        durationGameMin: 1f * blocks
                     );
                 }
 

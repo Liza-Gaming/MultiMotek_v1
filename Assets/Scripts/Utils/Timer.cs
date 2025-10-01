@@ -31,6 +31,7 @@ public class Timer : MonoBehaviour
     private bool  isRunning;
     private long  dayCount;
     
+    
     [Header("Daily Alarm")]
     [SerializeField, Range(0,23)] private int alarmHour   = 7;
     [SerializeField, Range(0,59)] private int alarmMinute = 0;
@@ -197,6 +198,15 @@ public class Timer : MonoBehaviour
         background = newBackground;
         UpdateClockUI();
     }
+    
+    public static void ClearSavedState()
+    {
+        s_hasSaved     = false;
+        s_savedSeconds = 0f;
+        s_savedDays    = 0;
+        s_savedRate    = 0f;
+        s_savedRunning = false;
+    }
 }
 
 public static class GameTime
@@ -211,4 +221,6 @@ public static class GameTime
 
     public static float GameMinutesToRealSeconds(float gameMinutes) => GameSecondsToRealSeconds(gameMinutes * 60f);
     public static float GameHoursToRealSeconds  (float gameHours)   => GameSecondsToRealSeconds(gameHours * 3600f);
+    
+
 }

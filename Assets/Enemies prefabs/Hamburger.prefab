@@ -171,6 +171,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   flipSpriteByVelocityX: 1
-  EnemyAmount: 49
+  EnemyAmount: 196
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15

@@ -1,31 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PersistentRoot : MonoBehaviour
 {
-    private static readonly HashSet<PersistentRoot> registry = new();
+    private static readonly HashSet<GameObject> _roots = new HashSet<GameObject>();
 
-    protected virtual void Awake()
+    void Awake()
     {
-
-        if (transform.parent != null) transform.SetParent(null, true);
+        _roots.Add(gameObject);
         DontDestroyOnLoad(gameObject);
-        registry.Add(this);
     }
 
-    protected virtual void OnDestroy()
+    void OnDestroy()
     {
-        registry.Remove(this);
+        _roots.Remove(gameObject);
     }
 
     public static void DestroyAll()
     {
 
-        var arr = new List<PersistentRoot>(registry);
-        registry.Clear();
-        foreach (var r in arr)
+        foreach (var go in _roots.ToList())
         {
-            if (r) Destroy(r.gameObject);
+            if (go) Destroy(go);
         }
+        _roots.Clear();
     }
 }

@@ -15,9 +15,6 @@ public class Inventory:MonoBehaviour
         this.useItemAction = useItemAction;
         itemList = new List<Item> ();
         Debug.Log(itemList.Count);
-        //AddItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
-        //AddItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
-        //AddItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
     }
 
     public void AddItem(Item item)
@@ -66,4 +63,13 @@ public class Inventory:MonoBehaviour
         }
         OnItemListChanged?.Invoke (this, EventArgs.Empty);
     }
+    
+    public void ClearAll()
+    {
+        if (itemList == null) itemList = new List<Item>();
+        else itemList.Clear();
+
+        OnItemListChanged?.Invoke(this, EventArgs.Empty);
+    }
+
 }

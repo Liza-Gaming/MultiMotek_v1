@@ -12,21 +12,20 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
 
     public void ApplyEffect(GameObject playerObj)
     {
-        if (this.CompareTag("Buffe") || this.CompareTag("GrillMaster") )
+        if (this.CompareTag("Buffe"))
         {
     
             float totalGameMin = EnemyDelayGameMin + EnemyDurationGameMin;
             float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
 
             var pm = playerObj.GetComponent<PlayerManager>();
-            pm?.SuppressSugarArrowRealSeconds(2f); // בופר קטן
+            pm?.SuppressSugarArrowRealSeconds(2f);
 
             // מפעילים את האפקט המדורג (ללא חץ)
-            SugarMeter.Instance?.AddSugarGame(
+            SugarMeter.Instance?.ScheduleEffectGame(
                 EnemyAmount,
                 durationGameMin: EnemyDurationGameMin,
-                delayGameMin: EnemyDelayGameMin,
-                suppressBaselineDuring: true
+                entryGameMin: EnemyDelayGameMin
             );
             return;
         }

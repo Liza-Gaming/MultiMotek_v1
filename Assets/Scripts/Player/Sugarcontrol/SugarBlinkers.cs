@@ -56,7 +56,7 @@ public class SugarBlinkers : MonoBehaviour
         var sm = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
         if (sm)
         {
-            sm.TimedChangeBegan += OnTimedChangeBegan;
+            sm.TimedChangeStarted += OnTimedChangeBegan;
             sm.TimedChangeEnded += OnTimedChangeEnded;
         }
     }
@@ -66,7 +66,7 @@ public class SugarBlinkers : MonoBehaviour
         var sm = SugarMeter.Instance;
         if (sm)
         {
-            sm.TimedChangeBegan -= OnTimedChangeBegan;
+            sm.TimedChangeStarted -= OnTimedChangeBegan;
             sm.TimedChangeEnded -= OnTimedChangeEnded;
         }
     }
@@ -111,29 +111,62 @@ public class SugarBlinkers : MonoBehaviour
     {
         if (Now < suppressUntil) return;
 
-        float dur   = (duration > 0f) ? duration : 2f;
-        float until = Now + dur;
-        if (isUp) upUntil = Mathf.Max(upUntil, until);
-        else      downUntil = Mathf.Max(downUntil, until);
+        float until = Now + ((duration > 0f) ? duration : 2f);
+        if (isUp)
+        {
+            downUntil = -1f;                 // בלעדי
+            if (downCg) downCg.alpha = 0f;
+            upUntil = Mathf.Max(upUntil, until);
+        }
+        else
+        {
+            upUntil = -1f;                   // בלעדי
+            if (upCg) upCg.alpha = 0f;
+            downUntil = Mathf.Max(downUntil, until);
+        }
 
         EnsureRoutine();
     }
+
 
     private void OnTimedChangeBegan(bool isIncrease, float duration)
     {
         if (Now < suppressUntil) return;
 
+        // תמיד מציגים חץ יחיד: מכבים את הכיוון ההפוך מיידית
         float until = Now + Mathf.Max(0f, duration);
-        if (isIncrease) upUntil = Mathf.Max(upUntil, until);
-        else            downUntil = Mathf.Max(downUntil, until);
+        if (isIncrease)
+        {
+            downUntil = -1f;                 // מכבה ירידה
+            if (downCg) downCg.alpha = 0f;
+            upUntil = until;                 // מדליק עלייה
+        }
+        else
+        {
+            upUntil = -1f;                   // מכבה עלייה
+            if (upCg) upCg.alpha = 0f;
+            downUntil = until;               // מדליק ירידה
+        }
 
         EnsureRoutine();
     }
 
     private void OnTimedChangeEnded(bool isIncrease)
     {
-        
+        // כשמגמה מסתיימת — מכבים רק את החץ שלה
+        if (isIncrease)
+        {
+            upUntil = -1f;
+            if (upCg) upCg.alpha = 0f;
+        }
+        else
+        {
+            downUntil = -1f;
+            if (downCg) downCg.alpha = 0f;
+        }
+        // אם שני החיצים כבויים — ייתכן שצריך לעצור את הקורוטינה בסיבוב הבא
     }
+
 
     private bool ShouldWarn()
     {

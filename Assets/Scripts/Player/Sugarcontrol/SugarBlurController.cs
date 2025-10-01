@@ -3,43 +3,29 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-
 public class SugarBlurController : MonoBehaviour
 {
-    
     private static SugarBlurController _instance;
     void Awake() {
         if (_instance != null && _instance != this) { Destroy(gameObject); return; }
         _instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
     [Header("Refs")]
-    [SerializeField] private Volume volume;
+    [SerializeField] private Volume volume;              // נבנה/נאתר מחדש לכל מצלמה פעילה
     [SerializeField] private SugarMeter sugarMeter;
 
     [Header("Sugar → Focus mapping")]
-    [Tooltip("סוכר מעל זה = חד לחלוטין")]
     public float blurStartSugar = 60f;
-    
-    public float maxBlurAtSugar = 30f; 
-    
-    [Tooltip("סוכר מתחת לזה = מטושטש לחלוטין")]
-    public float blurEndSugar = 20f;
-    
-    [Range(0f, 1f)]
-    public float overallStrength = 1f;
+    public float maxBlurAtSugar = 30f;
+    public float blurEndSugar   = 20f;
+    [Range(0f, 1f)] public float overallStrength = 1f;
 
     [Header("Blur Levels Configuration")]
-    [Tooltip("בחר סוג המעבר בין רמות הטשטוש")]
     public BlurTransitionType transitionType = BlurTransitionType.Smooth;
-    
-    [Tooltip("מספר רמות דיסקרטיות (עבור Step Levels)")]
-    [Range(2, 10)]
-    public int discreteSteps = 4;
-    
-    [Tooltip("עוצמת העקומה - ערכים גבוהים = טשטוש מהיר יותר בהתחלה")]
-    [Range(0.5f, 3f)]
-    public float blurCurvePower = 1.5f;
+    [Range(2, 10)] public int discreteSteps = 4;
+    [Range(0.5f, 3f)] public float blurCurvePower = 1.5f;
 
     [Header("Bokeh Settings")]
     public float sharpFocusDistance = 5f;
@@ -56,17 +42,14 @@ public class SugarBlurController : MonoBehaviour
 
     [Header("Debug")]
     public bool showDebugInfo = true;
-    
-    public enum BlurTransitionType
-    {
-        Smooth,      // מעבר חלק
-        StepLevels,  // רמות דיסקרטיות
-        Curved,      // עקומה (מהיר בהתחלה, איטי בסוף)
-        InverseCurved // איטי בהתחלה, מהיר בסוף
-    }
+
+    public enum BlurTransitionType { Smooth, StepLevels, Curved, InverseCurved }
 
     private DepthOfField dof;
     private float _nextRetryTime;
+
+    // NEW: שומר רפרנס למצלמה הפעילה הנוכחית
+    private Camera _activeCam;
 
     private void OnEnable() {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -78,25 +61,33 @@ public class SugarBlurController : MonoBehaviour
     }
 
     private void OnSceneLoaded(Scene s, LoadSceneMode m) {
+        // בסצנות חדשות – נמצא את המצלמה הפעילה ונעביר אליה את ה-Volume
         TryRebindAll(force:true);
     }
+    
+    private void OnDestroy() {
+        if (_instance == this) _instance = null;
+    }
+
 
     private void TryRebindAll(bool force = false)
     {
-        // 1) ודאי שיש SugarMeter
+        // 1) תמיד לבחור את המצלמה הפעילה של הסצנה הנוכחית
+        EnsureActiveCamera(force);
+
+        // 2) SugarMeter
         if (force || sugarMeter == null)
             sugarMeter = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>(FindObjectsInactive.Include);
 
-        // 2) ודאי שלמצלמה מופעל Post Processing ושה-VolumeMask נכון
+        // 3) PostFX על המצלמה הפעילה
         EnsureCameraPostFX();
 
-        // 3) השתמשי תמיד ב-Volume פרטי על המצלמה (ניצור אם אין)
-        EnsureLocalVolumeOnCamera();
+        // 4) Volume גלובלי פרטי שיושב על המצלמה הפעילה
+        EnsureLocalVolumeOnActiveCamera();
 
-        // 4) ודאי שיש DoF בפרופיל
+        // 5) לוודא שיש DoF בפרופיל
         dof = null;
-        if (volume != null)
-        {
+        if (volume != null) {
             if (volume.profile == null)
                 volume.profile = ScriptableObject.CreateInstance<VolumeProfile>();
             if (!volume.profile.TryGet(out dof))
@@ -104,185 +95,129 @@ public class SugarBlurController : MonoBehaviour
         }
     }
 
-
     private void Update()
     {
-        if (dof == null || sugarMeter == null || volume == null) {
+        if (_activeCam == null || volume == null || dof == null || sugarMeter == null) {
             if (Time.unscaledTime >= _nextRetryTime) {
-                TryRebindAll();
+                TryRebindAll();               // ריטרי עדין
                 _nextRetryTime = Time.unscaledTime + 0.5f;
             }
             return;
         }
 
         float sugar = sugarMeter.GetSugarLevel();
-        
+
         if (sugar >= blurStartSugar) {
             dof.active = false;
-            if (showDebugInfo) {
-                Debug.Log($"Sugar {sugar:F1} - DOF OFF (Sharp)");
-            }
+            if (showDebugInfo) Debug.Log($"Sugar {sugar:F1} - DOF OFF (Sharp)");
             return;
         }
 
         dof.active = true;
         dof.mode.value = DepthOfFieldMode.Bokeh;
 
-        // חישוב עוצמת הטשטוש בהתבסס על סוג המעבר
         float t = Mathf.InverseLerp(maxBlurAtSugar, blurStartSugar, sugar);
         t = Mathf.Clamp01(t);
 
-// אם את משתמשת ב-Step/Curved וכו'
         float blurIntensity = CalculateBlurIntensity(t);
-
-// אופציונלי: להחליש את ההשפעה הכללית כדי שלא "יקפוץ" מהר
         blurIntensity = Mathf.Lerp(0f, blurIntensity, overallStrength);
 
-// מיפוי הערכים (אותו דבר כמו אצלך)
-        float focusDist = Mathf.Lerp(blurredFocusDistance, sharpFocusDistance, blurIntensity);
-        float aperture  = Mathf.Lerp(blurredAperture,      sharpAperture,      blurIntensity);
-        float focalLen  = Mathf.Lerp(blurredFocalLength,    sharpFocalLength,   blurIntensity);
+        dof.focusDistance.value = Mathf.Lerp(blurredFocusDistance, sharpFocusDistance, blurIntensity);
+        dof.aperture.value      = Mathf.Lerp(blurredAperture,      sharpAperture,      blurIntensity);
+        dof.focalLength.value   = Mathf.Lerp(blurredFocalLength,   sharpFocalLength,   blurIntensity);
 
-        dof.focusDistance.value = focusDist;
-        dof.aperture.value      = aperture;
-        dof.focalLength.value   = focalLen;
-
-        // Blades
-        if (dof.bladeCount != null) dof.bladeCount.value = bladeCount;
-        if (dof.bladeCurvature != null) dof.bladeCurvature.value = bladeCurvature;
-        if (dof.bladeRotation != null) dof.bladeRotation.value = bladeRotation;
+        if (dof.bladeCount != null)        dof.bladeCount.value = bladeCount;
+        if (dof.bladeCurvature != null)    dof.bladeCurvature.value = bladeCurvature;
+        if (dof.bladeRotation != null)     dof.bladeRotation.value = bladeRotation;
         if (dof.highQualitySampling != null) dof.highQualitySampling.value = true;
     }
-    
 
     private float CalculateBlurIntensity(float normalizedSugar)
     {
         switch (transitionType)
         {
-            case BlurTransitionType.Smooth:
-                return normalizedSugar;
-
-            case BlurTransitionType.StepLevels:
-                // יוצר רמות דיסקרטיות
-                float stepSize = 1f / discreteSteps;
-                float stepLevel = Mathf.Floor(normalizedSugar / stepSize) * stepSize;
-                return stepLevel;
-
-            case BlurTransitionType.Curved:
-                // עקומה - טשטוש מהיר בהתחלה
-                return Mathf.Pow(normalizedSugar, 1f / blurCurvePower);
-
-            case BlurTransitionType.InverseCurved:
-                // עקומה הפוכה - טשטוש איטי בהתחלה
-                return Mathf.Pow(normalizedSugar, blurCurvePower);
-
-            default:
-                return normalizedSugar;
+            case BlurTransitionType.Smooth:        return normalizedSugar;
+            case BlurTransitionType.StepLevels:    return Mathf.Floor(normalizedSugar * discreteSteps) / discreteSteps;
+            case BlurTransitionType.Curved:        return Mathf.Pow(normalizedSugar, 1f / blurCurvePower);
+            case BlurTransitionType.InverseCurved: return Mathf.Pow(normalizedSugar, blurCurvePower);
+            default: return normalizedSugar;
         }
     }
 
-    // פונקציה לבדיקה בעורך
-    private void OnValidate()
+    // ---------- NEW: מצלמה פעילה ----------
+    private void EnsureActiveCamera(bool force)
     {
-        // blurStartSugar > maxBlurAtSugar >= blurEndSugar
-        if (maxBlurAtSugar >= blurStartSugar) maxBlurAtSugar = blurStartSugar - 1f;
-        if (blurEndSugar   >= maxBlurAtSugar) blurEndSugar   = maxBlurAtSugar - 1f;
+        // אם כבר יש לנו מצלמה פעילה והאובייקט עדיין Enabled – אפשר לצאת
+        if (!force && _activeCam != null && _activeCam.isActiveAndEnabled) return;
 
-        if (overallStrength < 0f) overallStrength = 0f;
-        if (overallStrength > 1f) overallStrength = 1f;
-    }
-
-
-    // גם אפשר להוסיף פונקציה ציבורית להגדרת רמות מותאמות אישית
-    [System.Serializable]
-    public struct BlurLevel
-    {
-        public float sugarThreshold;
-        public float focusDistance;
-        public float aperture;
-        public float focalLength;
-    }
-
-    [Header("Custom Blur Levels (Optional)")]
-    public bool useCustomLevels = false;
-    public BlurLevel[] customBlurLevels;
-
-    private float CalculateCustomBlurIntensity(float sugar)
-    {
-        if (!useCustomLevels || customBlurLevels == null || customBlurLevels.Length == 0)
-            return CalculateBlurIntensity(Mathf.InverseLerp(blurEndSugar, blurStartSugar, sugar));
-
-        // מצא את הרמה המתאימה
-        for (int i = 0; i < customBlurLevels.Length; i++)
-        {
-            if (sugar >= customBlurLevels[i].sugarThreshold)
-            {
-                // אם זה הרמה הראשונה או האחרונה, השתמש בערכים הישירים
-                if (i == 0 || i == customBlurLevels.Length - 1)
-                {
-                    SetCustomBlurValues(customBlurLevels[i]);
-                    return 0; // לא משנה כי אנחנו מגדירים ישירות
-                }
-                
-                // אחרת, עשה אינטרפולציה בין שתי הרמות
-                var currentLevel = customBlurLevels[i];
-                var nextLevel = customBlurLevels[i - 1];
-                
-                float t = Mathf.InverseLerp(currentLevel.sugarThreshold, nextLevel.sugarThreshold, sugar);
-                
-                dof.focusDistance.value = Mathf.Lerp(currentLevel.focusDistance, nextLevel.focusDistance, t);
-                dof.aperture.value = Mathf.Lerp(currentLevel.aperture, nextLevel.aperture, t);
-                dof.focalLength.value = Mathf.Lerp(currentLevel.focalLength, nextLevel.focalLength, t);
-                
-                return 0;
-            }
+        // קודם כל Camera.main; אם אין – קחי כל מצלמה פעילה בסצנה
+        Camera cam = Camera.main;
+        if (cam == null) {
+            var all = Camera.allCameras;
+            for (int i = 0; i < all.Length; i++)
+                if (all[i] != null && all[i].isActiveAndEnabled) { cam = all[i]; break; }
         }
-        
-        // אם לא מצאנו רמה מתאימה, השתמש ברמה האחרונה
-        SetCustomBlurValues(customBlurLevels[customBlurLevels.Length - 1]);
-        return 0;
+
+        _activeCam = cam;
+        // אל תסמכי על ה-Camera שעליו יושב הקונטרולר – זו עלולה להיות מצלמה ישנה מסצנה קודמת
     }
-    
+
     private void EnsureCameraPostFX()
     {
-        var cam = GetComponent<Camera>();
-        if (!cam) cam = Camera.main;
-        if (!cam) return;
+        if (_activeCam == null) return;
 
-        var uac = cam.GetComponent<UniversalAdditionalCameraData>();
-        if (!uac) uac = cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
+        var uac = _activeCam.GetComponent<UniversalAdditionalCameraData>();
+        if (!uac) uac = _activeCam.gameObject.AddComponent<UniversalAdditionalCameraData>();
 
-        // קריטי ב-URP כדי לראות אפקטים
         uac.renderPostProcessing = true;
-
-        // תני למסכה לכלול את כל הליירים (או התאימי ללייר של ה-Volume שלך)
-        uac.volumeLayerMask = ~0;        // Everything
-        uac.volumeTrigger   = cam.transform;
+        uac.volumeLayerMask = ~0; // Everything
+        uac.volumeTrigger   = _activeCam.transform;
     }
 
-    private void EnsureLocalVolumeOnCamera()
+    private void EnsureLocalVolumeOnActiveCamera()
     {
-        // אם כבר הוגדר ידנית בסריאלייזד שדה – השתמשי בו
-        if (volume != null) return;
-
-        // נסי למצוא ילד בשם קבוע
-        var t = transform.Find("SugarBlurVolume");
-        if (t) volume = t.GetComponent<Volume>();
-        if (volume != null) return;
-
-        // צרי Volume גלובלי פרטי על המצלמה (נשמר כי המצלמה נשמרת)
-        var go = new GameObject("SugarBlurVolume");
-        go.transform.SetParent(transform, false);
-        volume = go.AddComponent<Volume>();
-        volume.isGlobal = true;
-        volume.priority = 999f;
-        volume.profile  = ScriptableObject.CreateInstance<VolumeProfile>();
+        if (volume == null)
+        {
+            // נסה למצוא ילד קיים
+            var t = transform.Find("SugarBlurVolume");
+            if (t) volume = t.GetComponent<Volume>();
+        }
+    
+        // אם עדיין אין, צור חדש
+        if (volume == null)
+        {
+            var go = new GameObject("SugarBlurVolume");
+            go.transform.SetParent(transform, false);
+            volume = go.AddComponent<Volume>();
+            volume.isGlobal = true;
+            volume.priority = 999f;
+            volume.profile = ScriptableObject.CreateInstance<VolumeProfile>();
+        
+            Debug.Log("Created new Volume for SugarBlurController");
+        }
+    
+        // ודא שה-Volume פעיל
+        if (!volume.enabled) volume.enabled = true;
     }
 
-    private void SetCustomBlurValues(BlurLevel level)
+    // ---------- אופציונלי: לאפס לברירת מחדל בתחילת שלב ----------
+    public void ResetToDefault()
     {
-        dof.focusDistance.value = level.focusDistance;
-        dof.aperture.value = level.aperture;
-        dof.focalLength.value = level.focalLength;
+        // אפס את כל המשתנים לברירת המחדל
+        dof = null;
+        volume = null;
+        sugarMeter = null;
+    
+        // נסה למצוא הכל מחדש
+        TryRebindAll(force: true);
+    
+        Debug.Log("SugarBlurController - Reset to default state");
+    }
+
+    private void OnValidate()
+    {
+        if (maxBlurAtSugar >= blurStartSugar) maxBlurAtSugar = blurStartSugar - 1f;
+        if (blurEndSugar   >= maxBlurAtSugar) blurEndSugar   = maxBlurAtSugar - 1f;
+        overallStrength = Mathf.Clamp01(overallStrength);
     }
 }

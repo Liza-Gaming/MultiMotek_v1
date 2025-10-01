@@ -715,7 +715,7 @@ MonoBehaviour:
   pauseShield: {fileID: 1041388750}
   pauseBlurVolume: {fileID: 1201274722}
   volumesToMute:
-  - {fileID: 519420036}
+  - {fileID: 0}
   blurInTime: 0.15
   blurOutTime: 0.25
 --- !u!114 &120609659
@@ -3719,7 +3719,7 @@ Transform:
   m_GameObject: {fileID: 485086501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.38, y: -1.22, z: 0}
+  m_LocalPosition: {x: -4.58, y: -1.22, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4271,10 +4271,9 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420033}
-  - component: {fileID: 519420036}
-  - component: {fileID: 519420035}
   - component: {fileID: 519420034}
   - component: {fileID: 519420037}
+  - component: {fileID: 519420038}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4404,32 +4403,6 @@ MonoBehaviour:
   bladeCurvature: 0.2
   bladeRotation: 0
   showDebugInfo: 1
-  useCustomLevels: 0
-  customBlurLevels: []
---- !u!114 &519420035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &519420036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &519420037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4474,6 +4447,18 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &519420038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9773bc9ee22548da954a90d4f3f07004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &536518310
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23196,6 +23181,62 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91aebb278b095f843a6d4213d7df47fd, type: 3}
+--- !u!1 &977905658
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 977905660}
+  - component: {fileID: 977905659}
+  m_Layer: 0
+  m_Name: LevelBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &977905659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 977905658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1809be1cc2bc4c76868cf5d31b64f15a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyOnStandaloneOnly: 1
+  overrideSugar: 0
+  startSugar: 80
+  clearSugarTrends: 1
+  resetHeartsOnStart: 0
+  startHearts: 3
+  overrideClock: 0
+  startHour: 7
+  startMinute: 0
+  overrideClockRate: 0
+  gameMinutesPerRealMinute: 240
+  autoRunClock: 1
+--- !u!4 &977905660
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 977905658}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.538105, y: -12.965393, z: -0.389585}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &982979008
 GameObject:
   m_ObjectHideFlags: 0
@@ -29520,7 +29561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startSugar: 100
-  sugarDecreaseRate: 10
+  sugarDecreaseRate: 5
   maxHearts: 5
   minSugar: 70
   maxSugar: 180
@@ -33705,3 +33746,4 @@ SceneRoots:
   - {fileID: 873619380}
   - {fileID: 1548993839}
   - {fileID: 802599807}
+  - {fileID: 977905660}

@@ -13,7 +13,7 @@ public class EnemyStartTreadmill : MonoBehaviour
     [SerializeField] private float durationGameMinutes = 20f;
     [SerializeField] private float cooldownRealSeconds = 5f;
     [SerializeField] private string treadmillRunBool = "IsTreadmillRunning";
-    
+    [SerializeField] private float sugarDecreaseanount = -20f;
     public event Action<float> CooldownStartedRealSeconds; 
 
     private bool isRunning = false;
@@ -70,12 +70,11 @@ public class EnemyStartTreadmill : MonoBehaviour
 
         if (spawnedTreadmill) Destroy(spawnedTreadmill);
         if (mover) mover.SetInputLocked(false);
-
-        // אפקט סוכר (כמו שהיה)
+        
         var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         if (sm != null)
         {
-            sm.DecreaseSugarGame(20f, durationGameMin: 120f, delayGameMin: 0f, suppressBaselineDuring: true);
+            sm.ScheduleEffectGame(sugarDecreaseanount, durationGameMin: 120f, entryGameMin: 0f);
         }
         
         TreadmillEnded?.Invoke();
