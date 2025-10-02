@@ -98,8 +98,13 @@ public class SugarBlinkers : MonoBehaviour
         if (warnCg) warnCg.alpha = 0f;
     }
 
-    public void ShowUp(float duration = -1f)   => ManualBump(true,  duration);
-    public void ShowDown(float duration = -1f) => ManualBump(false, duration);
+    public void ShowUp  (float duration = -1f)               => ManualBump(true,  duration, exclusive:true);
+    public void ShowDown(float duration = -1f)               => ManualBump(false, duration, exclusive:true);
+
+// חדש: גרסאות transient שלא מכבות חץ קיים
+    public void ShowUpTransient  (float duration = -1f)      => ManualBump(true,  duration, exclusive:false);
+    public void ShowDownTransient(float duration = -1f)      => ManualBump(false, duration, exclusive:false);
+
 
     public void SuppressForSeconds(float seconds)
     {
@@ -107,26 +112,48 @@ public class SugarBlinkers : MonoBehaviour
         HideImmediate();
     }
 
-    private void ManualBump(bool isUp, float duration)
+    private void ManualBump(bool isUp, float duration, bool exclusive)
     {
         if (Now < suppressUntil) return;
 
-        float until = Now + ((duration > 0f) ? duration : 2f);
-        if (isUp)
+        float dur   = (duration > 0f) ? duration : 2f;
+        float until = Now + dur;
+
+        if (exclusive)
         {
-            downUntil = -1f;                 // בלעדי
-            if (downCg) downCg.alpha = 0f;
-            upUntil = Mathf.Max(upUntil, until);
+            // התנהגות קיימת – חץ יחיד בלבד
+            if (isUp)
+            {
+                downUntil = -1f;
+                if (downCg) downCg.alpha = 0f;
+                upUntil = Mathf.Max(upUntil, until);
+            }
+            else
+            {
+                upUntil = -1f;
+                if (upCg) upCg.alpha = 0f;
+                downUntil = Mathf.Max(downUntil, until);
+            }
         }
         else
         {
-            upUntil = -1f;                   // בלעדי
-            if (upCg) upCg.alpha = 0f;
-            downUntil = Mathf.Max(downUntil, until);
+            // transient: לא מכבים את החץ הנגדי
+            // אם כבר יש חץ בכיוון ההפוך פעיל – נתעלם מהבקשה (כדי לא להציג שני חצים)
+            bool oppositeActive = isUp ? (Now < downUntil) : (Now < upUntil);
+            if (oppositeActive)
+            {
+                // מתעלמים – לא לשבור את חץ המגמה
+            }
+            else
+            {
+                if (isUp)   upUntil   = Mathf.Max(upUntil,   until);
+                else        downUntil = Mathf.Max(downUntil, until);
+            }
         }
 
         EnsureRoutine();
     }
+
 
 
     private void OnTimedChangeBegan(bool isIncrease, float duration)

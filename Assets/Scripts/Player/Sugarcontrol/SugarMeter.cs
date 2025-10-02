@@ -47,6 +47,16 @@ public class SugarMeter : MonoBehaviour
     private readonly List<Effect> _effects = new();
     private int _nextEffectId = 1;
 
+// ===== Transients (momentary deltas outside trends) =====
+    private struct Transient
+    {
+        public float ratePerGameMin;     // יכול להיות חיובי/שלילי
+        public float remainingGameMin;   // זמן-משחק שנותר לפריסה (0 => נגמר)
+    }
+    private readonly List<Transient> _transients = new();
+
+
+    
     // הבסיס - אינסולין ארוך (פועל תמיד, לא מוצג בחיצים)
     private float BaselineRatePerGameMin => -(sugarDecreaseRate / 60f);
 
@@ -120,38 +130,137 @@ public class SugarMeter : MonoBehaviour
         float dt = Time.deltaTime;
         if (dt <= 0f) return;
 
-        // עדכון זמן משחק
+        // זמן משחק
         float gsrs = Timer.Instance ? Timer.Instance.GameSecondsPerRealSecond : 30f;
         float gameMinutesThisFrame = dt * (gsrs / 60f);
         _absGameMinutes += gameMinutesThisFrame;
         double nowGM = _absGameMinutes;
+        
+        // === Apply transients (do NOT affect trends/arrows) ===
+        if (_transients.Count > 0)
+        {
+            float gmStep = gameMinutesThisFrame;
+            for (int i = _transients.Count - 1; i >= 0; i--)
+            {
+                var tr = _transients[i];
+
+                if (tr.remainingGameMin <= 0.0001f)
+                {
+                    // "מיידי": כל הכמות בפריים הזה
+                    sugarLevel = Mathf.Clamp(sugarLevel + tr.ratePerGameMin * 0f /* no time */ + tr.ratePerGameMin * tr.remainingGameMin, minSugarClamp, maxSugarClamp);
+                    _transients.RemoveAt(i);
+                    continue;
+                }
+
+                float step = Mathf.Min((float)tr.remainingGameMin, gmStep);
+                float delta = tr.ratePerGameMin * step;
+                sugarLevel = Mathf.Clamp(sugarLevel + delta, minSugarClamp, maxSugarClamp);
+                tr.remainingGameMin -= step;
+
+                if (tr.remainingGameMin <= 0.0001f) _transients.RemoveAt(i);
+                else                                _transients[i] = tr;
+            }
+        }
+
 
         // ניקוי אפקטים שהסתיימו
         for (int i = _effects.Count - 1; i >= 0; i--)
+            if (nowGM >= _effects[i].endAtGameMin) _effects.RemoveAt(i);
+
+        // קצב השפעות (ללא בסיס)
+        float effectsRate = CalculateEffectsRate(nowGM);
+
+        // --- ניטרול זנב: גוזרים את האפקטים ההפוכים עד ה-flip הבא ---
+        int sign = GetSign(effectsRate);
+        if (sign != 0)
         {
-            if (nowGM >= _effects[i].endAtGameMin)
-                _effects.RemoveAt(i);
+            double flipAt = ComputeNextSignFlipTime(nowGM);   // איפה הנטו מתהפך
+            TrimOppositeEffectsUntil(sign, nowGM, flipAt);    // גזירת הזנב
+            effectsRate = CalculateEffectsRate(nowGM);        // חישוב מחדש אחרי הגזירה
+            _currentTrendEndsAt = flipAt;                     // נשמור לאינדיקציה/חץ
+        }
+        else
+        {
+            _currentTrendEndsAt = -1;
         }
 
-        // חישוב קצב השפעות (ללא בסיס)
-        float effectsRate = CalculateEffectsRate(nowGM);
-        
-        // קצב כולל (בסיס + השפעות)
-        float totalRate = BaselineRatePerGameMin + effectsRate;
+        // קצב כולל: בסיס רק כשאין אפקטים פעילים
+        float totalRate = (sign == 0) ? BaselineRatePerGameMin : effectsRate;
 
         // עדכון רמת הסוכר
         sugarLevel = Mathf.Clamp(
             sugarLevel + totalRate * gameMinutesThisFrame,
-            minSugarClamp, 
-            maxSugarClamp
+            minSugarClamp, maxSugarClamp
         );
 
-        // עדכון מגמות וחיצים (רק לפי השפעות, לא בסיס)
-        UpdateTrendArrows(effectsRate, nowGM);
+        // חיצים לפי האפקטים בלבד
+        UpdateTrendArrows_AfterTrim(sign, nowGM);
 
         UpdateSugarUI();
         UpdateHeartsLogic();
     }
+
+    
+    // סכום קצב האפקטים (ללא בסיס) בזמן gm
+    private float EffectsRateAt(double gm)
+    {
+        float sum = 0f;
+        for (int i = 0; i < _effects.Count; i++)
+        {
+            var e = _effects[i];
+            if (gm >= e.startAtGameMin && gm < e.endAtGameMin)
+                sum += e.ratePerGameMin;
+        }
+        return sum;
+    }
+
+// מוצא את זמן ההיפוך הבא של סימן הנטו (לפי אפקטים בלבד)
+    private double ComputeNextSignFlipTime(double nowGM)
+    {
+        int signNow = GetSign(EffectsRateAt(nowGM));
+        // אוספים נקודות מבנה קדימה
+        var events = new List<double>();
+        foreach (var e in _effects)
+        {
+            if (e.startAtGameMin > nowGM) events.Add(e.startAtGameMin);
+            if (e.endAtGameMin   > nowGM) events.Add(e.endAtGameMin);
+        }
+        events.Sort();
+
+        for (int i = 0; i < events.Count; i++)
+        {
+            double t = events[i];
+            int signAfter = GetSign(EffectsRateAt(t + 1e-5));
+            if (signAfter != signNow) return t; // כאן מתהפך הסימן
+        }
+        return nowGM + 24 * 60; // אופק רחוק (יום משחק) אם אין היפוך נראה לעין
+    }
+
+// גוזר אפקטים מהכיוון ההפוך כך שלא יישאר "זנב" אחרי המנצח
+    private void TrimOppositeEffectsUntil(int currentSign, double nowGM, double trimAt)
+    {
+        if (trimAt <= nowGM) return;
+        for (int i = 0; i < _effects.Count; i++)
+        {
+            var e = _effects[i];
+
+            bool activeNow = (nowGM >= e.startAtGameMin && nowGM < e.endAtGameMin);
+            if (!activeNow) continue;
+
+            bool opposite = (currentSign > 0 && e.ratePerGameMin < 0f) ||
+                            (currentSign < 0 && e.ratePerGameMin > 0f);
+            if (!opposite) continue;
+
+            // אם האפקט חוצה את נקודת ה-trim — נגזור את הסוף שלו
+            if (e.startAtGameMin < trimAt && e.endAtGameMin > trimAt)
+            {
+                e.endAtGameMin = trimAt;
+                _effects[i] = e;
+            }
+            // אם הוא כולו אחרי trimAt – לא נוגעים (הוא יהיה רלוונטי רק אם בעתיד יתחיל כיוון חדש)
+        }
+    }
+
 
     // מחשב את סכום קצבי ההשפעות (ללא בסיס) בזמן נתון
     private float CalculateEffectsRate(double gameMinutes)
@@ -166,31 +275,55 @@ public class SugarMeter : MonoBehaviour
         }
         return totalRate;
     }
-
-    // מעדכן חיצים ואירועים על בסיס ההשפעות בלבד
-    private void UpdateTrendArrows(float effectsRate, double nowGM)
+    
+    // Adds a transient delta that does NOT participate in trends.
+// durationGameMin == 0 -> instant; otherwise spreads linearly over duration.
+    public void AddTransientGame(float amountSigned, float durationGameMin = 0f)
     {
-        int newSign = GetSign(effectsRate);
+        if (Mathf.Approximately(durationGameMin, 0f))
+        {
+            sugarLevel = Mathf.Clamp(sugarLevel + amountSigned, minSugarClamp, maxSugarClamp);
+            UpdateSugarUI();
+            return;
+        }
 
-        // אם המגמה השתנתה
+        float rate = amountSigned / Mathf.Max(0.0001f, durationGameMin);
+        _transients.Add(new Transient {
+            ratePerGameMin    = rate,
+            remainingGameMin  = durationGameMin
+        });
+        // ללא חיצים/אירועים
+    }
+
+    public void AddTransientDecreaseGame(float amount, float durationGameMin = 0f)
+        => AddTransientGame(-Mathf.Abs(amount), durationGameMin);
+
+    public void AddTransientIncreaseGame(float amount, float durationGameMin = 0f)
+        => AddTransientGame(+Mathf.Abs(amount), durationGameMin);
+
+
+    private void UpdateTrendArrows_AfterTrim(int newSign, double nowGM)
+    {
+        const double EPS_GAMEMIN = 1e-4; // ~0.006 דקת-משחק
+        const float  MIN_SHOW_SEC = 0.25f;
+
         if (newSign != _currentTrendSign)
         {
-            // סיום המגמה הקודמת
             if (_currentTrendSign != 0)
-            {
                 TimedChangeEnded?.Invoke(_currentTrendSign > 0);
-            }
 
-            // התחלת מגמה חדשה
             if (newSign != 0)
             {
-                var trendInfo = CalculateTrendDuration(nowGM, newSign);
-                float durationSec = GameTime.GameMinutesToRealSeconds(trendInfo.durationGameMin);
-                
-                // שליחת אירוע אחד בלבד - TimedChangeStarted
+                // תמיד מחשבים אופק טרי (לא משתנים קודמים)
+                double endsAt = ComputeNextSignFlipTime(nowGM);
+                if (endsAt <= nowGM + EPS_GAMEMIN)
+                    endsAt = nowGM + EPS_GAMEMIN; // מבטיחים חיובי
+
+                float durationSec = GameTime.GameMinutesToRealSeconds((float)(endsAt - nowGM));
+                durationSec = Mathf.Max(durationSec, MIN_SHOW_SEC); // מינימום חצי-פלאש
+
                 TimedChangeStarted?.Invoke(newSign > 0, durationSec);
-                
-                _currentTrendEndsAt = trendInfo.endsAtGameMin;
+                _currentTrendEndsAt = endsAt;
             }
             else
             {
@@ -199,16 +332,22 @@ public class SugarMeter : MonoBehaviour
 
             _currentTrendSign = newSign;
         }
-        // אם נשארנו באותה מגמה אבל עברנו נקודת שינוי (משך צריך להתעדכן)
-        else if (newSign != 0 && _currentTrendEndsAt > 0 && nowGM >= _currentTrendEndsAt - 1e-6)
+        else if (newSign != 0 && _currentTrendEndsAt > 0 && nowGM >= _currentTrendEndsAt - EPS_GAMEMIN)
         {
-            var trendInfo = CalculateTrendDuration(nowGM, newSign);
-            float durationSec = GameTime.GameMinutesToRealSeconds(trendInfo.durationGameMin);
-            
+            // אם עברנו את נקודת הסיום – מחשבים אופק חדש (בדר"כ שינוי מבני)
+            double endsAt = ComputeNextSignFlipTime(nowGM);
+            if (endsAt <= nowGM + EPS_GAMEMIN)
+                endsAt = nowGM + EPS_GAMEMIN;
+
+            float durationSec = GameTime.GameMinutesToRealSeconds((float)(endsAt - nowGM));
+            durationSec = Mathf.Max(durationSec, MIN_SHOW_SEC);
+
             TimedChangeStarted?.Invoke(newSign > 0, durationSec);
-            _currentTrendEndsAt = trendInfo.endsAtGameMin;
+            _currentTrendEndsAt = endsAt;
         }
     }
+
+
 
     // מחזיר -1, 0, או 1 לפי הקצב
     private int GetSign(float rate)
@@ -223,15 +362,10 @@ public class SugarMeter : MonoBehaviour
         if (currentSign == 0)
             return (0f, nowGM);
 
-        // נחפש את הזמן שבו המגמה תתהפך (הסימן ישתנה)
-        // או את הזמן שבו האפקט המנצח (החזק ביותר בכיוון הנוכחי) יסתיים
-
-        double closestFlip = nowGM + 24 * 60; // ברירת מחדל: יום משחק
-        
-        // מצא את האפקט המנצח (בעל הקצב החזק ביותר בכיוון המגמה)
+        // מצא את האפקט הדומיננטי = החזק ביותר בכיוון המגמה
         Effect? dominantEffect = null;
         float maxAbsRate = 0f;
-        
+
         foreach (var effect in _effects)
         {
             if (nowGM >= effect.startAtGameMin && nowGM < effect.endAtGameMin)
@@ -248,22 +382,25 @@ public class SugarMeter : MonoBehaviour
             }
         }
 
-        // אם יש אפקט דומיננטי, משך המגמה מוגבל לסוף שלו
-        if (dominantEffect.HasValue)
-        {
-            closestFlip = dominantEffect.Value.endAtGameMin;
-        }
+        // אם אין אפקט דומיננטי, אין מגמה
+        if (!dominantEffect.HasValue)
+            return (0f, nowGM);
 
-        // עכשיו נבדוק אם לפני שהאפקט הדומיננטי נגמר, המגמה מתהפכת
+        // משך המגמה = עד שהאפקט הדומיננטי נגמר
+        double dominantEnd = dominantEffect.Value.endAtGameMin;
+
+        // עכשיו נבדוק אם לפני שהדומיננטי נגמר, המגמה מתהפכת
         var changePoints = new List<double>();
         foreach (var effect in _effects)
         {
-            if (effect.startAtGameMin > nowGM && effect.startAtGameMin < closestFlip)
+            if (effect.startAtGameMin > nowGM && effect.startAtGameMin < dominantEnd)
                 changePoints.Add(effect.startAtGameMin);
-            if (effect.endAtGameMin > nowGM && effect.endAtGameMin < closestFlip)
+            if (effect.endAtGameMin > nowGM && effect.endAtGameMin < dominantEnd)
                 changePoints.Add(effect.endAtGameMin);
         }
         changePoints.Sort();
+
+        double closestFlip = dominantEnd;
 
         // בודק בכל נקודה אם הסימן משתנה
         foreach (var point in changePoints)

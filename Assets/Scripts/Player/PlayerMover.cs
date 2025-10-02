@@ -397,15 +397,16 @@ public class PlayerMover : MonoBehaviour
                 if (sugarMeter)
                 {
                     // ↓ אפקט מיידי: ירידה בזמן אמת ללא תלות בפאזות
-                    sugarMeter.AddImmediateDecreaseGame(
+                    sugarMeter.AddTransientDecreaseGame(
                         amount: sugarDrainPerBlock * blocks,
-                        durationGameMin: 1f * blocks
+                        durationGameMin: 0f // instant
                     );
+
                 }
 
                 // חץ למטה למשך משך האפקט (שניות אמת)
                 float realDur = GameTime.GameMinutesToRealSeconds(1f * blocks);
-                sugarArrow?.ShowDown(realDur);
+                sugarArrow?.ShowDownTransient(Mathf.Min(realDur, 0.5f));
             }
 
         }
