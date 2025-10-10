@@ -9,14 +9,13 @@ public class DropMovement : MonoBehaviour
     private bool hasExploded = false;
 
     [Header("Lifetime")]
-    public float lifeTime = 5f; // כמה זמן עד שהטיפה נהרסת אוטומטית
+    public float lifeTime = 5f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
-        // השמדה אוטומטית אחרי זמן מוגדר
+        
         Invoke(nameof(DestroySelf), lifeTime);
     }
 
@@ -42,7 +41,6 @@ public class DropMovement : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Player"))
         {
-            // אפשר להוסיף כאן קוד שיפגע בשחקן (נזק/סוכר/חיים)
             Explode();
         }
     }

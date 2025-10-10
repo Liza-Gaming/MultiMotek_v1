@@ -20,7 +20,7 @@ public class PlayerFeedback : MonoBehaviour
     
     private Coroutine flashCo, punchCo, eyesCo;
     private Vector3 baseScale;
-    private Color[] originalColors; // שמירת הצבעים המקוריים
+    private Color[] originalColors;
     
 
     void Reset()
@@ -36,7 +36,6 @@ public class PlayerFeedback : MonoBehaviour
             sprites = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
         if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
         
-        // שמירת הצבעים המקוריים
         StoreOriginalColors();
     }
 
@@ -52,7 +51,7 @@ public class PlayerFeedback : MonoBehaviour
         if (flashCo != null) 
         {
             StopCoroutine(flashCo);
-            RestoreOriginalColors(); // מחזיר את הצבעים המקוריים
+            RestoreOriginalColors();
         }
         
         if (punchCo != null) StopCoroutine(punchCo);
@@ -82,10 +81,9 @@ public class PlayerFeedback : MonoBehaviour
                 if (sprites[i]) sprites[i].color = Color.Lerp(originalColors[i], flashColor, a);
             yield return null;
         }
-
-        // מחזיר את הצבעים המקוריים בסוף
+        
         RestoreOriginalColors();
-        flashCo = null; // מנקה את הרפרנס
+        flashCo = null;
     }
 
     private IEnumerator ScalePunchRoutine()
@@ -108,7 +106,7 @@ public class PlayerFeedback : MonoBehaviour
         }
 
         transform.localScale = new Vector3(signX * baseAbs.x, baseAbs.y, baseAbs.z);
-        punchCo = null; // מנקה את הרפרנס
+        punchCo = null;
     }
 
     
@@ -117,7 +115,7 @@ public class PlayerFeedback : MonoBehaviour
         eyesClosedRenderer.enabled = true;
         yield return new WaitForSeconds(duration);
         if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
-        eyesCo = null; // מנקה את הרפרנס
+        eyesCo = null;
     }
     
     public void ForceEyesOpen()

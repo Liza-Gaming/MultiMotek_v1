@@ -13,7 +13,7 @@ public class SugarBlurController : MonoBehaviour
     }
 
     [Header("Refs")]
-    [SerializeField] private Volume volume;              // נבנה/נאתר מחדש לכל מצלמה פעילה
+    [SerializeField] private Volume volume;
     [SerializeField] private SugarMeter sugarMeter;
 
     [Header("Sugar → Focus mapping")]
@@ -48,7 +48,6 @@ public class SugarBlurController : MonoBehaviour
     private DepthOfField dof;
     private float _nextRetryTime;
 
-    // NEW: שומר רפרנס למצלמה הפעילה הנוכחית
     private Camera _activeCam;
 
     private void OnEnable() {
@@ -61,7 +60,6 @@ public class SugarBlurController : MonoBehaviour
     }
 
     private void OnSceneLoaded(Scene s, LoadSceneMode m) {
-        // בסצנות חדשות – נמצא את המצלמה הפעילה ונעביר אליה את ה-Volume
         TryRebindAll(force:true);
     }
     
@@ -72,20 +70,15 @@ public class SugarBlurController : MonoBehaviour
 
     private void TryRebindAll(bool force = false)
     {
-        // 1) תמיד לבחור את המצלמה הפעילה של הסצנה הנוכחית
         EnsureActiveCamera(force);
-
-        // 2) SugarMeter
+        
         if (force || sugarMeter == null)
             sugarMeter = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>(FindObjectsInactive.Include);
-
-        // 3) PostFX על המצלמה הפעילה
+        
         EnsureCameraPostFX();
-
-        // 4) Volume גלובלי פרטי שיושב על המצלמה הפעילה
+        
         EnsureLocalVolumeOnActiveCamera();
-
-        // 5) לוודא שיש DoF בפרופיל
+        
         dof = null;
         if (volume != null) {
             if (volume.profile == null)
@@ -143,14 +136,11 @@ public class SugarBlurController : MonoBehaviour
             default: return normalizedSugar;
         }
     }
-
-    // ---------- NEW: מצלמה פעילה ----------
+    
     private void EnsureActiveCamera(bool force)
     {
-        // אם כבר יש לנו מצלמה פעילה והאובייקט עדיין Enabled – אפשר לצאת
         if (!force && _activeCam != null && _activeCam.isActiveAndEnabled) return;
-
-        // קודם כל Camera.main; אם אין – קחי כל מצלמה פעילה בסצנה
+        
         Camera cam = Camera.main;
         if (cam == null) {
             var all = Camera.allCameras;
@@ -159,7 +149,6 @@ public class SugarBlurController : MonoBehaviour
         }
 
         _activeCam = cam;
-        // אל תסמכי על ה-Camera שעליו יושב הקונטרולר – זו עלולה להיות מצלמה ישנה מסצנה קודמת
     }
 
     private void EnsureCameraPostFX()
@@ -178,12 +167,10 @@ public class SugarBlurController : MonoBehaviour
     {
         if (volume == null)
         {
-            // נסה למצוא ילד קיים
             var t = transform.Find("SugarBlurVolume");
             if (t) volume = t.GetComponent<Volume>();
         }
-    
-        // אם עדיין אין, צור חדש
+        
         if (volume == null)
         {
             var go = new GameObject("SugarBlurVolume");
@@ -199,16 +186,13 @@ public class SugarBlurController : MonoBehaviour
         // ודא שה-Volume פעיל
         if (!volume.enabled) volume.enabled = true;
     }
-
-    // ---------- אופציונלי: לאפס לברירת מחדל בתחילת שלב ----------
+    
     public void ResetToDefault()
     {
-        // אפס את כל המשתנים לברירת המחדל
         dof = null;
         volume = null;
         sugarMeter = null;
-    
-        // נסה למצוא הכל מחדש
+        
         TryRebindAll(force: true);
     
         Debug.Log("SugarBlurController - Reset to default state");

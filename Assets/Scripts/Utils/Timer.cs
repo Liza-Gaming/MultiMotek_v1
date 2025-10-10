@@ -91,7 +91,7 @@ public class Timer : MonoBehaviour
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) // <<< חדש
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         skipFramesAfterLoad          = 1;
         suppressNewDayUntilUnscaled  = Time.unscaledTime + newDayGraceAfterLoad;
@@ -172,7 +172,7 @@ public class Timer : MonoBehaviour
         if (now + 1e-6 >= nextAlarmAbs)
         {
             OnDailyAlarm?.Invoke(dayCount);
-            nextAlarmAbs += SecondsPerDay; // האלארם הבא – מחר ב-07:00
+            nextAlarmAbs += SecondsPerDay;
         }
     }
 

@@ -88,11 +88,9 @@ public class DoorLevelEnd : MonoBehaviour
             var mover = player.GetComponent<PlayerMover>();
             if (mover != null) mover.SetInputLocked(false);
         }
-
-        // מצאי/השתמשי ב-SummaryUI
+        
         if (summaryUI == null) summaryUI = FindObjectOfType<SugarSummaryUI>(true);
-
-        // קבעי סצנה הבאה
+        
         ResolveNextScene(out int resolvedIndex, out string resolvedName);
 
         if (summaryUI != null)
@@ -103,7 +101,6 @@ public class DoorLevelEnd : MonoBehaviour
         }
         else
         {
-            // אם אין SummaryUI – נטען ישר לסצנה הבאה (אם קיימת)
             if (TryHasScene(resolvedIndex, resolvedName))
             {
                 if (resolvedIndex >= 0)

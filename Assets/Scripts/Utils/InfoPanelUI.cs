@@ -13,8 +13,7 @@ public class InfoPanelUI : MonoBehaviour
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private RectTransform contentRoot;
     [SerializeField] private GameObject itemEntryPrefab;
-
-    // שומרים אילו סוגי פריטים כבר נחשפו
+    
     private readonly HashSet<Item.ItemType> discoveredTypes = new HashSet<Item.ItemType>();
 
     public static InfoPanelUI Instance { get; private set; }
@@ -38,8 +37,7 @@ public class InfoPanelUI : MonoBehaviour
     {
         if (panelRoot) panelRoot.SetActive(false);
     }
-
-    /// קראי לזה כשנאסף פריט חדש בפעם הראשונה
+    
     public void RegisterDiscovery(Item item)
     {
         if (item == null) return;

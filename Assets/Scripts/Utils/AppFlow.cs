@@ -7,8 +7,7 @@ public enum LaunchMode { None, Campaign, Standalone }
 public static class AppFlow
 {
     public static LaunchMode Mode { get; private set; } = LaunchMode.None;
-
-    // NEW: דגל "אתחול סטנדאלון" לסצנה הבאה בלבד
+    
     private static bool _armStandaloneInitForNextScene;
 
     public static bool ConsumeStandaloneInitFlag()
@@ -26,7 +25,7 @@ public static class AppFlow
     private static IEnumerator StartStandaloneRoutine(string sceneName)
     {
         Mode = LaunchMode.Standalone;
-        _armStandaloneInitForNextScene = true;           // ← נדרש רק לסצנה הקרובה
+        _armStandaloneInitForNextScene = true;
 
         PersistentRoot.DestroyAll();
         yield return null;
@@ -37,7 +36,7 @@ public static class AppFlow
     public static void ContinueToNext(string sceneName)
     {
         Mode = LaunchMode.Campaign;
-        _armStandaloneInitForNextScene = false;          // ← לא מאתחלים ברצף
+        _armStandaloneInitForNextScene = false;
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 }

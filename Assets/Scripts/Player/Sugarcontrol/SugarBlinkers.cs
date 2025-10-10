@@ -46,7 +46,7 @@ public class SugarBlinkers : MonoBehaviour
 
     void Update()
     {
-        // אם אין חיצים פעילים אבל צריך להתריע – נדאג שהקורוטינה תרוץ
+
         if (Now >= suppressUntil && ShouldWarn())
             EnsureRoutine();
     }
@@ -100,8 +100,7 @@ public class SugarBlinkers : MonoBehaviour
 
     public void ShowUp  (float duration = -1f)               => ManualBump(true,  duration, exclusive:true);
     public void ShowDown(float duration = -1f)               => ManualBump(false, duration, exclusive:true);
-
-// חדש: גרסאות transient שלא מכבות חץ קיים
+    
     public void ShowUpTransient  (float duration = -1f)      => ManualBump(true,  duration, exclusive:false);
     public void ShowDownTransient(float duration = -1f)      => ManualBump(false, duration, exclusive:false);
 
@@ -121,7 +120,7 @@ public class SugarBlinkers : MonoBehaviour
 
         if (exclusive)
         {
-            // התנהגות קיימת – חץ יחיד בלבד
+
             if (isUp)
             {
                 downUntil = -1f;
@@ -137,12 +136,10 @@ public class SugarBlinkers : MonoBehaviour
         }
         else
         {
-            // transient: לא מכבים את החץ הנגדי
-            // אם כבר יש חץ בכיוון ההפוך פעיל – נתעלם מהבקשה (כדי לא להציג שני חצים)
             bool oppositeActive = isUp ? (Now < downUntil) : (Now < upUntil);
             if (oppositeActive)
             {
-                // מתעלמים – לא לשבור את חץ המגמה
+
             }
             else
             {

@@ -7,12 +7,12 @@ public class PlayerSkinSwitcher : MonoBehaviour
     [SerializeField] private Animator animator;
 
     [Header("Controllers")]
-    [SerializeField] private RuntimeAnimatorController baseController;       // המקורי (אם ריק – יילקח אוטומטית מה-Animator)
-    [SerializeField] private AnimatorOverrideController stage3Override;      // ה-AOC שיצרת
+    [SerializeField] private RuntimeAnimatorController baseController;
+    [SerializeField] private AnimatorOverrideController stage3Override;
 
     [Header("Config")]
-    [SerializeField] private int stageBuildIndexToSwitch = 3;                // אינדקס בנייה של "שלב 3"
-    [SerializeField] private string stateToReenterAfterSwap = "Idle";        // שם state שקיים בשני הקונטרולרים
+    [SerializeField] private int stageBuildIndexToSwitch = 3;
+    [SerializeField] private string stateToReenterAfterSwap = "Idle";
 
     private bool hasSwitchedThisScene = false;
 
@@ -20,8 +20,7 @@ public class PlayerSkinSwitcher : MonoBehaviour
     {
         if (!animator) animator = GetComponent<Animator>();
         if (!baseController) baseController = animator.runtimeAnimatorController;
-
-        // נוודא שמכל טעינת סצנה אנחנו במצב הנכון
+        
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -39,20 +38,17 @@ public class PlayerSkinSwitcher : MonoBehaviour
         else
             animator.runtimeAnimatorController = baseController;
     }
-
-    // לקריאה גם מתוך לוגיקה של "הגעתי לשלב 3" במהלך משחק רציף
+    
     public void SwitchToStage3Now()
     {
         if (hasSwitchedThisScene || stage3Override == null) return;
-
-        // שומרות רציפות בזמן האנימציה כדי שלא יהיה "קפיצה" חזקה
+        
         var st = animator.GetCurrentAnimatorStateInfo(0);
         float t = st.normalizedTime % 1f;
 
         animator.runtimeAnimatorController = stage3Override;
         hasSwitchedThisScene = true;
-
-        // כניסה מחדש ל-Idle (או לכל state ששמו זהה בשני הקונטרולרים)
+        
         if (!string.IsNullOrEmpty(stateToReenterAfterSwap))
             animator.Play(stateToReenterAfterSwap, 0, t);
     }

@@ -87,8 +87,7 @@ public class HeartsDisplay : MonoBehaviour
 
         float t = 0f;
         float dur = Mathf.Max(0.0001f, popDuration);
-
-        // up
+        
         while (t < dur)
         {
             t += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;

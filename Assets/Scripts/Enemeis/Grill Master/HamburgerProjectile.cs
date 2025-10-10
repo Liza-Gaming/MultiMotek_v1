@@ -6,7 +6,7 @@ public class HamburgerProjectile : MonoBehaviour
 {
     [SerializeField] private float lifeSeconds = 5f;
     [SerializeField] private int damage = 1;
-    [SerializeField] private LayerMask hitMask = ~0; // אילו שכבות לפגוע
+    [SerializeField] private LayerMask hitMask = ~0;
     [SerializeField] private bool flipSpriteByVelocityX = true;
 
     private Rigidbody2D _rb;
@@ -22,19 +22,17 @@ public class HamburgerProjectile : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _col = GetComponent<Collider2D>();
-
-        // הגדרות מומלצות לקליע
+        
         _rb.gravityScale = 0f;
         _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         _rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        _col.isTrigger = false; // עדיף פגיעה פיזית, אבל אפשר גם Trigger לפי המשחק שלך
+        _col.isTrigger = false;
     }
 
     public void Launch(Vector2 dirNormalized, float speed, MonoBehaviour owner)
     {
         _owner = owner ? owner.transform : null;
-
-        // אם יש קוליידרים על האויב – נתעלם מהתנגשות איתם
+        
         if (_owner)
         {
             foreach (var c in _owner.GetComponentsInChildren<Collider2D>())
@@ -61,20 +59,17 @@ public class HamburgerProjectile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // פגיעה בשחקן?
         if (collision.collider.CompareTag("Player"))
         {
             ApplyEffect(collision.collider.gameObject);
         }
-
-        // אם פגענו במשהו מתוך המסכה – נהרוס את הקליע
+        
         if (((1 << collision.collider.gameObject.layer) & hitMask) != 0)
         {
             Destroy(gameObject);
         }
         else
         {
-            // ברירת מחדל: גם הורסים
             Destroy(gameObject);
         }
     }
@@ -94,7 +89,5 @@ public class HamburgerProjectile : MonoBehaviour
                 durationGameMin: EnemyDurationGameMin,
                 entryGameMin: EnemyDelayGameMin
             );
-            
-        
     }
 }

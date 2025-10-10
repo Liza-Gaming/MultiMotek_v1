@@ -19,8 +19,7 @@ public class DailyPopupController : MonoBehaviour
 
     [Tooltip("איזו סצנה נחשבת 'ראשונה' לפי Build Index")]
     [SerializeField] private int firstSceneBuildIndex = 1;
-
-    // אם מעדיפים לפי שם:
+    
     //[SerializeField] private string firstSceneName = "Intro";
 
     private PlayerMover playerMover;
@@ -103,7 +102,7 @@ public class DailyPopupController : MonoBehaviour
 
     private bool ShouldPauseTimer()
     {
-        if (!pauseTimerOnlyInFirstScene) return false; // ביקשת שלא לעצור בכלל
+        if (!pauseTimerOnlyInFirstScene) return false;
         return IsFirstScene();
     }
 
@@ -116,7 +115,7 @@ public class DailyPopupController : MonoBehaviour
 
         if (popupPanel) popupPanel.SetActive(true);
         if (instructionsAnimator) instructionsAnimator.SetTrigger("Show");
-        if (playerMover) playerMover.SetInputLocked(true); // אם תרצי – אפשר לנעול תמיד, גם בלי פאוז
+        if (playerMover) playerMover.SetInputLocked(true);
 
         didGlobalPauseThisShow = ShouldDoGlobalPauseNow();
 
@@ -162,7 +161,7 @@ public class DailyPopupController : MonoBehaviour
         }
 
         if (didGlobalPauseThisShow) {
-            s_didGlobalPauseOnce = true;   // מעכשיו – לא נעשה פאוז גלובלי יותר
+            s_didGlobalPauseOnce = true;
             didGlobalPauseThisShow = false;
         }
     }
@@ -172,7 +171,7 @@ public class DailyPopupController : MonoBehaviour
     private void TryRestore() {
         var sm = SugarMeter.Instance;
         if (sm != null && savedBaselineRate.HasValue) {
-            sm.sugarDecreaseRate = savedBaselineRate.Value; // שחזור
+            sm.sugarDecreaseRate = savedBaselineRate.Value;
             savedBaselineRate = null;
         }
     }

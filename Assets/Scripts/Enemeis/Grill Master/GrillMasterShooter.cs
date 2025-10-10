@@ -6,15 +6,15 @@ using System.Collections;
 public class GrillMasterShooter : MonoBehaviour
 {
     [Header("Targeting")]
-    [SerializeField] private Transform player;             // ייקבע אוטומטית אם ריק
+    [SerializeField] private Transform player;
     [SerializeField] private string playerTag = "Hit";
     [SerializeField] private float detectRadius = 8f;
     [SerializeField] private LayerMask lineOfSightMask = ~0;
 
     [Header("Auto Resolve")]
     [SerializeField] private bool autoFindPlayerOnEnable = true;
-    [SerializeField] private float refetchInterval = 0.5f; // כל כמה זמן לנסות שוב אם חסר
-    [SerializeField] private int refetchTriesOnLoad = 20;  // כמה ניסיונות מיד אחרי טעינת סצנה
+    [SerializeField] private float refetchInterval = 0.5f;
+    [SerializeField] private int refetchTriesOnLoad = 20;
 
     [Header("Shoot")]
     [SerializeField] private Transform firePoint;
@@ -37,8 +37,7 @@ public class GrillMasterShooter : MonoBehaviour
     {
         if (!firePoint) firePoint = transform; // fallback
         ResetCooldown();
-
-        // נסה פעם אחת (אם כבר יש שחקן)
+        
         if (!player) TryResolvePlayerOnce();
     }
 
@@ -47,7 +46,7 @@ public class GrillMasterShooter : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         if (autoFindPlayerOnEnable && !player)
-            _refetchLoop = StartCoroutine(RefetchLoop()); // ניסיון איטרטיבי עד שנמצא
+            _refetchLoop = StartCoroutine(RefetchLoop());
     }
 
     private void OnDisable()
@@ -59,7 +58,6 @@ public class GrillMasterShooter : MonoBehaviour
 
     private void OnSceneLoaded(Scene s, LoadSceneMode m)
     {
-        // אחרי טעינת סצנה – נריץ ריטריי מהיר יחסית
         if (_refetchLoop != null) StopCoroutine(_refetchLoop);
         _refetchLoop = StartCoroutine(RefetchBurst(refetchTriesOnLoad, refetchInterval));
     }
@@ -82,8 +80,7 @@ public class GrillMasterShooter : MonoBehaviour
             if (player) yield break;
             yield return new WaitForSeconds(dt);
         }
-
-        // אם עדיין לא נמצא – נעבור ללופ איטי
+        
         if (!player)
         {
             if (_refetchLoop != null) StopCoroutine(_refetchLoop);
@@ -93,7 +90,7 @@ public class GrillMasterShooter : MonoBehaviour
 
     private void TryResolvePlayerOnce()
     {
-        // סדר עדיפויות: ע"י Tag → לפי קומפוננטה → אובייקט כלשהו עם tag
+        
         if (!player)
         {
             var tagged = GameObject.FindGameObjectWithTag(playerTag);
@@ -101,12 +98,11 @@ public class GrillMasterShooter : MonoBehaviour
         }
         if (!player)
         {
-            var pm = FindObjectOfType<PlayerMover>(); // אם יש סינגלטון/אינסטנס – עוד יותר טוב
+            var pm = FindObjectOfType<PlayerMover>();
             if (pm) player = pm.transform;
         }
     }
-
-    // אפשר לאפשר ל־SpawnManager לקרוא לזה:
+    
     public void SetPlayer(Transform t)
     {
         player = t;
@@ -114,17 +110,16 @@ public class GrillMasterShooter : MonoBehaviour
 
     private void Update()
     {
-        // אם אין עדיין רפרנס, ננסה למצוא
+        
         if (player == null)
         {
             var tagged = GameObject.FindGameObjectWithTag(playerTag);
             if (tagged != null)
                 player = tagged.transform;
             else
-                return; // עדיין אין שחקן, לא עושים כלום בפריים הזה
+                return; 
         }
-
-        // מכאן הלוגיקה הרגילה שלך ↓
+        
         Vector2 toPlayer = player.position - transform.position;
         float dist = toPlayer.magnitude;
 

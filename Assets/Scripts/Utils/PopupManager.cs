@@ -7,30 +7,30 @@ public class PopupManager : MonoBehaviour
     public static PopupManager Instance { get; private set; }
 
     [Header("Global scene rules")]
-    [SerializeField] private int firstSceneBuildIndex = 1;  // "סצנה ראשונה" להגדרת פאוזה גלובלית
-    [SerializeField] private int stage3BuildIndex = 3;       // באיזה אינדקס להציג פופאפ "הגעת לשלב 3"
+    [SerializeField] private int firstSceneBuildIndex = 1;
+    [SerializeField] private int stage3BuildIndex = 3;
 
     [Header("Optional refs")]
-    [SerializeField] private PlayerMover playerMover;  // אם ריק—נמצא אוטומטית
-    [SerializeField] private SugarMeter  sugarMeter;   // אם ריק—נמצא אוטומטית
+    [SerializeField] private PlayerMover playerMover;
+    [SerializeField] private SugarMeter  sugarMeter;
 
     [System.Serializable]
     public class UIPopup
     {
-        [Tooltip("זיהוי לוגי לעבודה נוחה (לא חובה)")]
+
         public string id = "popup";
 
         [Header("UI")]
         public GameObject panel;
-        public Animator   animator;   // טריגרים: "Show" / "Hide" (אופציונלי)
+        public Animator   animator;
 
         [Header("Behaviour")]
         public bool lockPlayerInput = true;
-        public bool pauseTimerOnlyInFirstScene = true; // כמו אצלך: פאוזה רק בסצנה הראשונה?
-        public bool pauseHearts = true;                // לעצור לבבות/סוכר בזמן פופאפ?
-        public bool showOnceGlobally = false;          // להציג פעם אחת לכל המשחק?
+        public bool pauseTimerOnlyInFirstScene = true;
+        public bool pauseHearts = true;
+        public bool showOnceGlobally = false;
 
-        [HideInInspector] public bool shownOnce;       // מצב ריצה
+        [HideInInspector] public bool shownOnce;
     }
 
     [Header("Popups")]
@@ -45,8 +45,7 @@ public class PopupManager : MonoBehaviour
     private bool pausedTimerByMe;
     private bool pausedHeartsByMe;
     private float? savedBaselineRate;
-
-    // "פאוזה גלובלית" רק פעם אחת (לפי ההיגיון שהיה אצלך)
+    
     private static bool s_didGlobalPauseOnce = false;
 
     private void Awake()
@@ -54,7 +53,7 @@ public class PopupManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        HideAll(); // לוודא שמתחילים כשכל הפאנלים כבויים
+        HideAll();
     }
 
     private void OnEnable()
@@ -79,7 +78,6 @@ public class PopupManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // בכל טעינה: נסגור פופאפ פתוח ונבדוק אם צריך להציג שלב-3
         ForceCloseCurrentWithoutRestore(); 
         TryShowStage3IfNeeded();
     }
@@ -97,19 +95,18 @@ public class PopupManager : MonoBehaviour
         if (SceneManager.GetActiveScene().buildIndex == stage3BuildIndex)
             TryShow(stage3Popup);
     }
-
-    /// <summary>ניסיון להציג פופאפ לפי הכללים; מנהל פאוזות/נעילות</summary>
+    
     public void TryShow(UIPopup popup)
     {
         if (popup == null || popup.panel == null) return;
-        if (current != null) return;                   // כבר יש פופאפ פתוח, לא נערום
+        if (current != null) return;
         if (popup.showOnceGlobally && popup.shownOnce) return;
 
-        // רפרנסים
+
         if (playerMover == null) playerMover = FindObjectOfType<PlayerMover>();
         if (sugarMeter  == null) sugarMeter  = SugarMeter.Instance ?? FindObjectOfType<SugarMeter>();
 
-        // הצגה
+
         current = popup;
         current.shownOnce = true;
 
@@ -125,7 +122,7 @@ public class PopupManager : MonoBehaviour
         {
             Timer.Instance.PauseClock(true);
             pausedTimerByMe = true;
-            s_didGlobalPauseOnce = true; // מהנקודה הזו והלאה לא נעשה "פעם ראשונה" שוב
+            s_didGlobalPauseOnce = true;
         }
 
         if (doGlobalPause && popup.pauseHearts && sugarMeter != null)

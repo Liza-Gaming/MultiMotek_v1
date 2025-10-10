@@ -156,7 +156,7 @@ public class PlayerMover : MonoBehaviour
         SetInputLocked(false);
         SnapToSpawnIfExists();
         if (!sugarMeter) sugarMeter = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
-        SyncDrinkStateNow(); // ← חישוב מיידי בסצנה החדשה
+        SyncDrinkStateNow();
     }
 
     void SnapToSpawnIfExists()
@@ -252,38 +252,32 @@ public class PlayerMover : MonoBehaviour
 
     void FixedUpdate()
     {
-        // === LADDER: פיזיקה בזמן טיפוס
         if (onLadder)
         {
             Vector2 input = moveAction.action.ReadValue<Vector2>();
             float vx = input.x * _speed * speedFactor * ladderHorizontalFactor;
             float vy = 0f;
-
-            // תנועת טיפוס למעלה/למטה
+            
             if (currentLadder != null)
             {
                 vy = input.y * currentLadder.climbSpeed;
             }
-
-            // אם נועלים X למרכז הסולם – נבטל כמעט לגמרי תזוזה אופקית:
+            
             if (currentLadder != null && currentLadder.snapXToCenter)
             {
                 vx = 0f;
-                // להצמדה יציבה למרכז – מיישרים X בכל Fixed
                 var x = currentLadder.GetComponent<Collider2D>().bounds.center.x;
                 transform.position = new Vector3(x, transform.position.y, transform.position.z);
             }
 
             rb.linearVelocity = new Vector2(vx, vy);
-
-            // עדכון אנימטור
+            
             if (animator)
             {
                 animator.SetBool(animClimbBool, true);
-                animator.SetFloat(animClimbSpeedFloat, Mathf.Abs(vy)); // לא חובה
+                animator.SetFloat(animClimbSpeedFloat, Mathf.Abs(vy));
             }
-
-            // לא לבצע את שאר ה־FixedUpdate (הליכה/פלטפורמות) בזמן טיפוס
+            
             return;
         }
 
@@ -321,19 +315,17 @@ public class PlayerMover : MonoBehaviour
         if (scaleJumpWhenHighSugar && sugarMeter)
         {
             float s = sugarMeter.GetSugarLevel();
-
-            // מעבר חלק בין drinkOff→drinkOn (למשל 249→250)
+            
             if (s >= drinkOnSugar)
             {
-                jf *= highSugarJumpFactor;          // מקסימום הקטנה
+                jf *= highSugarJumpFactor;
             }
-            else if (s > drinkOffSugar)             // טווח ביניים: מערבבים לינארית
+            else if (s > drinkOffSugar)
             {
                 float t = Mathf.InverseLerp(drinkOffSugar, drinkOnSugar, s);
                 float factor = Mathf.Lerp(1f, highSugarJumpFactor, t);
                 jf *= factor;
             }
-            // מתחת ל-drinkOff → jf רגיל
         }
 
         return jf;
@@ -396,15 +388,14 @@ public class PlayerMover : MonoBehaviour
 
                 if (sugarMeter)
                 {
-                    // ↓ אפקט מיידי: ירידה בזמן אמת ללא תלות בפאזות
+
                     sugarMeter.AddTransientDecreaseGame(
                         amount: sugarDrainPerBlock * blocks,
-                        durationGameMin: 0f // instant
+                        durationGameMin: 0f
                     );
 
                 }
-
-                // חץ למטה למשך משך האפקט (שניות אמת)
+                
                 float realDur = GameTime.GameMinutesToRealSeconds(1f * blocks);
                 sugarArrow?.ShowDownTransient(Mathf.Min(realDur, 0.5f));
             }
@@ -413,14 +404,12 @@ public class PlayerMover : MonoBehaviour
         
 
     }
-    // === LADDER: טריגרים על הסולם
     private void OnTriggerEnter2D(Collider2D other)
     {
         var ladder = other.GetComponent<LadderZone>();
         if (ladder != null)
         {
             currentLadder = ladder;
-            // לא נכנסים אוטומטית לטיפוס; ניכנס רק אם יש קלט למעלה/למטה
         }
     }
 
@@ -438,8 +427,7 @@ public class PlayerMover : MonoBehaviour
     {
         if (onLadder || currentLadder == null) return;
         onLadder = true;
-
-        // מניעת קפיצה "יתומה" שנורתה בפריים הקודם
+        
         if (animator)
         {
             animator.ResetTrigger(T_Jump);
@@ -469,7 +457,7 @@ public class PlayerMover : MonoBehaviour
         {
             animator.SetBool(animClimbBool, false);
             animator.SetFloat(animClimbSpeedFloat, 0f);
-            animator.ResetTrigger(T_Jump); // שלא יישאר "חם" לפריים הבא
+            animator.ResetTrigger(T_Jump);
         }
     }
 

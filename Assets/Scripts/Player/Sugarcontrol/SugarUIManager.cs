@@ -13,7 +13,6 @@ public class SugarUIManager : MonoBehaviour
 
     void OnEnable()
     {
-        // נתעדכן גם בטעינה וגם בשינוי הסצנה האקטיבית
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.activeSceneChanged += OnActiveSceneChanged;
         RefreshForCurrentScene();
@@ -27,7 +26,6 @@ public class SugarUIManager : MonoBehaviour
 
     void Start()
     {
-        // עדיין טוב לעדכן ב-Start במקרה שהקנבס נוצר בסצנה הזו
         RefreshForCurrentScene();
     }
 

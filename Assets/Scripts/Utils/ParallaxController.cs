@@ -38,14 +38,13 @@ public class ParallaxController : MonoBehaviour
             {
                 if (mat[i].HasProperty("_BaseMap")) _texProp = "_BaseMap"; else _texProp = "_MainTex";
             }
-
-            // חשוב: לא רפיט ב-Y
+            
             var tex = mat[i].GetTexture(_texProp);
             if (tex != null)
             {
 #if UNITY_2017_1_OR_NEWER
-                tex.wrapModeU = TextureWrapMode.Repeat; // X ממשיך להיות אינסופי
-                tex.wrapModeV = TextureWrapMode.Clamp;  // Y ננעל — ללא רפיט אנכי
+                tex.wrapModeU = TextureWrapMode.Repeat;
+                tex.wrapModeV = TextureWrapMode.Clamp;
 #else
                 tex.wrapMode = TextureWrapMode.Clamp;   // (לגרסאות ישנות—ינעל גם X)
 #endif
@@ -72,14 +71,12 @@ public class ParallaxController : MonoBehaviour
 
     void LateUpdate()
     {
-        // הקבוצה זזה עם המצלמה גם ב-Y (כל התמונה עולה/יורדת כיחידה אחת)
         transform.position = new Vector3(
             cam.position.x + cameraFix.x,
             cam.position.y + cameraFix.y,
             groupStartPos.z + cameraFix.z
         );
-
-        // offset ב-UV רק ב-X (Y=0 כדי שלא תהיה גלילה אנכית של הטקסטורה)
+        
         float dx = cam.position.x - camStartPos.x;
 
         for (int i = 0; i < backgrounds.Length; i++)

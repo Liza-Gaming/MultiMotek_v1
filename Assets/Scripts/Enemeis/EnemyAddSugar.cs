@@ -4,10 +4,9 @@ using UnityEngine;
 public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
 {
     public float sugarAmount = 10f;
-
-    // ערכים בשביל הבופה (כמו שהגדרת)
+    
     [SerializeField] private float EnemyAmount = 16f;
-    [SerializeField] private float EnemyDurationGameMin = 180f; // שעתיים
+    [SerializeField] private float EnemyDurationGameMin = 180f;
     [SerializeField] private float EnemyDelayGameMin    = 15f;
 
     public void ApplyEffect(GameObject playerObj)
@@ -20,8 +19,7 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
 
             var pm = playerObj.GetComponent<PlayerManager>();
             pm?.SuppressSugarArrowRealSeconds(2f);
-
-            // מפעילים את האפקט המדורג (ללא חץ)
+            
             SugarMeter.Instance?.ScheduleEffectGame(
                 EnemyAmount,
                 durationGameMin: EnemyDurationGameMin,
@@ -29,8 +27,7 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
             );
             return;
         }
-
-        // מקרה רגיל (לא בופה) – נשאר כמו שהיה
+        
         if (SugarMeter.Instance != null)
         {
             SugarMeter.Instance.AddSugarGame(sugarAmount);

@@ -76,8 +76,7 @@ public class Pause : MonoBehaviour
         
         var btn = resumeBtn ? resumeBtn.GetComponent<Button>() : null;
         if (btn) EventSystem.current?.SetSelectedGameObject(btn.gameObject);
-
-        // למחשב
+        
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
@@ -100,7 +99,6 @@ public class Pause : MonoBehaviour
         SetActiveSafe(pauseBtn, true);
 
         FadePauseBlur(false);
-        // if (pauseAudio) AudioListener.pause = false;
     }
 
     void Awake()

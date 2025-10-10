@@ -17,7 +17,7 @@ public class CameraMover : MonoBehaviour
     private void OnEnable() {
         SceneManager.sceneLoaded += OnSceneLoaded;
         TryResolvePlayer();
-        ApplyBoundsForScene(SceneManager.GetActiveScene()); // גם כשעולים פעם ראשונה
+        ApplyBoundsForScene(SceneManager.GetActiveScene());
     }
 
     private void OnDisable() {

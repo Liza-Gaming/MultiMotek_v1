@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.UI; // או TMP_Text אם את על TMP
+using UnityEngine.UI;
 
 public class TrainerTreadmillTimer : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] private EnemyStartTreadmill source;
-    [SerializeField] private Text label; // אם TMP: TMP_Text
+    [SerializeField] private Text label;
 
     [Header("Look & Placement")]
     [SerializeField] private Vector3 localOffset = new Vector3(0f, 1.6f, 0f);
@@ -18,10 +18,9 @@ public class TrainerTreadmillTimer : MonoBehaviour
     private enum Mode { Idle, Active, Cooldown }
     private Mode _mode = Mode.Idle;
 
-    private float _remainingGameSeconds; // לסשן ההליכון
-    private float _remainingRealSeconds; // לקירור
-
-    // NEW: נשמור את הצבע המקורי מהאינספקטור
+    private float _remainingGameSeconds;
+    private float _remainingRealSeconds;
+    
     private Color _originalLabelColor;
     private bool _hasOriginalColor;
 
@@ -33,8 +32,7 @@ public class TrainerTreadmillTimer : MonoBehaviour
     private void Awake()
     {
         transform.localPosition = localOffset;
-
-        // >>> קלטת הצבע שהוגדר באינספקטור לסצנה הזו
+        
         if (label)
         {
             _originalLabelColor = label.color;
@@ -63,7 +61,6 @@ public class TrainerTreadmillTimer : MonoBehaviour
             source.TreadmillEnded -= OnEndSession;
             source.CooldownStartedRealSeconds -= OnCooldownStart;
         }
-        // אופציונלי: כשמכבים את האובייקט נחזיר לצבע המקורי
         if (label && _hasOriginalColor) label.color = _originalLabelColor;
     }
 
@@ -82,7 +79,7 @@ public class TrainerTreadmillTimer : MonoBehaviour
                 {
                     _remainingGameSeconds = 0f;
                     UpdateLabelSeconds(0);
-                    // מעבר ל-Idle יקרה כשנקבל OnEndSession
+
                 }
                 else
                 {
@@ -92,14 +89,14 @@ public class TrainerTreadmillTimer : MonoBehaviour
             }
             case Mode.Cooldown:
             {
-                // אם השתמשת ב-WaitForSecondsRealtime בקורוטינה – העדיפי unscaledDeltaTime כאן
-                float dt = Time.deltaTime; // או: Time.unscaledDeltaTime
+
+                float dt = Time.deltaTime;
                 _remainingRealSeconds -= dt;
 
                 if (_remainingRealSeconds <= 0f)
                 {
                     _remainingRealSeconds = 0f;
-                    ShowIdle(); // חוזרים לצבע המקורי + 20:00
+                    ShowIdle();
                 }
                 else
                 {
@@ -112,14 +109,12 @@ public class TrainerTreadmillTimer : MonoBehaviour
                 break;
         }
     }
-
-    // ---- EVENT HANDLERS ----
+    
     private void OnStartSession(float totalGameSeconds)
     {
         _mode = Mode.Active;
         _remainingGameSeconds = totalGameSeconds;
-
-        // >>> תחילת סשן – נחזור לצבע המקורי שהוגדר בסצנה
+        
         if (label && _hasOriginalColor) label.color = _originalLabelColor;
 
         UpdateLabelSeconds(_remainingGameSeconds);
@@ -127,7 +122,7 @@ public class TrainerTreadmillTimer : MonoBehaviour
 
     private void OnEndSession()
     {
-        // נמתין ל-OnCooldownStart שיגיע מהמאמן
+
     }
 
     private void OnCooldownStart(float cooldownRealSeconds)
@@ -135,7 +130,7 @@ public class TrainerTreadmillTimer : MonoBehaviour
         _mode = Mode.Cooldown;
         _remainingRealSeconds = cooldownRealSeconds;
 
-        // >>> בזמן קירור – נטינט לצבע הקירור
+
         if (label) label.color = cooldownColor;
 
         UpdateLabelSeconds(_remainingRealSeconds);
@@ -147,7 +142,7 @@ public class TrainerTreadmillTimer : MonoBehaviour
         _mode = Mode.Idle;
         if (!label) return;
 
-        // >>> מצב מנוחה – תמיד יחזור לצבע המקורי מהאינספקטור
+
         if (_hasOriginalColor) label.color = _originalLabelColor;
 
         label.text = $"{defaultMinutes:00}:00";
