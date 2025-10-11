@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class Timer : MonoBehaviour
+
+public class Timer : MonoBehaviour, IClockProvider
 {
     public static Timer Instance { get; private set; }
 
@@ -36,13 +37,15 @@ public class Timer : MonoBehaviour
     [SerializeField, Range(0,23)] private int alarmHour   = 7;
     [SerializeField, Range(0,59)] private int alarmMinute = 0;
 
-    public event Action<long> OnDailyAlarm; // dayCount
+    public event Action<long> OnDailyAlarm;
     
     private double nextAlarmAbs;
 
-
     public event Action<long> OnNewDay;
 
+    // ממשק IClockProvider
+    public int CurrentHour => Mathf.FloorToInt(secondsSinceMidnight / 3600f) % 24;
+    public int CurrentMinute => Mathf.FloorToInt((secondsSinceMidnight % 3600f) / 60f);
 
     private static bool  s_hasSaved;
     private static float s_savedSeconds;
@@ -95,7 +98,6 @@ public class Timer : MonoBehaviour
     {
         skipFramesAfterLoad          = 1;
         suppressNewDayUntilUnscaled  = Time.unscaledTime + newDayGraceAfterLoad;
-        
     }
 
     private void Update()
@@ -137,11 +139,10 @@ public class Timer : MonoBehaviour
         UpdateClockUI();
     }
 
-
     private void UpdateClockUI()
     {
-        int h = Mathf.FloorToInt(secondsSinceMidnight / 3600f) % 24;
-        int m = Mathf.FloorToInt((secondsSinceMidnight % 3600f) / 60f);
+        int h = CurrentHour;
+        int m = CurrentMinute;
         if (clockText) clockText.text = $"{h:00}:{m:00}";
         if (background) background.enabled = true;
     }
@@ -185,9 +186,7 @@ public class Timer : MonoBehaviour
 
     public (int hour, int minute) GetCurrentTime()
     {
-        int h = Mathf.FloorToInt(secondsSinceMidnight / 3600f) % 24;
-        int m = Mathf.FloorToInt((secondsSinceMidnight % 3600f) / 60f);
-        return (h, m);
+        return (CurrentHour, CurrentMinute);
     }
 
     public long GetDayCount() => dayCount;
@@ -221,6 +220,10 @@ public static class GameTime
 
     public static float GameMinutesToRealSeconds(float gameMinutes) => GameSecondsToRealSeconds(gameMinutes * 60f);
     public static float GameHoursToRealSeconds  (float gameHours)   => GameSecondsToRealSeconds(gameHours * 3600f);
-    
+}
 
+public interface IClockProvider
+{
+    int CurrentHour { get; }
+    int CurrentMinute { get; }
 }

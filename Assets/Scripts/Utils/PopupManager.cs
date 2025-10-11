@@ -10,6 +10,11 @@ public class PopupManager : MonoBehaviour
     [SerializeField] private int firstSceneBuildIndex = 1;
     [SerializeField] private int stage3BuildIndex = 3;
 
+    // ✅ הוספה: איזה שלב מדכא את הפופאפ היומי
+    [Header("Per-scene suppression")]
+    [SerializeField] private int suppressDailyPopupBuildIndex = 4; // Level 4
+    private bool _suppressDailyThisScene; // דגל ריצה לסצנה הנוכחית
+
     [Header("Optional refs")]
     [SerializeField] private PlayerMover playerMover;
     [SerializeField] private SugarMeter  sugarMeter;
@@ -17,19 +22,14 @@ public class PopupManager : MonoBehaviour
     [System.Serializable]
     public class UIPopup
     {
-
         public string id = "popup";
-
-        [Header("UI")]
-        public GameObject panel;
-        public Animator   animator;
-
+        [Header("UI")] public GameObject panel;
+        public Animator animator;
         [Header("Behaviour")]
         public bool lockPlayerInput = true;
         public bool pauseTimerOnlyInFirstScene = true;
         public bool pauseHearts = true;
         public bool showOnceGlobally = false;
-
         [HideInInspector] public bool shownOnce;
     }
 
@@ -45,7 +45,6 @@ public class PopupManager : MonoBehaviour
     private bool pausedTimerByMe;
     private bool pausedHeartsByMe;
     private float? savedBaselineRate;
-    
     private static bool s_didGlobalPauseOnce = false;
 
     private void Awake()
@@ -78,12 +77,20 @@ public class PopupManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        ForceCloseCurrentWithoutRestore(); 
+        // עדכון דגל ההשתקה לפי הסצנה הנוכחית
+        _suppressDailyThisScene = (scene.buildIndex == suppressDailyPopupBuildIndex);
+
+        // אם נכנסנו לשלב 4 עם פופאפ פתוח – לסגור אותו
+        ForceCloseCurrentWithoutRestore();
+
         TryShowStage3IfNeeded();
     }
 
     private void OnDailyAlarm(long dayCount)
     {
+        // ✅ דיכוי הפופאפ היומי רק בשלב 4
+        if (_suppressDailyThisScene) return;
+
         TryShow(dailyPopup);
     }
 
@@ -102,10 +109,8 @@ public class PopupManager : MonoBehaviour
         if (current != null) return;
         if (popup.showOnceGlobally && popup.shownOnce) return;
 
-
         if (playerMover == null) playerMover = FindObjectOfType<PlayerMover>();
         if (sugarMeter  == null) sugarMeter  = SugarMeter.Instance ?? FindObjectOfType<SugarMeter>();
-
 
         current = popup;
         current.shownOnce = true;
@@ -186,7 +191,6 @@ public class PopupManager : MonoBehaviour
         if (dailyPopup  != null && dailyPopup.panel  != null) dailyPopup.panel.SetActive(false);
         if (stage3Popup != null && stage3Popup.panel != null) stage3Popup.panel.SetActive(false);
     }
-
 
     public void ResetRuntimeState()
     {

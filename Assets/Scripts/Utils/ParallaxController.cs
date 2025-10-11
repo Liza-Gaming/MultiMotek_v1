@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ParallaxController : MonoBehaviour
 {
@@ -7,8 +8,8 @@ public class ParallaxController : MonoBehaviour
     Vector3 groupStartPos;
     public Vector3 cameraFix;
 
-    GameObject[] backgrounds;
-    Material[] mat;
+    Renderer[] renderers;          // כל הרנדררים בכל הצאצאים
+    Material[] mats;
     float[] backSpeed;
     float farthestBack;
 
@@ -23,50 +24,60 @@ public class ParallaxController : MonoBehaviour
         camStartPos = cam.position;
         groupStartPos = transform.position;
 
-        int n = transform.childCount;
-        mat = new Material[n];
-        backSpeed = new float[n];
-        backgrounds = new GameObject[n];
+        BuildLists();
+        BackSpeedCalculate();
+    }
 
-        for (int i = 0; i < n; i++)
+    void BuildLists()
+    {
+        renderers = GetComponentsInChildren<Renderer>(true); // גם אם מושבת
+        var matsList = new List<Material>();
+        backSpeed = new float[renderers.Length];
+
+        for (int i = 0; i < renderers.Length; i++)
         {
-            backgrounds[i] = transform.GetChild(i).gameObject;
-            var r = backgrounds[i].GetComponent<Renderer>();
-            mat[i] = r.material;
+            var r = renderers[i];
+            var m = r.material; // אינסטנס פר רנדרר
+            matsList.Add(m);
 
             if (i == 0)
             {
-                if (mat[i].HasProperty("_BaseMap")) _texProp = "_BaseMap"; else _texProp = "_MainTex";
+                if (m.HasProperty("_BaseMap")) _texProp = "_BaseMap"; else _texProp = "_MainTex";
             }
-            
-            var tex = mat[i].GetTexture(_texProp);
+
+            var tex = m.GetTexture(_texProp);
             if (tex != null)
             {
 #if UNITY_2017_1_OR_NEWER
                 tex.wrapModeU = TextureWrapMode.Repeat;
                 tex.wrapModeV = TextureWrapMode.Clamp;
 #else
-                tex.wrapMode = TextureWrapMode.Clamp;   // (לגרסאות ישנות—ינעל גם X)
+                tex.wrapMode = TextureWrapMode.Clamp;
 #endif
             }
         }
-
-        BackSpeedCalculate(n);
+        mats = matsList.ToArray();
     }
 
-    void BackSpeedCalculate(int n)
+    void BackSpeedCalculate()
     {
         farthestBack = 0f;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < renderers.Length; i++)
         {
-            float depth = backgrounds[i].transform.position.z - cam.position.z;
+            float depth = renderers[i].transform.position.z - cam.position.z;
             if (depth > farthestBack) farthestBack = depth;
         }
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < renderers.Length; i++)
         {
-            float depth = backgrounds[i].transform.position.z - cam.position.z;
+            float depth = renderers[i].transform.position.z - cam.position.z;
             backSpeed[i] = 1f - depth / Mathf.Max(0.0001f, farthestBack);
         }
+    }
+
+    public void Rebuild() // אם הוספת/הסרת שכבות בזמן ריצה
+    {
+        BuildLists();
+        BackSpeedCalculate();
     }
 
     void LateUpdate()
@@ -76,13 +87,13 @@ public class ParallaxController : MonoBehaviour
             cam.position.y + cameraFix.y,
             groupStartPos.z + cameraFix.z
         );
-        
+
         float dx = cam.position.x - camStartPos.x;
 
-        for (int i = 0; i < backgrounds.Length; i++)
+        for (int i = 0; i < mats.Length; i++)
         {
             float speed = backSpeed[i] * parallaxSpeed;
-            mat[i].SetTextureOffset(_texProp, new Vector2(dx * speed, 0f));
+            mats[i].SetTextureOffset(_texProp, new Vector2(dx * speed, 0f));
         }
     }
 }

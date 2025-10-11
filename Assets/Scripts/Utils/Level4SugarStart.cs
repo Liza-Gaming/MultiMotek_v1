@@ -5,7 +5,6 @@ public class Level4SugarStart : MonoBehaviour
 {
     [SerializeField] private float levelStartSugar = 80f;
     [SerializeField] private float uiGraceSeconds  = 1.5f;
-
     private void Awake()
     {
         var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
