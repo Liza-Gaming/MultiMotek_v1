@@ -13,24 +13,23 @@ public class DailyPopupController : MonoBehaviour
     [SerializeField] private float showDelayOnStart  = 0.05f;
     [SerializeField] private bool unlockInventoryOnConfirm = true;
 
+    // 1. להוסיף את ההפניה הזו
+    [Header("Dependencies")]
+    [Tooltip("אופציונלי: אם צוין, הפופאפ ימתין לסיום ההדרכה לפני שהוא מוצג")]
+    [SerializeField] private TutorialSlideshow tutorial;
+
     [Header("Timer pause policy")]
     [Tooltip("לעצור את השעון רק כשהפופאפ פתוח בסצנה הראשונה")]
     [SerializeField] private bool pauseTimerOnlyInFirstScene = true;
 
     [Tooltip("איזו סצנה נחשבת 'ראשונה' לפי Build Index")]
     [SerializeField] private int firstSceneBuildIndex = 1;
-    
-    //[SerializeField] private string firstSceneName = "Intro";
 
     private PlayerMover playerMover;
     private bool isShowing = false;
-    
     private bool pausedTimerByMe = false;
-    
     private float? savedBaselineRate;
-    
     private bool pausedHeartsByMe = false;
-    
     private static bool s_didGlobalPauseOnce = false;
     private bool didGlobalPauseThisShow = false;
 
@@ -39,6 +38,9 @@ public class DailyPopupController : MonoBehaviour
         if (popupPanel != null) popupPanel.SetActive(false);
     }
 
+    // ... (OnEnable, WaitForTimerThenSubscribe, OnDisable, HandleDailyAlarm, IsFirstScene, ShouldDoGlobalPauseNow נשארים זהים) ...
+    // ...
+    // ...
     private void OnEnable()
     {
         if (Timer.Instance != null) Timer.Instance.OnDailyAlarm += HandleDailyAlarm;
@@ -76,16 +78,34 @@ public class DailyPopupController : MonoBehaviour
 
     private bool ShouldDoGlobalPauseNow()
     {
-
         return pauseTimerOnlyInFirstScene && IsFirstScene() && !s_didGlobalPauseOnce;
     }
-    
 
+    // 2. לשנות את Start
     private void Start()
     {
+        // ננסה למצוא אוטומטית אם לא שויך ב-Inspector
+        if (tutorial == null)
+        {
+            tutorial = FindFirstObjectByType<TutorialSlideshow>();
+        }
+
+        // נבדוק אם ההדרכה קיימת ועומדת להיות מוצגת
+        bool tutorialIsPending = (tutorial != null && tutorial.IsPendingOrActive());
+
         if (showOnSceneStart)
         {
-            StartCoroutine(ShowAfterDelay(showDelayOnStart));
+            if (tutorialIsPending)
+            {
+                // ההדרכה קיימת ותפעל.
+                // *לא* נפעיל את הפופאפ עכשיו.
+                // נחכה שהאירוע 'onTutorialClosed' יקרא לפונקציה שלנו.
+            }
+            else
+            {
+                // אין הדרכה, נפעיל את הפופאפ כרגיל
+                StartCoroutine(ShowAfterDelay(showDelayOnStart));
+            }
         }
     }
 
@@ -106,7 +126,8 @@ public class DailyPopupController : MonoBehaviour
         return IsFirstScene();
     }
 
-    private void ShowPopup()
+    // 3. לשנות את החתימה ל-public
+    public void ShowPopup()
     {
         if (isShowing) return;
 
@@ -139,10 +160,23 @@ public class DailyPopupController : MonoBehaviour
             }
         }
     }
+    
+    // 4. להוסיף את הפונקציה הציבורית הזו
+    // זו הפונקציה שנקרא לה מה-UnityEvent של ההדרכה
+    public void ShowPopupAfterTutorial()
+    {
+        // נציג את הפופאפ רק אם הוא באמת היה אמור להיות מוצג בתחילת הסצנה
+        if (showOnSceneStart)
+        {
+            // אפשר לקרוא ל-ShowPopup ישירות, או עם ה-delay אם רוצים
+            StartCoroutine(ShowAfterDelay(showDelayOnStart));
+        }
+    }
 
 
     public void ClosePopup()
     {
+        // ... (הקוד של ClosePopup נשאר זהה) ...
         if (!isShowing) return;
 
         if (instructionsAnimator) instructionsAnimator.SetTrigger("Hide");
@@ -165,8 +199,8 @@ public class DailyPopupController : MonoBehaviour
             didGlobalPauseThisShow = false;
         }
     }
-
     
+    // ... (TryRestore ו-TryUnpauseTimer נשארים זהים) ...
     
     private void TryRestore() {
         var sm = SugarMeter.Instance;

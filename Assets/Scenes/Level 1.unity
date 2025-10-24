@@ -4586,8 +4586,8 @@ MonoBehaviour:
   volume: {fileID: 1548993838}
   sugarMeter: {fileID: 1671181921}
   blurStartSugar: 60
-  maxBlurAtSugar: 20
-  blurEndSugar: 19
+  maxBlurAtSugar: 45
+  blurEndSugar: 20
   overallStrength: 1
   transitionType: 0
   discreteSteps: 4
@@ -29945,7 +29945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b29c68274d37a1e40ad1c79335bc9281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSugar: 100
+  startSugar: 70
   sugarDecreaseRate: 5
   maxHearts: 5
   minSugar: 70

@@ -1,24 +1,45 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LevelMenu : MonoBehaviour
 {
-    
-    public Button[] buttons;
+    [Header("Panels")]
+    [SerializeField] private GameObject storyPanel;
+    [SerializeField] private GameObject levelPanel;
 
-    private void Awake()
+    [Header("Level Buttons")]
+    [SerializeField] private Button[] buttons;
+
+    [Header("Story Button")]
+    [SerializeField] private Button continueButton;
+
+    private void Start()
+    {
+
+        if (storyPanel) storyPanel.SetActive(true);
+        if (levelPanel) levelPanel.SetActive(false);
+        
+        if (continueButton)
+            continueButton.onClick.AddListener(OnContinueStory);
+        
+        InitLevelButtons();
+    }
+
+    private void InitLevelButtons()
     {
         int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
+
         for (int i = 0; i < buttons.Length; i++)
         {
-            buttons[i].interactable = false;
+            if (buttons[i])
+                buttons[i].interactable = (i < unlockedLevel);
         }
+    }
 
-        for (int i = 0; i < unlockedLevel; i++)
-        {
-            buttons[i].interactable = true;
-        }
+    public void OnContinueStory()
+    {
+        if (storyPanel) storyPanel.SetActive(false);
+        if (levelPanel) levelPanel.SetActive(true);
     }
 
     public void OpenLevel(int levelId)
@@ -26,5 +47,9 @@ public class LevelMenu : MonoBehaviour
         string levelName = "Level " + levelId;
         AppFlow.StartStandalone(levelName, this);
     }
-    
+
+    public void CloseLevel()
+    {
+        levelPanel.SetActive(false);
+    }
 }
