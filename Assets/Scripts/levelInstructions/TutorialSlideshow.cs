@@ -1,248 +1,176 @@
 ﻿using System.Collections.Generic;
-
 using UnityEngine;
-
 using UnityEngine.UI;
 
-
-
 public class TutorialSlideshow : MonoBehaviour
-
 {
-
-[Header("Wiring")]
-
-[SerializeField] private GameObject rootPanel;
-
-[SerializeField] private Image slideImage;
-
-[SerializeField] private Button prevButton;
-
-[SerializeField] private Button nextButton;
-
-
-
-[Header("Slides")]
-
-[SerializeField] private List<Sprite> slides = new List<Sprite>();
-
-
-
-[Header("Behavior")]
-
-[Tooltip("כאשר לוחצים 'ימינה' על השקופית האחרונה – לסגור את הפאנל")]
-
-[SerializeField] private bool closeOnLastNext = true;
-
-
-
-[Tooltip("להציג רק פעם אחת בשלב הזה (נשמר ב-PlayerPrefs)")]
-
-[SerializeField] private bool showOnce = true;
-
-
-
-[Tooltip("מפתח לשמירה אם כבר הוצג (החליפי לפי שם השלב)")]
-
-[SerializeField] private string playerPrefsKey = "Level1_TutorialShown";
-
-
-
-private int index = 0;
-
-
-
-private void Awake()
-
-{
-
-if (prevButton) prevButton.onClick.AddListener(OnPrev);
-
-if (nextButton) nextButton.onClick.AddListener(OnNext);
-
-
-
-// אם אין הפניות – ננסה לנחש את ה-rootPanel כאובייקט הנוכחי
-
-if (!rootPanel) rootPanel = gameObject;
-
-}
-
-
-
-private void Start()
-
-{
-
-// להציג פעם אחת בלבד?
-
-if (showOnce && PlayerPrefs.GetInt(playerPrefsKey, 0) == 1)
-
-{
-
-if (rootPanel) rootPanel.SetActive(false);
-
-enabled = false;
-
-return;
-
-}
-
-
-
-// להבטיח שיש מה להציג
-
-if (slides == null || slides.Count == 0 || slideImage == null)
-
-{
-
-Debug.LogWarning("[TutorialSlideshow] No slides or slideImage assigned");
-
-if (rootPanel) rootPanel.SetActive(false);
-
-enabled = false;
-
-return;
-
-}
-
-
-
-index = 0;
-
-if (rootPanel) rootPanel.SetActive(true);
-
-ApplySlide();
-
-UpdateButtons();
-
-}
-
-
-
-private void OnPrev()
-
-{
-
-if (index > 0)
-
-{
-
-index--;
-
-ApplySlide();
-
-UpdateButtons();
-
-}
-
-}
-
-
-
-private void OnNext()
-
-{
-
-if (index < slides.Count - 1)
-
-{
-
-index++;
-
-ApplySlide();
-
-UpdateButtons();
-
-}
-
-else
-
-{
-
-// אנחנו בשקופית האחרונה
-
-if (closeOnLastNext)
-
-{
-
-ClosePanel();
-
-}
-
-}
-
-}
-
-
-
-private void ApplySlide()
-
-{
-
-if (slideImage && index >= 0 && index < slides.Count)
-
-{
-
-slideImage.sprite = slides[index];
-
-
-
-//slideImage.SetNativeSize();
-
-}
-
-}
-
-
-
-private void UpdateButtons()
-
-{
-
-if (prevButton) prevButton.interactable = index > 0;
-
-
-
-if (nextButton)
-
-{
-
-nextButton.interactable = true;
-
-}
-
-}
-
-
-
-private void ClosePanel()
-
-{
-
-if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
-
-if (rootPanel) rootPanel.SetActive(false);
-
-
-
-}
-
-
-private void Update()
-
-{
-
-if (!rootPanel || !rootPanel.activeSelf) return;
-
-
-
-if (Input.GetKeyDown(KeyCode.RightArrow)) OnNext();
-
-if (Input.GetKeyDown(KeyCode.LeftArrow)) OnPrev();
-
-if (Input.GetKeyDown(KeyCode.Escape)) ClosePanel();
-
-}
-
+    [Header("Wiring")]
+    [SerializeField] private GameObject rootPanel;
+    [SerializeField] private Image slideImage;
+    [SerializeField] private Button prevButton;
+    [SerializeField] private Button nextButton;
+
+    [Header("Slides")]
+    [SerializeField] private List<Sprite> slides = new List<Sprite>();
+
+    [Header("Behavior")]
+    [SerializeField] private bool closeOnLastNext = true;
+    [SerializeField] private bool showOnce = true;
+    [SerializeField] private string playerPrefsKey = "Level1_TutorialShown";
+
+    // --- NEW ---
+    [Header("Timer policy")]
+    [Tooltip("לעצור את הטיימר בזמן שההוראות פתוחות")]
+    [SerializeField] private bool pauseTimerWhileOpen = true;
+    private bool pausedTimerByMe = false;
+
+    // --- Character bubble (כמו שהיה) ---
+    [Header("Guide Character (alternates every slide)")]
+    [SerializeField] private Image characterImage;
+    [SerializeField] private Sprite girlSprite;
+    [SerializeField] private Sprite boySprite;
+    [SerializeField] private bool startWithGirl = true;
+    [SerializeField] private bool alternateByIndex = true;
+
+    private int index = 0;
+
+    private void Awake()
+    {
+        if (prevButton) prevButton.onClick.AddListener(OnPrev);
+        if (nextButton) nextButton.onClick.AddListener(OnNext);
+        if (!rootPanel) rootPanel = gameObject;
+    }
+
+    private void Start()
+    {
+        if (showOnce && PlayerPrefs.GetInt(playerPrefsKey, 0) == 1)
+        {
+            if (rootPanel) rootPanel.SetActive(false);
+            enabled = false;
+            return;
+        }
+
+        if (slides == null || slides.Count == 0 || slideImage == null)
+        {
+            Debug.LogWarning("[TutorialSlideshow] No slides or slideImage assigned");
+            if (rootPanel) rootPanel.SetActive(false);
+            enabled = false;
+            return;
+        }
+
+        index = 0;
+        if (rootPanel) rootPanel.SetActive(true);
+
+        // --- NEW: Pause timer when opening the tutorial ---
+        TryPauseTimer();
+
+        ApplySlide();
+        ApplyCharacter();
+        UpdateButtons();
+    }
+
+    private void OnDisable()
+    {
+        // אם מישהו השבית את האובייקט/קומפוננט – לשחרר את ההשהייה אם היא שלנו
+        TryUnpauseTimer();
+    }
+
+    private void OnPrev()
+    {
+        if (index > 0)
+        {
+            index--;
+            ApplySlide();
+            ApplyCharacter();
+            UpdateButtons();
+        }
+    }
+
+    private void OnNext()
+    {
+        if (index < slides.Count - 1)
+        {
+            index++;
+            ApplySlide();
+            ApplyCharacter();
+            UpdateButtons();
+        }
+        else
+        {
+            // סוף הוראות – לפתוח מה שצריך ואז לסגור/לשחרר
+            if (PopupManager.Instance != null)
+                PopupManager.Instance.ShowDailyFromTutorialGate();
+
+            if (closeOnLastNext)
+                ClosePanel();
+        }
+    }
+
+    private void ApplySlide()
+    {
+        if (slideImage && index >= 0 && index < slides.Count)
+        {
+            slideImage.sprite = slides[index];
+        }
+    }
+
+    private void ApplyCharacter()
+    {
+        if (!characterImage) return;
+        if (!alternateByIndex)
+        {
+            characterImage.sprite = startWithGirl ? girlSprite : boySprite;
+            characterImage.enabled = characterImage.sprite != null;
+            return;
+        }
+
+        bool showGirl = (index % 2 == 0) == startWithGirl;
+        characterImage.sprite = showGirl ? girlSprite : boySprite;
+        characterImage.enabled = characterImage.sprite != null;
+    }
+
+    private void UpdateButtons()
+    {
+        if (prevButton) prevButton.interactable = index > 0;
+        if (nextButton) nextButton.interactable = true;
+    }
+
+    private void ClosePanel()
+    {
+        if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
+        if (rootPanel) rootPanel.SetActive(false);
+
+        // --- NEW: resume timer when closing ---
+        TryUnpauseTimer();
+    }
+
+    private void Update()
+    {
+        if (!rootPanel || !rootPanel.activeSelf) return;
+
+        if (Input.GetKeyDown(KeyCode.RightArrow)) OnNext();
+        if (Input.GetKeyDown(KeyCode.LeftArrow))  OnPrev();
+        if (Input.GetKeyDown(KeyCode.Escape))     ClosePanel();
+    }
+
+    // --- NEW: timer helpers ---
+    private void TryPauseTimer()
+    {
+        if (!pauseTimerWhileOpen) return;
+        if (Timer.Instance != null && !pausedTimerByMe)
+        {
+            Timer.Instance.PauseClock(true);
+            pausedTimerByMe = true;
+        }
+    }
+
+    private void TryUnpauseTimer()
+    {
+        if (!pauseTimerWhileOpen) return;
+        if (pausedTimerByMe && Timer.Instance != null)
+        {
+            Timer.Instance.PauseClock(false);
+            pausedTimerByMe = false;
+        }
+    }
 }

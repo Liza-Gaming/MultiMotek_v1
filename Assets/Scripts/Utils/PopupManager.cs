@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 public class PopupManager : MonoBehaviour
 {
     public static PopupManager Instance { get; private set; }
+    
+    [Header("Daily gating")]
+    [SerializeField] private bool requireTutorialGate = true;
+    private bool _tutorialGateOpened = false;
 
     [Header("Global scene rules")]
     [SerializeField] private int firstSceneBuildIndex = 1;
@@ -84,14 +88,6 @@ public class PopupManager : MonoBehaviour
         ForceCloseCurrentWithoutRestore();
 
         TryShowStage3IfNeeded();
-    }
-
-    private void OnDailyAlarm(long dayCount)
-    {
-        // ✅ דיכוי הפופאפ היומי רק בשלב 4
-        if (_suppressDailyThisScene) return;
-
-        TryShow(dailyPopup);
     }
 
     private bool IsFirstScene() =>
@@ -198,5 +194,30 @@ public class PopupManager : MonoBehaviour
         if (dailyPopup  != null) dailyPopup.shownOnce  = false;
         if (stage3Popup != null) stage3Popup.shownOnce = false;
         ForceCloseCurrentWithoutRestore();
+    }
+    
+    public void ShowDailyFromTutorialGate()
+    {
+        _tutorialGateOpened = true;
+        TryShowDailyIfAllowed();
+    }
+    
+    private void TryShowDailyIfAllowed()
+    {
+        // דיכוי בשלב מסוים?
+        if (_suppressDailyThisScene) return;
+
+        // חייבים שהשער יהיה פתוח (אם נדרש)
+        if (requireTutorialGate && !_tutorialGateOpened) return;
+
+        // רק בסצנה הראשונה
+        if (!IsFirstScene()) return;
+
+        TryShow(dailyPopup);
+    }
+    
+    private void OnDailyAlarm(long dayCount)
+    {
+        TryShowDailyIfAllowed();
     }
 }

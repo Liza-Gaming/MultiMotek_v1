@@ -4,6 +4,8 @@ using System.Collections;
 
 public class DailyPopupController : MonoBehaviour
 {
+    public static DailyPopupController Instance { get; private set; }
+
     [Header("Refs")]
     [SerializeField] private GameObject popupPanel;
     [SerializeField] private Animator instructionsAnimator;
@@ -14,13 +16,8 @@ public class DailyPopupController : MonoBehaviour
     [SerializeField] private bool unlockInventoryOnConfirm = true;
 
     [Header("Timer pause policy")]
-    [Tooltip("לעצור את השעון רק כשהפופאפ פתוח בסצנה הראשונה")]
     [SerializeField] private bool pauseTimerOnlyInFirstScene = true;
-
-    [Tooltip("איזו סצנה נחשבת 'ראשונה' לפי Build Index")]
     [SerializeField] private int firstSceneBuildIndex = 1;
-    
-    //[SerializeField] private string firstSceneName = "Intro";
 
     private PlayerMover playerMover;
     private bool isShowing = false;
@@ -34,10 +31,34 @@ public class DailyPopupController : MonoBehaviour
     private static bool s_didGlobalPauseOnce = false;
     private bool didGlobalPauseThisShow = false;
 
+
     private void Awake()
     {
+        Instance = this;
         if (popupPanel != null) popupPanel.SetActive(false);
     }
+
+    private bool IsFirstScene()
+    {
+        var scene = SceneManager.GetActiveScene();
+        return scene.buildIndex == firstSceneBuildIndex;
+    }
+
+    /// <summary>
+    /// קריאה ידנית מההדרכה: פתח את הפופאפ רק אם אנחנו בסצנה הראשונה.
+    /// עובדת גם אם הקומפוננט מושבת, כל עוד האובייקט בסצנה.
+    /// </summary>
+    public void ShowIfFirstScene_FromTutorial()
+    {
+        if (!IsFirstScene()) return;
+
+        // לוודא שהאובייקט והפאנל דולקים
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
+        if (popupPanel != null && !popupPanel.activeSelf) popupPanel.SetActive(true);
+
+        ShowPopup(); // זו הפונקציה הקיימת שלך שמבצעת את כל ההקפאות/אנימציה וכו'
+    }
+
 
     private void OnEnable()
     {
@@ -68,12 +89,6 @@ public class DailyPopupController : MonoBehaviour
         ShowPopup();
     }
     
-    private bool IsFirstScene()
-    {
-        var scene = SceneManager.GetActiveScene();
-        return scene.buildIndex == firstSceneBuildIndex;
-    }
-
     private bool ShouldDoGlobalPauseNow()
     {
 
@@ -93,17 +108,6 @@ public class DailyPopupController : MonoBehaviour
     {
         if (delay > 0f) yield return new WaitForSeconds(delay);
         ShowPopup();
-    }
-
-    private void HandleNewDay(long newDayCount)
-    {
-        ShowPopup();
-    }
-
-    private bool ShouldPauseTimer()
-    {
-        if (!pauseTimerOnlyInFirstScene) return false;
-        return IsFirstScene();
     }
 
     private void ShowPopup()
