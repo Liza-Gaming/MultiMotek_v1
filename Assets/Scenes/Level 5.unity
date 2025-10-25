@@ -46502,7 +46502,7 @@ Transform:
   m_GameObject: {fileID: 2025385564}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -216.99997, y: -469.99997, z: -3.6995778}
+  m_LocalPosition: {x: -242, y: -470, z: -3.6995778}
   m_LocalScale: {x: 1.4627643, y: 1.4627643, z: 1.4627643}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -46747,23 +46747,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42aa24edba7a45cebcf2d1eeb030c27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requireTutorialGate: 1
   firstSceneBuildIndex: 1
-  stage3BuildIndex: 3
+  suppressDailyPopupBuildIndex: 4
   playerMover: {fileID: 1800796066}
   sugarMeter: {fileID: 1800796062}
   dailyPopup:
     id: popup
     panel: {fileID: 1390285287}
     animator: {fileID: 1390285289}
-    lockPlayerInput: 1
-    pauseTimerOnlyInFirstScene: 1
-    pauseHearts: 1
-    showOnceGlobally: 0
-    shownOnce: 0
-  stage3Popup:
-    id: popup
-    panel: {fileID: 1783280407}
-    animator: {fileID: 1783280409}
     lockPlayerInput: 1
     pauseTimerOnlyInFirstScene: 1
     pauseHearts: 1

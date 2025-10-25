@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TutorialSlideshow : MonoBehaviour
@@ -32,7 +33,11 @@ public class TutorialSlideshow : MonoBehaviour
     [SerializeField] private bool startWithGirl = true;
     [SerializeField] private bool alternateByIndex = true;
 
+    [SerializeField] private bool pauseOnlyInFirstScene = true;
+    [SerializeField] private int firstSceneBuildIndex = 1;
     private int index = 0;
+    
+    private PlayerMover playerMover;
 
     private void Awake()
     {
@@ -43,6 +48,11 @@ public class TutorialSlideshow : MonoBehaviour
 
     private void Start()
     {
+        if (playerMover == null)
+            playerMover = FindObjectOfType<PlayerMover>();
+        
+        if (playerMover) playerMover.SetInputLocked(true);
+        
         if (showOnce && PlayerPrefs.GetInt(playerPrefsKey, 0) == 1)
         {
             if (rootPanel) rootPanel.SetActive(false);
@@ -60,8 +70,7 @@ public class TutorialSlideshow : MonoBehaviour
 
         index = 0;
         if (rootPanel) rootPanel.SetActive(true);
-
-        // --- NEW: Pause timer when opening the tutorial ---
+        
         TryPauseTimer();
 
         ApplySlide();
@@ -97,9 +106,11 @@ public class TutorialSlideshow : MonoBehaviour
         }
         else
         {
-            // סוף הוראות – לפתוח מה שצריך ואז לסגור/לשחרר
-            if (PopupManager.Instance != null)
-                PopupManager.Instance.ShowDailyFromTutorialGate();
+            if (SceneManager.GetActiveScene().buildIndex == 1)
+            {
+                if (PopupManager.Instance != null)
+                    PopupManager.Instance.ShowDailyFromTutorialGate();
+            }
 
             if (closeOnLastNext)
                 ClosePanel();
@@ -141,6 +152,7 @@ public class TutorialSlideshow : MonoBehaviour
         if (rootPanel) rootPanel.SetActive(false);
 
         // --- NEW: resume timer when closing ---
+        playerMover.SetInputLocked(false);
         TryUnpauseTimer();
     }
 
@@ -152,11 +164,12 @@ public class TutorialSlideshow : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow))  OnPrev();
         if (Input.GetKeyDown(KeyCode.Escape))     ClosePanel();
     }
-
-    // --- NEW: timer helpers ---
+    
     private void TryPauseTimer()
     {
         if (!pauseTimerWhileOpen) return;
+        if (pauseOnlyInFirstScene && SceneManager.GetActiveScene().buildIndex != firstSceneBuildIndex) return;
+
         if (Timer.Instance != null && !pausedTimerByMe)
         {
             Timer.Instance.PauseClock(true);

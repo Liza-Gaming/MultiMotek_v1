@@ -12,9 +12,7 @@ public class PopupManager : MonoBehaviour
 
     [Header("Global scene rules")]
     [SerializeField] private int firstSceneBuildIndex = 1;
-    [SerializeField] private int stage3BuildIndex = 3;
-
-    // ✅ הוספה: איזה שלב מדכא את הפופאפ היומי
+    
     [Header("Per-scene suppression")]
     [SerializeField] private int suppressDailyPopupBuildIndex = 4; // Level 4
     private bool _suppressDailyThisScene; // דגל ריצה לסצנה הנוכחית
@@ -40,9 +38,7 @@ public class PopupManager : MonoBehaviour
     [Header("Popups")]
     [Tooltip("פופאפ יומי ב-07:00")]
     public UIPopup dailyPopup;
-
-    [Tooltip("פופאפ שיקפוץ כשמגיעים לשלב 3 ומעלה")]
-    public UIPopup stage3Popup;
+    
 
     // --- Runtime state ---
     private UIPopup current;
@@ -86,18 +82,12 @@ public class PopupManager : MonoBehaviour
 
         // אם נכנסנו לשלב 4 עם פופאפ פתוח – לסגור אותו
         ForceCloseCurrentWithoutRestore();
-
-        TryShowStage3IfNeeded();
+        
     }
 
     private bool IsFirstScene() =>
         SceneManager.GetActiveScene().buildIndex == firstSceneBuildIndex;
-
-    private void TryShowStage3IfNeeded()
-    {
-        if (SceneManager.GetActiveScene().buildIndex == stage3BuildIndex)
-            TryShow(stage3Popup);
-    }
+    
     
     public void TryShow(UIPopup popup)
     {
@@ -185,14 +175,12 @@ public class PopupManager : MonoBehaviour
     private void HideAll()
     {
         if (dailyPopup  != null && dailyPopup.panel  != null) dailyPopup.panel.SetActive(false);
-        if (stage3Popup != null && stage3Popup.panel != null) stage3Popup.panel.SetActive(false);
     }
 
     public void ResetRuntimeState()
     {
         s_didGlobalPauseOnce = false;
         if (dailyPopup  != null) dailyPopup.shownOnce  = false;
-        if (stage3Popup != null) stage3Popup.shownOnce = false;
         ForceCloseCurrentWithoutRestore();
     }
     
@@ -204,17 +192,18 @@ public class PopupManager : MonoBehaviour
     
     private void TryShowDailyIfAllowed()
     {
-        // דיכוי בשלב מסוים?
         if (_suppressDailyThisScene) return;
 
-        // חייבים שהשער יהיה פתוח (אם נדרש)
-        if (requireTutorialGate && !_tutorialGateOpened) return;
+        bool inFirstScene = IsFirstScene();
 
-        // רק בסצנה הראשונה
-        if (!IsFirstScene()) return;
+        // רק בסצנה הראשונה הפופאפ תלוי ב-gate של ההדרכה
+        if (inFirstScene && requireTutorialGate && !_tutorialGateOpened)
+            return;
 
+        // בשאר הסצנות אין gate, ולכן לא חוסמים
         TryShow(dailyPopup);
     }
+
     
     private void OnDailyAlarm(long dayCount)
     {

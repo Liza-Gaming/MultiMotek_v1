@@ -118,14 +118,5 @@ public class SugarSummaryUI : MonoBehaviour
             SceneManager.LoadScene(idx);
         }
     }
-    
-    void OnDisable()  { ReleaseGameplayLocks(); }
-    void OnDestroy()  { ReleaseGameplayLocks(); }
-
-    void ReleaseGameplayLocks() {
-        if (Time.timeScale == 0f) Time.timeScale = 1f;
-        var mover = FindFirstObjectByType<PlayerMover>(FindObjectsInactive.Exclude);
-        if (mover) mover.SetInputLocked(false);
-    }
 
 }
