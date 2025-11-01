@@ -67,9 +67,7 @@ public class ItemWorld : MonoBehaviour
         
         var inventory = other.GetComponent<Inventory>();
         if (inventory != null) inventory.AddItem(item);
-
         
-        InfoPanelUI.Instance?.RegisterDiscovery(item);
 
         DestroySelf();
     }

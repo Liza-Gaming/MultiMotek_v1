@@ -16,13 +16,11 @@ public class LevelMenu : MonoBehaviour
     [SerializeField] private LevelPanelEntry[] levelConfirmPanels;
 
     [Header("Story Button")]
-    [SerializeField] private Button continueStoryButton;  // כפתור 'המשך' בפאנל סיפור (אם יש)
+    [SerializeField] private Button continueStoryButton;
 
     [Header("Fade Settings")]
-    [SerializeField, Tooltip("משך הפייד-אין של פאנל האישור")]
     private float confirmFadeInDuration = 0.25f;
-
-    [SerializeField, Tooltip("משך הפייד-אאוט לפני מעבר לשלב")]
+    
     private float confirmFadeOutDuration = 0.25f;
 
     private int _pendingLevelId = -1; // 1-based level id
@@ -36,8 +34,7 @@ public class LevelMenu : MonoBehaviour
 
         if (continueStoryButton)
             continueStoryButton.onClick.AddListener(OnContinueStory);
-
-        // לוודא שלכל פאנל יש CanvasGroup ולהתחיל סגור/שקוף
+        
         PreparePanels();
 
         InitLevelButtons();
@@ -59,7 +56,7 @@ public class LevelMenu : MonoBehaviour
             cg.blocksRaycasts = false;
 
             entry.panel.SetActive(false);
-            levelConfirmPanels[i].canvasGroup = cg; // לשמור רפרנס חזרה במבנה
+            levelConfirmPanels[i].canvasGroup = cg;
         }
     }
 
@@ -77,7 +74,7 @@ public class LevelMenu : MonoBehaviour
     {
         for (int i = 0; i < levelButtons.Length; i++)
         {
-            int idx = i; // לכידת אינדקס
+            int idx = i;
             if (levelButtons[i] != null)
             {
                 levelButtons[i].onClick.RemoveAllListeners();

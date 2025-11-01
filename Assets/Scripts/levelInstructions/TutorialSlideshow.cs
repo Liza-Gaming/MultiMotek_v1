@@ -80,7 +80,6 @@ public class TutorialSlideshow : MonoBehaviour
 
     private void OnDisable()
     {
-        // אם מישהו השבית את האובייקט/קומפוננט – לשחרר את ההשהייה אם היא שלנו
         TryUnpauseTimer();
     }
 
