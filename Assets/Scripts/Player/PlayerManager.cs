@@ -29,6 +29,7 @@ public class PlayerManager : MonoBehaviour
     
     [SerializeField] private SugarBlinkers sugarArrow;
 
+    public bool hasRequiredItem = false;
 
     private void Awake()
     {
@@ -50,18 +51,28 @@ public class PlayerManager : MonoBehaviour
     {
         var sm = SugarMeter.Instance ?? sugarMeter;
         if (sm != null) sm.TimedChangeStarted += OnTimedChangeStarted;
+        
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
         var sm = SugarMeter.Instance ?? sugarMeter;
         if (sm != null) sm.TimedChangeStarted -= OnTimedChangeStarted;
+        
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        hasRequiredItem = false;
     }
 
     private void OnTimedChangeStarted(bool isIncrease, float durationSec)
     {
         if (isIncrease) sugarArrow?.ShowUp(durationSec);
         else            sugarArrow?.ShowDown(durationSec);
+        
     }
 
 

@@ -21,7 +21,18 @@ public class DoorLevelEnd : MonoBehaviour
     [SerializeField] private bool lockPlayerDuringOpen = true;
     [SerializeField] private bool unlockPlayerAfterOpen = false;
 
+    [Header("Locked Feedback UI")]
+    [SerializeField] private GameObject lockedMessageUI;
+    
     private bool _used = false;
+    
+    private void Start()
+    {
+        if (lockedMessageUI != null)
+        {
+            lockedMessageUI.SetActive(false);
+        }
+    }
 
     private void Reset()
     {
@@ -32,6 +43,24 @@ public class DoorLevelEnd : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (_used || !other.CompareTag("Player")) return;
+        
+        
+        PlayerManager collector = other.GetComponent<PlayerManager>();
+        
+        if (collector == null || !collector.hasRequiredItem)
+        {
+            
+            if (lockedMessageUI != null)
+            {
+                lockedMessageUI.SetActive(true);
+            }
+
+            Debug.Log("Door is locked! Find the required item first.");
+            
+            return; 
+        }
+        
+        
         _used = true;
 
         var mover = other.GetComponent<PlayerMover>();
@@ -44,6 +73,19 @@ public class DoorLevelEnd : MonoBehaviour
 
         UnlockNewLevel();
         StartCoroutine(OpenThenSummary(other));
+    }
+    
+    private void OnTriggerExit2D(Collider2D other)
+    {
+
+        if (other.CompareTag("Player"))
+        {
+
+            if (lockedMessageUI != null)
+            {
+                lockedMessageUI.SetActive(false);
+            }
+        }
     }
 
     private IEnumerator OpenThenSummary(Collider2D player)
