@@ -6,8 +6,8 @@ using System.Collections;
 public class LevelMenu : MonoBehaviour
 {
     [Header("Panels")]
-    [SerializeField] private GameObject storyPanel;   // פאנל סיפור פתיחה (רשות)
-    [SerializeField] private GameObject levelsPanel;  // הגריד של כפתורי השלבים
+    [SerializeField] private GameObject storyPanel;
+    [SerializeField] private GameObject levelsPanel;
 
     [Header("Level Buttons (Grid)")]
     [SerializeField] private Button[] levelButtons;   // כפתורי שלבים בתפריט
@@ -22,6 +22,11 @@ public class LevelMenu : MonoBehaviour
     private float confirmFadeInDuration = 0.25f;
     
     private float confirmFadeOutDuration = 0.25f;
+    
+    [Header("Story Gallery")]
+    [SerializeField] private LevelStoryGallery storyGallery;
+    
+    [SerializeField] private DisclaimerManager disclaimerManager;
 
     private int _pendingLevelId = -1; // 1-based level id
     private int _openPanelIndex = -1;
@@ -29,8 +34,9 @@ public class LevelMenu : MonoBehaviour
 
     private void Start()
     {
-        if (storyPanel) storyPanel.SetActive(true);
         if (levelsPanel) levelsPanel.SetActive(false);
+        
+        if (storyGallery != null) storyGallery.HidePanel();
 
         if (continueStoryButton)
             continueStoryButton.onClick.AddListener(OnContinueStory);
@@ -40,7 +46,31 @@ public class LevelMenu : MonoBehaviour
         InitLevelButtons();
         WireLevelButtons();
         WireConfirmPanels();
+        
+        if (disclaimerManager != null)
+        {
+            // קרא למנהל הדיסקליימר.
+            // הפונקציה ShowInitialStoryPanel תופעל רק בסיום.
+            disclaimerManager.CheckDisclaimer(ShowInitialStoryPanel);
+        }
+        else
+        {
+            // אם אין מנהל, פשוט הצג את הפאנל כרגיל.
+            Debug.LogWarning("DisclaimerManager not assigned in LevelMenu!");
+            ShowInitialStoryPanel();
+        }
     }
+    
+    
+    /// <summary>
+    /// פונקציה זו נקראת *אחרי* שהדיסקליימר טופל.
+    /// היא מציגה את פאנל הסיפור הראשון.
+    /// </summary>
+    private void ShowInitialStoryPanel()
+    {
+        if (storyPanel) storyPanel.SetActive(true);
+    }
+    
 
     private void PreparePanels()
     {
@@ -97,13 +127,31 @@ public class LevelMenu : MonoBehaviour
             }
         }
     }
+    
 
     public void OnContinueStory()
     {
         if (storyPanel) storyPanel.SetActive(false);
         if (levelsPanel) levelsPanel.SetActive(true);
     }
+    
+    private void ShowConfirmPanel(int panelIndex)
+    {
+        if (panelIndex < 0 || panelIndex >= levelConfirmPanels.Length) return;
 
+        var entry = levelConfirmPanels[panelIndex];
+        if (!entry.panel) return;
+
+        _openPanelIndex = panelIndex;
+        entry.panel.SetActive(true);
+        StartCoroutine(FadeCanvasGroup(entry.canvasGroup, 0f, 1f, confirmFadeInDuration, after: () =>
+        {
+            entry.canvasGroup.interactable = true;
+            entry.canvasGroup.blocksRaycasts = true;
+        }));
+    }
+    
+    
     private void OnLevelButtonClicked(int buttonIndexZeroBased)
     {
         if (_isFading) return;
@@ -115,21 +163,22 @@ public class LevelMenu : MonoBehaviour
         }
 
         _pendingLevelId = buttonIndexZeroBased + 1;
-
-        // לסגור כל פאנל פתוח אחר
+        
         CloseOpenPanelImmediate();
 
-        // לפתוח את הפאנל המתאים בפייד-אין
         var entry = levelConfirmPanels[buttonIndexZeroBased];
-        if (!entry.panel) return;
 
-        _openPanelIndex = buttonIndexZeroBased;
-        entry.panel.SetActive(true);
-        StartCoroutine(FadeCanvasGroup(entry.canvasGroup, 0f, 1f, confirmFadeInDuration, after: () =>
+        if (entry.showStoryGalleryFirst && entry.storyImages != null && entry.storyImages.Length > 0 && storyGallery != null)
         {
-            entry.canvasGroup.interactable = true;
-            entry.canvasGroup.blocksRaycasts = true;
-        }));
+
+            storyGallery.StartGallery(entry.storyImages, () => {
+                ShowConfirmPanel(buttonIndexZeroBased);
+            });
+        }
+        else
+        {
+            ShowConfirmPanel(buttonIndexZeroBased);
+        }
     }
 
     private void OnConfirmContinue(int panelIndex)
@@ -149,8 +198,7 @@ public class LevelMenu : MonoBehaviour
         }
 
         string levelName = "Level " + _pendingLevelId;
-
-        // לנעול אינטראקציה ולבצע פייד-אאוט ואז מעבר
+        
         var entry = levelConfirmPanels[panelIndex];
         if (entry.canvasGroup)
         {
@@ -159,14 +207,14 @@ public class LevelMenu : MonoBehaviour
 
             StartCoroutine(FadeCanvasGroup(entry.canvasGroup, 1f, 0f, confirmFadeOutDuration, after: () =>
             {
-                // לכבות את הפאנל ואז לטעון את הסצנה
+
                 if (entry.panel) entry.panel.SetActive(false);
                 AppFlow.StartStandalone(levelName, this);
             }));
         }
         else
         {
-            // גיבוי: אם משום מה אין CanvasGroup, נטען מייד
+
             AppFlow.StartStandalone(levelName, this);
         }
     }
@@ -234,5 +282,9 @@ public class LevelMenu : MonoBehaviour
         public GameObject panel;
         public Button continueButton;
         [HideInInspector] public CanvasGroup canvasGroup;
+        
+        [Header("Optional Story Gallery")]
+        public bool showStoryGalleryFirst = false;
+        public Sprite[] storyImages;
     }
 }
