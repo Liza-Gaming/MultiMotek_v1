@@ -27,6 +27,9 @@ public class Item
         Bamba,
         Baigale,
         Icecream,
+        Cucumber,
+        Carrot,
+        Tomato
         
     } // add vegetables, milk products, No impact drinks
 
@@ -57,6 +60,9 @@ public class Item
             case ItemType.Bamba: return ItemAssets.Instance.Bamba;
             case ItemType.Baigale: return ItemAssets.Instance.Baigale;
             case ItemType.Icecream: return ItemAssets.Instance.Icecream;
+            case ItemType.Cucumber: return ItemAssets.Instance.Cucamber;
+            case ItemType.Carrot: return ItemAssets.Instance.Carrot;
+            case ItemType.Tomato: return ItemAssets.Instance.Tomato;
             
         }
     }

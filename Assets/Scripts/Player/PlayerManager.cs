@@ -265,6 +265,36 @@ public class PlayerManager : MonoBehaviour
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Candy, amount = 1 });
                 playerFeedback?.PlayUseItemFX(sugarFlashColor);
                 break;
+            
+            case Item.ItemType.DietYogurt:
+                sugarMeter.ScheduleEffectGame(+8*4f, durationGameMin:120f, entryGameMin:15f);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.DietYogurt, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
+            
+            case Item.ItemType.Baigale:
+                sugarMeter.ScheduleEffectGame(+23*4f, durationGameMin:120f, entryGameMin:20f);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Baigale, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
+            
+            case Item.ItemType.Cucumber:
+                sugarMeter.ScheduleEffectGame(+0*4f, durationGameMin:0f, entryGameMin:0f);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Cucumber, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
+            
+            case Item.ItemType.Carrot:
+                sugarMeter.ScheduleEffectGame(+0*4f, durationGameMin:0f, entryGameMin:0f);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Carrot, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
+            
+            case Item.ItemType.Tomato:
+                sugarMeter.ScheduleEffectGame(+0*4f, durationGameMin:0f, entryGameMin:0f);
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Tomato, amount = 1 });
+                playerFeedback?.PlayUseItemFX(sugarFlashColor);
+                break;
         }
     }
 

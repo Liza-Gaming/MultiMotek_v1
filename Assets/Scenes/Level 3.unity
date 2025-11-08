@@ -86065,7 +86065,7 @@ MonoBehaviour:
     amount: 2
   - itemType: 11
     amount: 1
-  - itemType: 4
+  - itemType: 1
     amount: 3
   randomDropPool: []
   randomCountMin: 2
@@ -100896,21 +100896,24 @@ MonoBehaviour:
   SugarBag: {fileID: 3662117302869363952, guid: 5c4bf04bd45f7e24d90a9821123b54d9, type: 3}
   Apple: {fileID: 21300000, guid: acb816f6bd2eb714b98dc454b1f6ca7d, type: 3}
   Bread: {fileID: 4917599475261026392, guid: 2886bbd79acdfc348b2a27f4efea38b9, type: 3}
-  EnergyDrink: {fileID: 9079280134585263027, guid: 3885f23a3c30bbc40a50d48e0dffb7e0, type: 3}
+  EnergyDrink: {fileID: 8465958648692019664, guid: efd031dc1551a82479f83c7cf4bfa152, type: 3}
   ChocolateCup: {fileID: 2004806222685241845, guid: cac5ceb54a44c154badbdcdc8e2bf1f9, type: 3}
-  CokeCup: {fileID: 0}
+  CokeCup: {fileID: 6923696015321458255, guid: c18afbc1abc1f6b46bac1248ec799eca, type: 3}
   Candy: {fileID: -5040778147885213409, guid: e90f172e99fa7614f92474d57a7c5bd6, type: 3}
   LineChocolate: {fileID: -7803652017912114495, guid: 9af571889cad4c7428dde929114e9b27, type: 3}
   ChickenLeg: {fileID: 1518207682172366208, guid: 9ee88e6fec7e26349821874bba9bf139, type: 3}
   Fish: {fileID: 599191344211904797, guid: 68e15e11ef1811d4a81e544667ff9d7b, type: 3}
   Sausages: {fileID: 6862163376538571222, guid: a5930dc566ec91141b8c66b3b873d650, type: 3}
-  DietYogurt: {fileID: 0}
+  DietYogurt: {fileID: -5771902089576168972, guid: 9afe653436d0f29489e24909a9090f00, type: 3}
   Banana: {fileID: 6844666817133349423, guid: 1ba0e16f4d88d934a9abcc54abf89257, type: 3}
   WaterMelon: {fileID: 287148983159985998, guid: e8b0701554efbf647a71205b31b7521e, type: 3}
   BeanBag: {fileID: 8648599435035203585, guid: da5b79275e814e042bc23a8ac2800216, type: 3}
-  Bamba: {fileID: 4966059419637312265, guid: 2543fd4563ae9284796092f52ac61425, type: 3}
-  Baigale: {fileID: 0}
+  Bamba: {fileID: 6808739103522278753, guid: f4efefc379bf57648a2f50ef386a45fd, type: 3}
+  Baigale: {fileID: 1683881033312115472, guid: 84a7ed2ab19b00344814f27d7340cf92, type: 3}
   Icecream: {fileID: 8729019308651151237, guid: 9434fb0258632bd41a7911c4524f81ab, type: 3}
+  Cucamber: {fileID: 5074199366995168413, guid: cd440765d8f336c44b81b92704cef6b1, type: 3}
+  Carrot: {fileID: 5090332265974381170, guid: 7bc6d7beb177a8049a0f1c27bb913826, type: 3}
+  Tomato: {fileID: -5618029807175586084, guid: 4e01281b7bf111f4eadcb8ad4581b965, type: 3}
 --- !u!4 &1763975134
 Transform:
   m_ObjectHideFlags: 0

@@ -31,6 +31,8 @@ public class ItemAssets : MonoBehaviour
     public Sprite Bamba;
     public Sprite Baigale;
     public Sprite Icecream;
-
+    public Sprite Cucamber;
+    public Sprite Carrot;
+    public Sprite Tomato;
 
 }
