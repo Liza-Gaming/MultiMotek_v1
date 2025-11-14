@@ -30,6 +30,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private SugarBlinkers sugarArrow;
 
     public bool hasRequiredItem = false;
+    
+    [SerializeField] private ItemPointerArrow itemPointer;
 
     private void Awake()
     {
@@ -66,6 +68,32 @@ public class PlayerManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         hasRequiredItem = false;
+    
+        // 🔧 איפוס והגדרת החץ מחדש בכל סצנה
+        if (itemPointer != null)
+        {
+            // חיפוש אוטומטי של הפריט הנדרש בסצנה החדשה
+            GameObject requiredItem = GameObject.FindGameObjectWithTag("RequiredItem");
+        
+            if (requiredItem != null)
+            {
+                itemPointer.SetTarget(requiredItem.transform);
+            }
+            else
+            {
+                // אין פריט נדרש בסצנה זו
+                itemPointer.SetTarget(null);
+            }
+        }
+    }
+
+// 🔧 שיטה נוספת: קריאה מ-DoorLevelEnd
+    public void ResetArrowForNewScene(Transform newTarget)
+    {
+        if (itemPointer != null)
+        {
+            itemPointer.SetTarget(newTarget);
+        }
     }
 
     private void OnTimedChangeStarted(bool isIncrease, float durationSec)
@@ -152,6 +180,12 @@ public class PlayerManager : MonoBehaviour
         {
             inventory.AddItem(itemWorld.GetItem());
             itemWorld.DestroySelf();
+            
+            var arrow = GetComponentInChildren<ItemPointerArrow>();
+            if (arrow != null)
+            {
+                
+            }
         }
     }
 
