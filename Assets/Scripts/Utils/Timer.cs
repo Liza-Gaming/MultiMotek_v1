@@ -42,8 +42,7 @@ public class Timer : MonoBehaviour, IClockProvider
     private double nextAlarmAbs;
 
     public event Action<long> OnNewDay;
-
-    // ממשק IClockProvider
+    
     public int CurrentHour => Mathf.FloorToInt(secondsSinceMidnight / 3600f) % 24;
     public int CurrentMinute => Mathf.FloorToInt((secondsSinceMidnight % 3600f) / 60f);
 

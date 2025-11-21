@@ -48,7 +48,6 @@ public class PlayerManager : MonoBehaviour
 
     }
     
-    
     private void OnEnable()
     {
         var sm = SugarMeter.Instance ?? sugarMeter;

@@ -47,9 +47,10 @@ public class SugarSummaryUI : MonoBehaviour
         if (belowText)   belowText.text   = $"{belowPct:0}%";
         if (aboveText)   aboveText.text   = $"{abovePct:0}%";
         
-        if (heartsDisplay && meter)
+        if (heartsDisplay && stats)
         {
-            heartsDisplay.SetHearts(meter.CurrentHearts, meter.maxHearts, animate:true);
+            int summaryHearts = stats.GetSummaryHearts();
+            heartsDisplay.SetHearts(summaryHearts, stats.summaryHeartsMax, animate:true);
         }
         
         if (barBelow) barBelow.SetPercent(0, animated:false);

@@ -12,10 +12,7 @@ public class SugarStats : MonoBehaviour
     public float uiUpdateInterval = 0.3f;
 
     [Header("Summary Rating (Hearts)")]
-    public int summaryHeartsMax = 3;
-    public float pctFor1Heart = 30f;
-    public float pctFor2Hearts = 60f;
-    public float pctFor3Hearts = 80f;
+    public int summaryHeartsMax = 5;
 
     [Header("Stats (read-only)")]
     [SerializeField] private float totalTime = 0f;
@@ -66,8 +63,7 @@ public class SugarStats : MonoBehaviour
             statsText.text = $"In Range: {inPct:0}% | Above: {abovePct:0}% | Below: {belowPct:0}%";
         }
     }
-
-    // ===== API =====
+    
     public void ResetStats()
     {
         totalTime = 0f;
@@ -94,17 +90,10 @@ public class SugarStats : MonoBehaviour
 
         if (summaryHeartsMax <= 0) return 0;
 
-        if (summaryHeartsMax == 3)
-        {
-            if (inPct >= pctFor3Hearts) return 3;
-            if (inPct >= pctFor2Hearts) return 2;
-            if (inPct >= pctFor1Heart)  return 1;
-            return 0;
-        }
-
         int hearts = Mathf.RoundToInt((inPct / 100f) * summaryHeartsMax);
         return Mathf.Clamp(hearts, 0, summaryHeartsMax);
     }
+
     
     public float TotalTime   => totalTime;
     public float TimeInRange => timeInRange;

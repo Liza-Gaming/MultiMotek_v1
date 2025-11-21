@@ -49412,7 +49412,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetItem: {fileID: 0}
   arrowVisuals: {fileID: 939797875}
-  delayBeforeShowing: 0
+  delayBeforeShowing: 30
   rotationOffset: 0
 --- !u!1 &1431622741
 GameObject:
@@ -57335,7 +57335,7 @@ MonoBehaviour:
   sugarMeter: {fileID: 1800796062}
   statsText: {fileID: 0}
   uiUpdateInterval: 0.3
-  summaryHeartsMax: 3
+  summaryHeartsMax: 5
   pctFor1Heart: 30
   pctFor2Hearts: 60
   pctFor3Hearts: 80
@@ -58832,6 +58832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b29c68274d37a1e40ad1c79335bc9281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  simulationPaused: 0
   startSugar: 100
   sugarDecreaseRate: 10
   maxHearts: 5

@@ -348,6 +348,7 @@ public class PlayerMover : MonoBehaviour
             moveAction.action.Enable();
             jumpAction.action.Enable();
         }
+        
     }
 
     private void OnDrawGizmosSelected()

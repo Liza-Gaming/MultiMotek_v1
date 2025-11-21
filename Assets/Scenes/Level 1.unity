@@ -641,10 +641,7 @@ MonoBehaviour:
   sugarMeter: {fileID: 1671181921}
   statsText: {fileID: 1254872275}
   uiUpdateInterval: 0.3
-  summaryHeartsMax: 3
-  pctFor1Heart: 30
-  pctFor2Hearts: 60
-  pctFor3Hearts: 80
+  summaryHeartsMax: 5
   totalTime: 0
   timeInRange: 0
   timeAboveRange: 0
@@ -2156,7 +2153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetItem: {fileID: 1418740190}
   arrowVisuals: {fileID: 875700689}
-  delayBeforeShowing: 30
+  delayBeforeShowing: 15
   rotationOffset: 0
 --- !u!1 &300782649
 GameObject:
@@ -8605,7 +8602,7 @@ Transform:
   m_GameObject: {fileID: 485086501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.3, y: -1.15, z: 0}
+  m_LocalPosition: {x: -4.33, y: -1.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -35090,6 +35087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b29c68274d37a1e40ad1c79335bc9281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  simulationPaused: 0
   startSugar: 100
   sugarDecreaseRate: 5
   maxHearts: 5

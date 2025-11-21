@@ -23,12 +23,8 @@ public class ItemPointerArrow : MonoBehaviour
 
     void Awake()
     {
-        // 🔧 וודא שהחץ לא נהרס בין סצנות
         if (transform.parent != null)
         {
-            // אם החץ הוא ילד של השחקן, והשחקן DontDestroyOnLoad,
-            // הילד יישמר אוטומטית
-            // אבל אם יש בעיה, אפשר להוסיף:
             // DontDestroyOnLoad(gameObject);
         }
     }
@@ -40,7 +36,6 @@ public class ItemPointerArrow : MonoBehaviour
 
     void OnEnable()
     {
-        // 🔧 אתחול מחדש כשעוברים לסצנה חדשה
         if (isInitialized)
         {
             ResetArrow();
@@ -63,17 +58,14 @@ public class ItemPointerArrow : MonoBehaviour
 
     private void ResetArrow()
     {
-        // 🔧 איפוס סטטוס כשנכנסים לסצנה חדשה
         timer = 0f;
         itemCollectedOrMissing = false;
         
         if (arrowVisuals != null)
             arrowVisuals.SetActive(false);
-
-        // 🔧 חיפוש מחדש של הפריט בסצנה החדשה
+        
         if (targetItem == null)
         {
-            // ננסה למצוא את הפריט לפי Tag או שם
             GameObject found = GameObject.FindGameObjectWithTag("RequiredItem");
             if (found != null)
             {
@@ -85,13 +77,13 @@ public class ItemPointerArrow : MonoBehaviour
 
     void Update()
     {
-        // 1. בדיקה אם הפריט נאסף / נעלם
+
         if (!itemCollectedOrMissing && targetItem == null)
         {
             itemCollectedOrMissing = true;
         }
 
-        // 2. אם נאסף → להסתיר חץ ולצאת
+
         if (itemCollectedOrMissing)
         {
             if (arrowVisuals != null && arrowVisuals.activeSelf)
@@ -99,13 +91,11 @@ public class ItemPointerArrow : MonoBehaviour
 
             return;
         }
-
-        // 3. טיימר
+        
         timer += Time.deltaTime;
         if (timer < delayBeforeShowing)
             return;
-
-        // 4. הצגה וכיוון חץ
+        
         if (arrowVisuals != null)
         {
             if (!arrowVisuals.activeSelf)
@@ -113,8 +103,7 @@ public class ItemPointerArrow : MonoBehaviour
 
             Vector3 direction = targetItem.position - transform.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            // 🔧 פיצוי על flip של השחקן (scale.x שלילי)
+            
             if (transform.lossyScale.x < 0f)
             {
                 angle += 180f;
@@ -123,8 +112,7 @@ public class ItemPointerArrow : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, 0f, angle + rotationOffset);
         }
     }
-
-    // 🔧 API חיצוני להגדרת מטרה חדשה
+    
     public void SetTarget(Transform newTarget)
     {
         targetItem = newTarget;

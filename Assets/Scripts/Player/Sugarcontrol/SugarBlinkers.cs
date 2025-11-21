@@ -157,19 +157,19 @@ public class SugarBlinkers : MonoBehaviour
     {
         if (Now < suppressUntil) return;
 
-        // תמיד מציגים חץ יחיד: מכבים את הכיוון ההפוך מיידית
+
         float until = Now + Mathf.Max(0f, duration);
         if (isIncrease)
         {
-            downUntil = -1f;                 // מכבה ירידה
+            downUntil = -1f;
             if (downCg) downCg.alpha = 0f;
-            upUntil = until;                 // מדליק עלייה
+            upUntil = until;
         }
         else
         {
-            upUntil = -1f;                   // מכבה עלייה
+            upUntil = -1f;
             if (upCg) upCg.alpha = 0f;
-            downUntil = until;               // מדליק ירידה
+            downUntil = until;
         }
 
         EnsureRoutine();
@@ -177,7 +177,6 @@ public class SugarBlinkers : MonoBehaviour
 
     private void OnTimedChangeEnded(bool isIncrease)
     {
-        // כשמגמה מסתיימת — מכבים רק את החץ שלה
         if (isIncrease)
         {
             upUntil = -1f;
@@ -188,7 +187,6 @@ public class SugarBlinkers : MonoBehaviour
             downUntil = -1f;
             if (downCg) downCg.alpha = 0f;
         }
-        // אם שני החיצים כבויים — ייתכן שצריך לעצור את הקורוטינה בסיבוב הבא
     }
 
 
@@ -220,8 +218,7 @@ public class SugarBlinkers : MonoBehaviour
             if (upCg)   upCg.alpha   = upActive   ? (on ? 1f : 0f) : 0f;
             if (downCg) downCg.alpha = downActive ? (on ? 1f : 0f) : 0f;
             if (warnCg) warnCg.alpha = warnActive ? (on ? 1f : 0f) : 0f;
-
-            // אם אין מה להציג – מפסיקים עד לפעם הבאה ש־EnsureRoutine יופעל
+            
             if (!upActive && !downActive && !warnActive)
             {
                 HideAll();

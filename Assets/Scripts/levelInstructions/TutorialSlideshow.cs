@@ -50,9 +50,10 @@ public class TutorialSlideshow : MonoBehaviour
     {
         if (playerMover == null)
             playerMover = FindObjectOfType<PlayerMover>();
-        
-        if (playerMover) playerMover.SetInputLocked(true);
-        
+
+        if (playerMover) 
+            playerMover.SetInputLocked(true);
+
         if (showOnce && PlayerPrefs.GetInt(playerPrefsKey, 0) == 1)
         {
             if (rootPanel) rootPanel.SetActive(false);
@@ -71,12 +72,13 @@ public class TutorialSlideshow : MonoBehaviour
         index = 0;
         if (rootPanel) rootPanel.SetActive(true);
         
-        TryPauseTimer();
+        PauseGame(true);
 
         ApplySlide();
         ApplyCharacter();
         UpdateButtons();
     }
+
 
     private void OnDisable()
     {
@@ -92,6 +94,15 @@ public class TutorialSlideshow : MonoBehaviour
             ApplyCharacter();
             UpdateButtons();
         }
+    }
+    
+    private void PauseGame(bool pause)
+    {
+        if (Timer.Instance != null)
+            Timer.Instance.PauseClock(pause);
+        
+        if (SugarMeter.Instance != null)
+            SugarMeter.Instance.SetSimulationPaused(pause);
     }
 
     private void OnNext()
@@ -150,9 +161,10 @@ public class TutorialSlideshow : MonoBehaviour
         if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
         if (rootPanel) rootPanel.SetActive(false);
 
-        // --- NEW: resume timer when closing ---
-        playerMover.SetInputLocked(false);
-        TryUnpauseTimer();
+        if (playerMover)
+            playerMover.SetInputLocked(false);
+        
+        PauseGame(false);
     }
 
     private void Update()
@@ -185,4 +197,6 @@ public class TutorialSlideshow : MonoBehaviour
             pausedTimerByMe = false;
         }
     }
+    
+    
 }

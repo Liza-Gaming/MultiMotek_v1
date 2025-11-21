@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class SugarMeter : MonoBehaviour
 {
     public static SugarMeter Instance;
+    
+    [SerializeField] private bool simulationPaused = false;
 
     // ===== Persist basic =====
     private static bool  s_hasSaved;
@@ -112,6 +114,13 @@ public class SugarMeter : MonoBehaviour
         UpdateSugarUI();
         UpdateHeartsUI();
     }
+    
+    public void SetSimulationPaused(bool paused)
+    {
+        simulationPaused = paused;
+        
+        SetHeartsPaused(paused, resetProgress: paused);
+    }
 
     void OnDisable()
     {
@@ -123,6 +132,11 @@ public class SugarMeter : MonoBehaviour
 
     void Update()
     {
+        if (simulationPaused) 
+        {
+            return;
+        }
+
         float dt = Time.deltaTime;
         if (dt <= 0f) return;
         
@@ -185,6 +199,21 @@ public class SugarMeter : MonoBehaviour
 
         UpdateSugarUI();
         UpdateHeartsLogic();
+    }
+
+    public int GetCurrentTrendSign()
+    {
+        double gm = _absGameMinutes;
+        float totalRate = 0f;
+        
+        foreach (var effect in _effects)
+        {
+            if (gm >= effect.startAtGameMin && gm < effect.endAtGameMin)
+                totalRate += effect.ratePerGameMin;
+        }
+
+        if (Mathf.Abs(totalRate) < 1e-6f) return 0;
+        return totalRate > 0 ? 1 : -1;
     }
 
     
