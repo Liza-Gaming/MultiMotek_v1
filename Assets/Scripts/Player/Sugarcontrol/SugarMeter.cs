@@ -25,9 +25,7 @@ public class SugarMeter : MonoBehaviour
 
     public float minSugar = 70f, maxSugar = 180f;
     public float minSugarClamp = 0f, maxSugarClamp = 250f;
-
-    public float timeOutsideRangeToLoseHeart = 20f;
-    public float timeInsideRangeToGainHeart  = 20f;
+    
 
     private float timeOutsideSafeRange = 0f, timeInsideSafeRange = 0f;
 
@@ -198,7 +196,7 @@ public class SugarMeter : MonoBehaviour
         UpdateTrendArrows_AfterTrim(sign, nowGM);
 
         UpdateSugarUI();
-        UpdateHeartsLogic();
+        //UpdateHeartsLogic();
     }
 
     public int GetCurrentTrendSign()
@@ -487,60 +485,19 @@ public class SugarMeter : MonoBehaviour
 
     public void AddImmediateDecreaseGame(float amount, float durationGameMin)
         => AddImmediateGame(-Mathf.Abs(amount), durationGameMin);
-
-    // ===== Hearts =====
-    private void UpdateHeartsLogic()
-    {
-        if (heartsPaused) return;
-        
-        if (sugarLevel >= minSugar && sugarLevel <= maxSugar)
-        {
-            timeInsideSafeRange += Time.deltaTime;
-            timeOutsideSafeRange = 0f;
-
-            if (timeInsideSafeRange >= timeInsideRangeToGainHeart)
-            {
-                GainHeart();
-                timeInsideSafeRange = 0f;
-            }
-        }
-        else
-        {
-            timeOutsideSafeRange += Time.deltaTime;
-            timeInsideSafeRange = 0f;
-
-            if (timeOutsideSafeRange >= timeOutsideRangeToLoseHeart)
-            {
-                LoseHeart();
-                timeOutsideSafeRange = 0f;
-            }
-        }
-    }
-
-    void GainHeart()
-    {
-        if (currentHearts < maxHearts)
-        {
-            currentHearts++;
-            UpdateHeartsUI();
-        }
-    }
-
-    void LoseHeart()
-    {
-        if (currentHearts > 0)
-        {
-            currentHearts--;
-            UpdateHeartsUI();
-            if (currentHearts == 0)
-                Debug.Log("Game Over!");
-        }
-    }
-
+    
     void UpdateSugarUI()
     {
         if (sugarText)
-            sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
+            if (sugarLevel > 500)
+            {
+                sugarText.text = "HIGH";
+            }
+            else
+            {
+                sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
+            }
+            
     }
 
     void UpdateHeartsUI()
