@@ -38,6 +38,11 @@ public class TutorialSlideshow : MonoBehaviour
     private int index = 0;
     
     private PlayerMover playerMover;
+    
+    [Header("Audio per slide")]
+    [SerializeField] private AudioSource narrationSource;
+    
+    [SerializeField] private List<AudioClip> slideClips = new List<AudioClip>();
 
     private void Awake()
     {
@@ -76,6 +81,7 @@ public class TutorialSlideshow : MonoBehaviour
 
         ApplySlide();
         ApplyCharacter();
+        PlaySlideAudio();
         UpdateButtons();
     }
 
@@ -92,17 +98,9 @@ public class TutorialSlideshow : MonoBehaviour
             index--;
             ApplySlide();
             ApplyCharacter();
+            PlaySlideAudio();   // ← חדש
             UpdateButtons();
         }
-    }
-    
-    private void PauseGame(bool pause)
-    {
-        if (Timer.Instance != null)
-            Timer.Instance.PauseClock(pause);
-        
-        if (SugarMeter.Instance != null)
-            SugarMeter.Instance.SetSimulationPaused(pause);
     }
 
     private void OnNext()
@@ -112,6 +110,7 @@ public class TutorialSlideshow : MonoBehaviour
             index++;
             ApplySlide();
             ApplyCharacter();
+            PlaySlideAudio();   // ← חדש
             UpdateButtons();
         }
         else
@@ -126,6 +125,16 @@ public class TutorialSlideshow : MonoBehaviour
                 ClosePanel();
         }
     }
+
+    private void PauseGame(bool pause)
+    {
+        if (Timer.Instance != null)
+            Timer.Instance.PauseClock(pause);
+        
+        if (SugarMeter.Instance != null)
+            SugarMeter.Instance.SetSimulationPaused(pause);
+    }
+    
 
     private void ApplySlide()
     {
@@ -197,6 +206,37 @@ public class TutorialSlideshow : MonoBehaviour
             pausedTimerByMe = false;
         }
     }
+    
+    private void PlaySlideAudio()
+    {
+        if (narrationSource == null)
+            return;
+        
+        if (slideClips == null || slideClips.Count == 0)
+        {
+            narrationSource.Stop();
+            return;
+        }
+        
+        if (index < 0 || index >= slideClips.Count)
+        {
+            narrationSource.Stop();
+            return;
+        }
+
+        AudioClip clip = slideClips[index];
+        
+        if (clip == null)
+        {
+            narrationSource.Stop();
+            return;
+        }
+
+        narrationSource.Stop();
+        narrationSource.clip = clip;
+        narrationSource.Play();
+    }
+
     
     
 }

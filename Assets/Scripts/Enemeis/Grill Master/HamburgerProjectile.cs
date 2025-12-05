@@ -18,6 +18,8 @@ public class HamburgerProjectile : MonoBehaviour
     [SerializeField] private float EnemyDurationGameMin = 180f;
     [SerializeField] private float EnemyDelayGameMin    = 15f;
 
+    private PlayerManager manager;
+    
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -82,7 +84,7 @@ public class HamburgerProjectile : MonoBehaviour
 
             var pm = playerObj.GetComponent<PlayerManager>();
             pm?.SuppressSugarArrowRealSeconds(2f);
-
+           // manager.ShowFloatingSugarText(EnemyAmount/4, Color.yellow);
           
             SugarMeter.Instance?.ScheduleEffectGame(
                 EnemyAmount,

@@ -8,7 +8,7 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
     [SerializeField] private float EnemyAmount = 16f;
     [SerializeField] private float EnemyDurationGameMin = 180f;
     [SerializeField] private float EnemyDelayGameMin    = 15f;
-
+    private PlayerManager manager;
     public void ApplyEffect(GameObject playerObj)
     {
         if (this.CompareTag("Buffe"))
@@ -19,7 +19,7 @@ public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
 
             var pm = playerObj.GetComponent<PlayerManager>();
             pm?.SuppressSugarArrowRealSeconds(2f);
-            
+          //  manager.ShowFloatingSugarText(EnemyAmount/4, Color.yellow);
             SugarMeter.Instance?.ScheduleEffectGame(
                 EnemyAmount,
                 durationGameMin: EnemyDurationGameMin,
