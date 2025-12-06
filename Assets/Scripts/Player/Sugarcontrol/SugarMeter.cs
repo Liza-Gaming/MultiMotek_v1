@@ -492,9 +492,11 @@ public class SugarMeter : MonoBehaviour
             if (sugarLevel > 500)
             {
                 sugarText.text = "HIGH";
+                sugarText.color = Color.yellow;
             }
             else
             {
+                sugarText.color = Color.white;
                 sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
             }
             

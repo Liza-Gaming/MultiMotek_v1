@@ -241,7 +241,7 @@ public class PlayerManager : MonoBehaviour
 
 
 
-    private void UseItemAction(Item item)
+    public void UseItemAction(Item item)
     {
         switch (item.itemType)
         {

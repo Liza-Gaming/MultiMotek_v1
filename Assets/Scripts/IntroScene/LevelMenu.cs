@@ -31,6 +31,11 @@ public class LevelMenu : MonoBehaviour
     private int _pendingLevelId = -1; // 1-based level id
     private int _openPanelIndex = -1;
     private bool _isFading = false;
+    
+    [Header("Audio per slide")]
+    [SerializeField] private AudioSource narrationSource;
+
+    [SerializeField] private AudioClip clip;
 
     private void Start()
     {
@@ -42,7 +47,7 @@ public class LevelMenu : MonoBehaviour
             continueStoryButton.onClick.AddListener(OnContinueStory);
         
         PreparePanels();
-
+        narrationSource.clip = clip;
         InitLevelButtons();
         WireLevelButtons();
         WireConfirmPanels();
@@ -68,6 +73,7 @@ public class LevelMenu : MonoBehaviour
     /// </summary>
     private void ShowInitialStoryPanel()
     {
+        narrationSource.Play();
         if (storyPanel) storyPanel.SetActive(true);
     }
     

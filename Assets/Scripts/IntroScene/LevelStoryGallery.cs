@@ -12,7 +12,7 @@ public class LevelStoryGallery : MonoBehaviour
     private Sprite[] _currentImages;      // מערך התמונות הנוכחי להצגה
     private int _currentIndex;            // האינדקס של התמונה הנוכחית
     private Action _onFinishedCallback;   // הפעולה שתופעל בסיום הגלריה
-
+    
     private void Awake()
     {
         // הסתר את הפאנל בהתחלה וחבר את הכפתור
