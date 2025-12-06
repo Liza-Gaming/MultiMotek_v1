@@ -18,6 +18,8 @@ public class HamburgerProjectile : MonoBehaviour
     [SerializeField] private float EnemyDurationGameMin = 180f;
     [SerializeField] private float EnemyDelayGameMin    = 15f;
     
+    [SerializeField] private Color simpleFloatingColor = Color.yellow;
+    
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -81,12 +83,14 @@ public class HamburgerProjectile : MonoBehaviour
             float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
 
             var pm = playerObj.GetComponent<PlayerManager>();
-            pm?.SuppressSugarArrowRealSeconds(2f);
+            pm?.SuppressSugarArrowRealSeconds(0.3f);
           
-            SugarMeter.Instance?.ScheduleEffectGame(
-                EnemyAmount,
+            pm.ApplyEnemySugarEffect(
+                amountSigned: EnemyAmount,
                 durationGameMin: EnemyDurationGameMin,
-                entryGameMin: EnemyDelayGameMin
+                floatingColor: simpleFloatingColor,
+                entryGameMin: EnemyDelayGameMin,
+                floatingDisplayValue: EnemyAmount/4
             );
     }
 }

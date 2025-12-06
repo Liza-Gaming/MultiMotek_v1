@@ -899,7 +899,7 @@ MonoBehaviour:
   failButton: {fileID: 388647919}
   fadeDuration: 2
   sugarThreshold: 60
-  requiredGameMinutesBelow: 60
+  requiredGameMinutesBelow: 70
 --- !u!1 &130254104
 GameObject:
   m_ObjectHideFlags: 0
@@ -2383,7 +2383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetItem: {fileID: 1418740190}
   arrowVisuals: {fileID: 875700689}
-  delayBeforeShowing: 120
+  delayBeforeShowing: 100
   rotationOffset: 0
 --- !u!1 &300782649
 GameObject:
@@ -38128,7 +38128,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1113, y: 658}
+  m_AnchoredPosition: {x: 1110.3, y: 575}
   m_SizeDelta: {x: 65.895, y: 65.5704}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1895263029
@@ -38912,9 +38912,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!4 &1952240113 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1049023302621363165, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}

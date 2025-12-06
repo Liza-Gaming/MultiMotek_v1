@@ -3,33 +3,47 @@ using UnityEngine;
 
 public class EnemyAddSugar : MonoBehaviour, IEnemyEffect
 {
+    [Header("Simple enemy hit (instant or short effect)")]
     public float sugarAmount = 10f;
-    
+    [SerializeField] private float simpleDurationGameMin = 1f;
+    [SerializeField] private Color simpleFloatingColor = Color.yellow;
+
+    [Header("Buffet enemy (delayed + long effect)")]
     [SerializeField] private float EnemyAmount = 16f;
     [SerializeField] private float EnemyDurationGameMin = 180f;
     [SerializeField] private float EnemyDelayGameMin    = 15f;
+    [SerializeField] private Color buffetFloatingColor = Color.yellow;
+
     public void ApplyEffect(GameObject playerObj)
     {
-        if (this.CompareTag("Buffe"))
+        var pm = playerObj.GetComponent<PlayerManager>();
+        if (pm == null)
         {
-    
-            float totalGameMin = EnemyDelayGameMin + EnemyDurationGameMin;
-            float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
-
-            var pm = playerObj.GetComponent<PlayerManager>();
-            pm?.SuppressSugarArrowRealSeconds(2f);
-            SugarMeter.Instance?.ScheduleEffectGame(
-                EnemyAmount,
-                durationGameMin: EnemyDurationGameMin,
-                entryGameMin: EnemyDelayGameMin
-            );
+            Debug.LogWarning("EnemyAddSugar: PlayerManager not found on playerObj.");
             return;
         }
         
-        if (SugarMeter.Instance != null)
+        if (this.CompareTag("Buffe"))
         {
-            SugarMeter.Instance.AddSugarGame(sugarAmount);
-            GetComponentInChildren<SugarBlinkers>()?.ShowUp(2f);
+          pm.SuppressSugarArrowRealSeconds(0.3f);
+
+            pm.ApplyEnemySugarEffect(
+                amountSigned: EnemyAmount,
+                durationGameMin: EnemyDurationGameMin,
+                floatingColor: buffetFloatingColor,
+                entryGameMin: EnemyDelayGameMin,
+                floatingDisplayValue: EnemyAmount/4
+            );
+
+            return;
         }
+        
+        pm.ApplyEnemySugarEffect(
+            amountSigned: sugarAmount,
+            durationGameMin: simpleDurationGameMin,
+            floatingColor: simpleFloatingColor,
+            floatingDisplayValue: sugarAmount/4,
+            entryGameMin: 0f
+        );
     }
 }

@@ -751,9 +751,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!212 &64968060
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3668,9 +3671,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!60 &316049213
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -41187,9 +41193,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!60 &707691986
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -41765,9 +41774,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 0
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 64
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &734974939
 GameObject:
   m_ObjectHideFlags: 0
@@ -44075,9 +44087,11 @@ MonoBehaviour:
   prevButton: {fileID: 734974943}
   nextButton: {fileID: 996906359}
   slides:
-  - {fileID: 3590864418144555390, guid: 27a258904b35345489f58f90a488d05f, type: 3}
-  - {fileID: 3677490221934730428, guid: d67e7deafb6b99243a393f098f8a2b35, type: 3}
-  - {fileID: -8211915892861095241, guid: 3bf100f9345677c47b6c21cbe994bd1c, type: 3}
+  - {fileID: 22667340551009863, guid: 8ef8fe2f47e0277438f6d36d48b25c7d, type: 3}
+  - {fileID: -395491133437582024, guid: 4a58de21741d8fe4ca2a58b2d11c8451, type: 3}
+  - {fileID: -1514096800457163767, guid: bef0d675a8dd7454fbad07fb0fed8852, type: 3}
+  - {fileID: 640433017098589700, guid: ed2b7524a29505e49b7b7303bdc23925, type: 3}
+  - {fileID: 1282872404125567421, guid: 51969efffaf78914c91422d75a67fbba, type: 3}
   closeOnLastNext: 0
 --- !u!114 &944527147
 MonoBehaviour:
@@ -45158,9 +45172,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!212 &985099411
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -46601,9 +46618,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!95 &1109503879
 Animator:
   serializedVersion: 7
@@ -46817,7 +46837,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1113, y: 658}
+  m_AnchoredPosition: {x: 1110.3, y: 575}
   m_SizeDelta: {x: 65.895, y: 65.5704}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1128470277
@@ -46939,7 +46959,7 @@ Transform:
   m_GameObject: {fileID: 1132682724}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.55, y: -0.94, z: -0.9169444}
+  m_LocalPosition: {x: -8.53, y: -1.19, z: -0.9169444}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -49606,9 +49626,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sugarAmount: 100
+  simpleDurationGameMin: 1
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   EnemyAmount: 16
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  buffetFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!212 &1411095279
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -49892,7 +49915,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetItem: {fileID: 0}
   arrowVisuals: {fileID: 939797875}
-  delayBeforeShowing: 150
+  delayBeforeShowing: 120
   rotationOffset: 0
 --- !u!1 &1431622741
 GameObject:
@@ -58002,7 +58025,7 @@ MonoBehaviour:
   failButton: {fileID: 52488055}
   fadeDuration: 2
   sugarThreshold: 60
-  requiredGameMinutesBelow: 60
+  requiredGameMinutesBelow: 70
 --- !u!1 &1701210989
 GameObject:
   m_ObjectHideFlags: 0

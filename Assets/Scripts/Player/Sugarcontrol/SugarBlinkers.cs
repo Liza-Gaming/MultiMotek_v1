@@ -49,6 +49,24 @@ public class SugarBlinkers : MonoBehaviour
 
         if (Now >= suppressUntil && ShouldWarn())
             EnsureRoutine();
+        
+        var sm = SugarMeter.Instance;
+        if (!sm) return;
+
+        int sign = sm.GetCurrentTrendSign();
+
+        bool anyArrowActive = (Now < upUntil) || (Now < downUntil);
+
+
+        if (!anyArrowActive && sign != 0 && Now >= suppressUntil)
+        {
+
+            if (sign > 0)
+                ManualBump(true,  2f, exclusive: true);
+            else
+                ManualBump(false, 2f, exclusive: true); 
+            
+        }
     }
 
     void TrySubscribe()
