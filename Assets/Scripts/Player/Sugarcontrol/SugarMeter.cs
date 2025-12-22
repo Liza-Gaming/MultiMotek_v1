@@ -451,7 +451,7 @@ public class SugarMeter : MonoBehaviour
         TimedChangeScheduled?.Invoke(isIncrease, realDelaySec, realDurSec);
     }
 
-    // ===== תאימות לאחור =====
+
     public void AddSugarGame(float amount, float durationGameMin = 0f, float delayGameMin = 0f)
     {
         amount = Mathf.Abs(amount);

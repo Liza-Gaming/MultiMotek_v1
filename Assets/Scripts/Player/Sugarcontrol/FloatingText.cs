@@ -39,9 +39,9 @@ public class FloatingText : MonoBehaviour
         int rounded = Mathf.RoundToInt(value);
         
         if (rounded > 0)
-            _text.text = "+" + rounded;
+            _text.text = "+" + rounded + " carbs";
         else
-            _text.text = rounded.ToString();
+            _text.text = rounded.ToString() + " mg/dl";
 
         _text.color = color;
         _startColor = color;
@@ -53,19 +53,17 @@ public class FloatingText : MonoBehaviour
     
     private void LateUpdate()
     {
-        // פה אנחנו מאזנים את ההיפוך של האבא
+
         if (_parent != null)
         {
             float parentScaleX = _parent.lossyScale.x;
 
-            // נשמור שהסקייל הגלובלי של הטקסט יהיה תמיד חיובי (לא הפוך)
             float sign = parentScaleX < 0 ? -1f : 1f;
 
             Vector3 ls = _baseLocalScale;
             ls.x *= sign;
             transform.localScale = ls;
-
-            // ואם יש סיבוב על Y (שימוש ב-Rotate במקום Scale) – ניישר גם אותו:
+            
             transform.rotation = Quaternion.identity;
         }
     }
@@ -77,10 +75,10 @@ public class FloatingText : MonoBehaviour
 
         while (timer < duration)
         {
-            // תנועה כלפי מעלה בעולם
+
             transform.Translate(Vector3.up * moveSpeed * Time.deltaTime, Space.World);
 
-            // Fade Out בחלק האחרון
+
             if (timer >= duration - fadeOutTime)
             {
                 float fadeTimer = timer - (duration - fadeOutTime);

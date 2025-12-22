@@ -154,12 +154,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 750
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -1051,7 +1051,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -1060,7 +1060,44 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_0: 6923696015321458255
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_1: -1768695134335310482
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_10: -8929174433809049099
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_11: -3454000423410994911
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_12: -2453277397785128137
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_13: 1257924648350033749
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_14: 3640438127681445508
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_15: 7537274750200111120
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_16: -1223859862986280157
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_17: 2769055036714821671
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_18: 1769437239104086737
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_19: 9097117119578439400
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_2: 1412985486765826330
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_20: 6611603702298844449
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_21: -5493840024700906830
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_22: -7246834925028650208
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_23: 5839135849002987766
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_24: -7970679944731058600
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_25: -1390272011900402062
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_26: -1821893089296324005
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_27: -3030022325223413663
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_28: -1379131053299377582
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_29: -12782859549377760
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_3: -8733048221035415757
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_30: -7991929191404403484
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_31: 8874739058835089978
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_32: 2975698452775702750
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_33: 1888916878208737674
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_34: -979756309012155780
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_35: -2846368079857852439
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_36: -5006694880974939902
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_4: 1903469987023835669
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_5: -239738018108245133
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_6: -4248917504276830027
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_7: -789866476215426516
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_8: 3328604098277991918
+      ChatGPT Image Nov 7, 2025, 07_54_50 PM_9: 6616070061658534010
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
-
     private Transform checkpoint;
     public GameObject explosionPrefab;
     public Animator animator;
@@ -32,6 +32,14 @@ public class PlayerManager : MonoBehaviour
     public bool hasRequiredItem = false;
     
     [SerializeField] private ItemPointerArrow itemPointer;
+    
+    [SerializeField] private Color waterFxColor = new Color(0.35f, 0.7f, 1f);
+
+    private readonly Queue<float> _waterPressTimesReal = new Queue<float>();
+
+    private const float WATER_WINDOW_GAME_HOURS = 1f;
+    private const float WATER_EFFECT_GAME_MIN   = 90f;
+    private const float WATER_SUGAR_DROP        = 2f;
     
     
     [Header("Floating Text")]
@@ -153,6 +161,7 @@ public class PlayerManager : MonoBehaviour
         
         if (sugarMeter) sugarMeter.SetSugarInstant(savedSugar);
     }
+
     
     private static bool InMask(GameObject go, LayerMask mask) => (mask.value & (1 << go.layer)) != 0;
 
@@ -279,369 +288,411 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-public void UseItemAction(Item item)
-{
-    switch (item.itemType)
+    public void UseItemAction(Item item)
     {
-        case Item.ItemType.Insulin:
+        switch (item.itemType)
         {
-            float amount = -30f; // יחידות סוכר פנימיות
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 180f,
-                entryGameMin: 0f,
-                showFloatingText: true,
-                floatingDisplayValue: -30f,      // מה שמופיע בטקסט
-                floatingColor: Color.red,
-                fxColor: insulinFlashColor
-            );
+            case Item.ItemType.Insulin:
+            {
+                float amount = -30f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 180f,
+                    entryGameMin: 0f,
+                    showFloatingText: true,
+                    floatingDisplayValue: -30f,
+                    floatingColor: Color.red,
+                    fxColor: insulinFlashColor
+                );
 
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
-            break;
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.SugarBag:
+            {
+                float amount = +4f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 60f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 4f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Banana:
+            {
+                float amount = +25f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 20f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 25f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Banana, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.WaterMelon:
+            {
+                float amount = +11f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 11f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.WaterMelon, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.ChickenLeg:
+            {
+                float amount = 0f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 0f,
+                    entryGameMin: 0f,
+                    showFloatingText: false,
+                    floatingDisplayValue: 0f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.ChickenLeg, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Bamba:
+            {
+                float amount = +12f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 20f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 12f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Bamba, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Apple:
+            {
+                float amount = +15f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 15f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Apple, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Bread:
+            {
+                float amount = +15f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 30f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 15f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Bread, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Fish:
+            {
+                float amount = 0f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 0f,
+                    entryGameMin: 0f,
+                    showFloatingText: false,
+                    floatingDisplayValue: 0f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Fish, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Sausages:
+            {
+                float amount = 0f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 0f,
+                    entryGameMin: 0f,
+                    showFloatingText: false,
+                    floatingDisplayValue: 0f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Sausages, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.EnergyDrink:
+            {
+                float amount = +28f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 60f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 28f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.EnergyDrink, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.BeanBag:
+            {
+                float amount = +14f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 14f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.BeanBag, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.ChocolateCup:
+            {
+                float amount = +17f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 60f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 17f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.ChocolateCup, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Icecream:
+            {
+                float amount = +12f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 60f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 12f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Icecream, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.LineChocolate:
+            {
+                float amount = +17f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 20f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 17f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.LineChocolate, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Candy:
+            {
+                float amount = +15f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 60f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 15f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Candy, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.DietYogurt:
+            {
+                float amount = +8f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 8f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.DietYogurt, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Baigale:
+            {
+                float amount = +23f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 120f,
+                    entryGameMin: 20f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 23f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Baigale, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Cucumber:
+            {
+                float amount = 0f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 0f,
+                    entryGameMin: 0f,
+                    showFloatingText: false,
+                    floatingDisplayValue: 0f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Cucumber, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Carrot:
+            {
+                float amount = 0f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 0f,
+                    entryGameMin: 0f,
+                    showFloatingText: false,
+                    floatingDisplayValue: 0f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Carrot, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.Tomato:
+            {
+                float amount = 0f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 0f,
+                    entryGameMin: 0f,
+                    showFloatingText: false,
+                    floatingDisplayValue: 0f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.Tomato, amount = 1 });
+                break;
+            }
+
+            case Item.ItemType.CokeCup:
+            {
+                float amount = +26f * 4f;
+                ApplyItemSugarEffect(
+                    amountSigned: amount,
+                    durationGameMin: 60f,
+                    entryGameMin: 15f,
+                    showFloatingText: true,
+                    floatingDisplayValue: 104f,
+                    floatingColor: Color.yellow,
+                    fxColor: sugarFlashColor
+                );
+
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.CokeCup, amount = 1 });
+                break;
+            }
         }
 
-        case Item.ItemType.SugarBag:
-        {
-            float amount = +4f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 60f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 4f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
+    }
+    
+    public void HandleWaterBottlePress()
+    {
+        float windowRealSec = GameTime.GameHoursToRealSeconds(WATER_WINDOW_GAME_HOURS);
+        float now = Time.time;
+        
+        while (_waterPressTimesReal.Count > 0 && (now - _waterPressTimesReal.Peek()) > windowRealSec)
+            _waterPressTimesReal.Dequeue();
+        
+        _waterPressTimesReal.Enqueue(now);
+        
+        if (_waterPressTimesReal.Count < 3)
+            return;
+        
+        _waterPressTimesReal.Clear();
 
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Banana:
-        {
-            float amount = +25f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 20f,
-                showFloatingText: true,
-                floatingDisplayValue: 25f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Banana, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.WaterMelon:
-        {
-            float amount = +11f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 11f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.WaterMelon, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.ChickenLeg:
-        {
-            float amount = 0f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 0f,
-                entryGameMin: 0f,
-                showFloatingText: false,
-                floatingDisplayValue: 0f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.ChickenLeg, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Bamba:
-        {
-            float amount = +12f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 20f,
-                showFloatingText: true,
-                floatingDisplayValue: 12f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Bamba, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Apple:
-        {
-            float amount = +15f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 15f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Apple, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Bread:
-        {
-            float amount = +15f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 30f,
-                showFloatingText: true,
-                floatingDisplayValue: 15f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Bread, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Fish:
-        {
-            float amount = 0f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 0f,
-                entryGameMin: 0f,
-                showFloatingText: false,
-                floatingDisplayValue: 0f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Fish, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Sausages:
-        {
-            float amount = 0f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 0f,
-                entryGameMin: 0f,
-                showFloatingText: false,
-                floatingDisplayValue: 0f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Sausages, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.EnergyDrink:
-        {
-            float amount = +28f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 60f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 28f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.EnergyDrink, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.BeanBag:
-        {
-            float amount = +14f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 14f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.BeanBag, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.ChocolateCup:
-        {
-            float amount = +17f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 60f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 17f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.ChocolateCup, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Icecream:
-        {
-            float amount = +12f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 60f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 12f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Icecream, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.LineChocolate:
-        {
-            float amount = +17f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 20f,
-                showFloatingText: true,
-                floatingDisplayValue: 17f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.LineChocolate, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Candy:
-        {
-            float amount = +15f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 60f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 15f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Candy, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.DietYogurt:
-        {
-            float amount = +8f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 15f,
-                showFloatingText: true,
-                floatingDisplayValue: 8f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.DietYogurt, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Baigale:
-        {
-            float amount = +23f * 4f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 120f,
-                entryGameMin: 20f,
-                showFloatingText: true,
-                floatingDisplayValue: 23f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Baigale, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Cucumber:
-        {
-            float amount = 0f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 0f,
-                entryGameMin: 0f,
-                showFloatingText: false,
-                floatingDisplayValue: 0f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Cucumber, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Carrot:
-        {
-            float amount = 0f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 0f,
-                entryGameMin: 0f,
-                showFloatingText: false,
-                floatingDisplayValue: 0f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Carrot, amount = 1 });
-            break;
-        }
-
-        case Item.ItemType.Tomato:
-        {
-            float amount = 0f;
-            ApplyItemSugarEffect(
-                amountSigned: amount,
-                durationGameMin: 0f,
-                entryGameMin: 0f,
-                showFloatingText: false,
-                floatingDisplayValue: 0f,
-                floatingColor: Color.yellow,
-                fxColor: sugarFlashColor
-            );
-
-            inventory.RemoveItem(new Item { itemType = Item.ItemType.Tomato, amount = 1 });
-            break;
-        }
+        ApplyItemSugarEffect(
+            amountSigned: -WATER_SUGAR_DROP,
+            durationGameMin: WATER_EFFECT_GAME_MIN, // 90
+            entryGameMin: 15f,
+            showFloatingText: true,
+            floatingDisplayValue: -WATER_SUGAR_DROP,
+            floatingColor: waterFxColor,
+            fxColor: waterFxColor
+        );
     }
 }
-
-
-    }
 

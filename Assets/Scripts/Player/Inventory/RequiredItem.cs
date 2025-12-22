@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class RequiredItem : MonoBehaviour
 {
 
+    [SerializeField] Image[] itemImage;
     private void Reset()
     {
         var col = GetComponent<Collider2D>();
@@ -19,7 +21,10 @@ public class RequiredItem : MonoBehaviour
             if (collector != null)
             {
                 collector.hasRequiredItem = true;
-
+                for (int i = 0; i < itemImage.Length; i++)
+                {
+                    itemImage[i].color = Color.white;
+                }
                 Destroy(gameObject);
             }
             else
