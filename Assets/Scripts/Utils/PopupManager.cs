@@ -14,8 +14,8 @@ public class PopupManager : MonoBehaviour
     [SerializeField] private int firstSceneBuildIndex = 1;
     
     [Header("Per-scene suppression")]
-    [SerializeField] private int suppressDailyPopupBuildIndex = 4; // Level 4
-    private bool _suppressDailyThisScene; // דגל ריצה לסצנה הנוכחית
+    [SerializeField] private int suppressDailyPopupBuildIndex = 4;
+    private bool _suppressDailyThisScene;
 
     [Header("Optional refs")]
     [SerializeField] private PlayerMover playerMover;
@@ -36,7 +36,7 @@ public class PopupManager : MonoBehaviour
     }
 
     [Header("Popups")]
-    [Tooltip("פופאפ יומי ב-07:00")]
+    [Tooltip("07:00")]
     public UIPopup dailyPopup;
     
 
@@ -77,10 +77,8 @@ public class PopupManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // עדכון דגל ההשתקה לפי הסצנה הנוכחית
-        _suppressDailyThisScene = (scene.buildIndex == suppressDailyPopupBuildIndex);
-
-        // אם נכנסנו לשלב 4 עם פופאפ פתוח – לסגור אותו
+        _suppressDailyThisScene = (scene.buildIndex >= suppressDailyPopupBuildIndex);
+        
         ForceCloseCurrentWithoutRestore();
         
     }
@@ -195,12 +193,10 @@ public class PopupManager : MonoBehaviour
         if (_suppressDailyThisScene) return;
 
         bool inFirstScene = IsFirstScene();
-
-        // רק בסצנה הראשונה הפופאפ תלוי ב-gate של ההדרכה
+        
         if (inFirstScene && requireTutorialGate && !_tutorialGateOpened)
             return;
-
-        // בשאר הסצנות אין gate, ולכן לא חוסמים
+        
         TryShow(dailyPopup);
     }
 

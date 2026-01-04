@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Player.Sugarcontrol.InsulinPump;
 using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
@@ -256,15 +257,28 @@ public class PlayerManager : MonoBehaviour
         Color floatingColor,
         Color fxColor)
     {
-        if (sugarMeter != null)
+        if (amountSigned > 0f && CarbReportManager.Instance != null)
         {
-            sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+            int expectedCarbs = Mathf.RoundToInt(floatingDisplayValue);
+            bool opened = CarbReportManager.Instance.RequestReport(expectedCarbs, () =>
+            {
+                if (sugarMeter != null)
+                    sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+
+                if (showFloatingText)
+                    ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+
+                playerFeedback?.PlayUseItemFX(fxColor);
+            });
+
+            if (opened) return;
         }
 
+        if (sugarMeter != null)
+            sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+
         if (showFloatingText)
-        {
             ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-        }
 
         playerFeedback?.PlayUseItemFX(fxColor);
     }
@@ -657,7 +671,7 @@ public class PlayerManager : MonoBehaviour
                     durationGameMin: 60f,
                     entryGameMin: 15f,
                     showFloatingText: true,
-                    floatingDisplayValue: 104f,
+                    floatingDisplayValue: 26f,
                     floatingColor: Color.yellow,
                     fxColor: sugarFlashColor
                 );
@@ -686,7 +700,7 @@ public class PlayerManager : MonoBehaviour
 
         ApplyItemSugarEffect(
             amountSigned: -WATER_SUGAR_DROP,
-            durationGameMin: WATER_EFFECT_GAME_MIN, // 90
+            durationGameMin: WATER_EFFECT_GAME_MIN,
             entryGameMin: 15f,
             showFloatingText: true,
             floatingDisplayValue: -WATER_SUGAR_DROP,

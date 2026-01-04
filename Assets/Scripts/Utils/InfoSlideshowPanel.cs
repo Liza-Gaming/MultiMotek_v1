@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// זהו שילוב של InfoPanel ו-TutorialSlideshow
+
 public class InfoSlideshowPanel : MonoBehaviour
 {
     [Header("Wiring")]
@@ -24,6 +24,8 @@ public class InfoSlideshowPanel : MonoBehaviour
     private int index = 0;
     private Pause pauseManager;
     private PlayerMover playerMover;
+
+    [SerializeField] private GameObject pumpUI;
 
     private void Awake()
     {

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,7 +56,16 @@ public class SugarMeter : MonoBehaviour
     private readonly List<Transient> _transients = new();
 
     
-    private float BaselineRatePerGameMin => -(sugarDecreaseRate / 60f);
+    private bool IsBaselineEnabled
+    {
+        get
+        {
+            int sceneNumber = SceneManager.GetActiveScene().buildIndex + 1;
+            return sceneNumber < 5;
+        }
+    }
+
+    private float BaselineRatePerGameMin => IsBaselineEnabled ? -(sugarDecreaseRate / 60f) : 0f;
     
     private double _absGameMinutes = 0;
     
@@ -416,9 +425,7 @@ public class SugarMeter : MonoBehaviour
     }
 
     // ===== API ראשי =====
-    /// <summary>
-    /// מתזמן אפקט: amountSigned יחידות סוכר מפוזרות לינארית על פני (durationGameMin - entryGameMin).
-    /// </summary>
+
     public void ScheduleEffectGame(float amountSigned, float durationGameMin, float entryGameMin)
     {
         durationGameMin = Mathf.Max(0f, durationGameMin);
@@ -427,7 +434,7 @@ public class SugarMeter : MonoBehaviour
         float effectiveDuration = durationGameMin - entryGameMin;
         if (effectiveDuration <= 0.0001f)
         {
-            // השפעה מיידית
+
             SetSugarInstant(sugarLevel + amountSigned);
             return;
         }
@@ -443,8 +450,7 @@ public class SugarMeter : MonoBehaviour
             id = _nextEffectId++
         };
         _effects.Add(effect);
-
-        // אירוע תזמון
+        
         float realDelaySec = GameTime.GameMinutesToRealSeconds(entryGameMin);
         float realDurSec = GameTime.GameMinutesToRealSeconds(effectiveDuration);
         bool isIncrease = amountSigned > 0f;
