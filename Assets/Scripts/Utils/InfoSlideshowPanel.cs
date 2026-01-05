@@ -24,8 +24,7 @@ public class InfoSlideshowPanel : MonoBehaviour
     private int index = 0;
     private Pause pauseManager;
     private PlayerMover playerMover;
-
-    [SerializeField] private GameObject pumpUI;
+    
 
     private void Awake()
     {
@@ -86,7 +85,7 @@ public class InfoSlideshowPanel : MonoBehaviour
         index = 0; 
         
         rootPanel.SetActive(true);
-        pauseManager.PausGeame();
+        pauseManager.SoftPauseFor("InfoBook");
         if (playerMover) playerMover.SetInputLocked(true);
 
         ApplySlide();
@@ -98,7 +97,7 @@ public class InfoSlideshowPanel : MonoBehaviour
         if (!rootPanel || !pauseManager) return;
 
         rootPanel.SetActive(false);
-        pauseManager.Resume();
+        pauseManager.SoftResumeFor("InfoBook");
         if (playerMover) playerMover.SetInputLocked(false);
     }
     

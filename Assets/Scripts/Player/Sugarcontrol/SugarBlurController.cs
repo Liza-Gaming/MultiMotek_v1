@@ -102,7 +102,6 @@ public class SugarBlurController : MonoBehaviour
 
         if (sugar >= blurStartSugar) {
             dof.active = false;
-            if (showDebugInfo) Debug.Log($"Sugar {sugar:F1} - DOF OFF (Sharp)");
             return;
         }
 

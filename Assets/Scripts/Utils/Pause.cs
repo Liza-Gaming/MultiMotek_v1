@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using System.Collections.Generic;
+
 
 using UnityEngine.SceneManagement;
 
@@ -28,6 +30,10 @@ public class Pause : MonoBehaviour
 
     private Coroutine blurRoutine;
     private float[] prevWeights;
+    
+    private readonly HashSet<string> _pauseReasons = new HashSet<string>();
+    private readonly HashSet<string> _softPauseReasons = new HashSet<string>();
+
 
     void Start()
     {
@@ -63,7 +69,8 @@ public class Pause : MonoBehaviour
         if (IsPaused) return;
         IsPaused = true;
 
-        Time.timeScale = 0f;
+        ApplyTimeScale();
+
         ToggleGameplayVolumes(false);
         
         SetActiveSafe(pauseBtn, false);
@@ -87,10 +94,12 @@ public class Pause : MonoBehaviour
     }
     public void Resume()
     {
+        if (_pauseReasons.Count > 0) return;
         if (!IsPaused) return;
+        
         IsPaused = false;
 
-        Time.timeScale = 1f;
+        ApplyTimeScale();
         ToggleGameplayVolumes(true);
         
         SetActiveSafe(pauseShield, false);
@@ -205,5 +214,52 @@ public class Pause : MonoBehaviour
         }
         volumesToMute = list.ToArray();
     }
+    
+    public void PauseFor(string reason)
+    {
+        if (string.IsNullOrEmpty(reason)) reason = "unknown";
+        if (_pauseReasons.Add(reason))
+        {
+
+            if (!IsPaused) PausGeame();
+            else
+            {
+
+                Time.timeScale = 0f;
+            }
+        }
+    }
+
+    public void ResumeFor(string reason)
+    {
+        if (string.IsNullOrEmpty(reason)) reason = "unknown";
+        _pauseReasons.Remove(reason);
+
+        if (_pauseReasons.Count == 0 && IsPaused)
+            Resume();
+    }
+    
+    public void SoftPauseFor(string reason)
+    {
+        if (string.IsNullOrEmpty(reason)) reason = "unknown";
+        _softPauseReasons.Add(reason);
+        ApplyTimeScale();
+    }
+
+    public void SoftResumeFor(string reason)
+    {
+        if (string.IsNullOrEmpty(reason)) reason = "unknown";
+        _softPauseReasons.Remove(reason);
+        ApplyTimeScale();
+    }
+
+    private void ApplyTimeScale()
+    {
+        Time.timeScale = (IsPaused || _softPauseReasons.Count > 0) ? 0f : 1f;
+    }
+
+
+    public bool IsPausedByAnyReason => _pauseReasons.Count > 0;
+
 
 }

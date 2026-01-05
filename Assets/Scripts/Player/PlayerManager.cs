@@ -257,7 +257,7 @@ public class PlayerManager : MonoBehaviour
         Color floatingColor,
         Color fxColor)
     {
-        if (amountSigned > 0f && CarbReportManager.Instance != null)
+        if (amountSigned > 0f && CarbReportManager.Instance != null && entryGameMin > 0 )
         {
             int expectedCarbs = Mathf.RoundToInt(floatingDisplayValue);
             bool opened = CarbReportManager.Instance.RequestReport(expectedCarbs, () =>

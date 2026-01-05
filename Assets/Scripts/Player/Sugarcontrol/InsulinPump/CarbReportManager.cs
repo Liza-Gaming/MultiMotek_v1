@@ -1,4 +1,6 @@
-﻿namespace Player.Sugarcontrol.InsulinPump
+﻿using UnityEngine.Timeline;
+
+namespace Player.Sugarcontrol.InsulinPump
 {
 using System;
 using UnityEngine;
@@ -22,9 +24,12 @@ public class CarbReportManager : MonoBehaviour
     [Header("Optional lock")]
     [SerializeField] private PlayerMover playerMover;
 
+    [SerializeField] private Pause pauseManager;
+
     private int _expected;
     private Action _onCorrect;
     private bool _active;
+    [SerializeField] private string titleString = "תומימחפ חוויד";
 
     private void Awake()
     {
@@ -32,7 +37,14 @@ public class CarbReportManager : MonoBehaviour
         Instance = this;
 
         if (panel) panel.SetActive(false);
-        if (errorText) errorText.gameObject.SetActive(false);
+
+        if (errorText)
+        {
+            errorText.gameObject.SetActive(true);
+            errorText.color = Color.black;
+            errorText.text = titleString;
+        }
+
 
         if (confirmButton) confirmButton.onClick.AddListener(OnConfirm);
 
@@ -59,9 +71,17 @@ public class CarbReportManager : MonoBehaviour
         if (playerMover == null) playerMover = FindObjectOfType<PlayerMover>();
         playerMover?.SetInputLocked(true);
 
-        Time.timeScale = 0f;
+        pauseManager.SoftPauseFor("CarbReport");
 
-        if (errorText) errorText.gameObject.SetActive(false);
+
+        if (errorText)
+        {
+            errorText.gameObject.SetActive(true);
+            errorText.color = Color.white;
+            errorText.text = titleString;
+        }
+
+
 
         if (slider)
         {
@@ -108,7 +128,7 @@ public class CarbReportManager : MonoBehaviour
     private void Close()
     {
         if (panel) panel.SetActive(false);
-        Time.timeScale = 1f;
+        pauseManager.SoftResumeFor("CarbReport");
         playerMover?.SetInputLocked(false);
         _active = false;
     }
