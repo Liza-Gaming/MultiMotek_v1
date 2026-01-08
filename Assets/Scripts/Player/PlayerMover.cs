@@ -94,6 +94,13 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private bool scaleJumpWhenHighSugar = true;
     [SerializeField, Range(0.1f, 1f)] private float highSugarJumpFactor = 0.5f;
 
+    [Header("Smoothing")]
+    [SerializeField] private float acceleration = 35f;
+    [SerializeField] private float deceleration = 45f;
+
+    private float moveInputX;
+    private float moveInputY;
+    private bool jumpQueued;
 
     private void Awake()
     {
@@ -177,6 +184,11 @@ public class PlayerMover : MonoBehaviour
     {
         if (inputLocked) return;
 
+        // קלט פעם אחת בפריים
+        Vector2 inputVec = moveAction.action.ReadValue<Vector2>();
+        moveInputX = inputVec.x;
+        moveInputY = inputVec.y;
+
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
 
         if (isGrounded)
@@ -194,34 +206,26 @@ public class PlayerMover : MonoBehaviour
             if (animator) animator.SetTrigger(T_Land);
         }
 
+        // לתור קפיצה (לא לשנות rb פה)
         if (jumpAction.action.triggered && CanJumpNow())
         {
-            float platformX = (currentPlatform != null) ? currentPlatform.Velocity.x : 0f;
-            float inputX = moveAction.action.ReadValue<Vector2>().x;
-            rb.linearVelocity = new Vector2(platformX + inputX * _speed * speedFactor, CurrentJumpForce());
+            jumpQueued = true;
             if (animator) animator.SetTrigger(T_Jump);
         }
-        
 
-        Vector2 inputVec = moveAction.action.ReadValue<Vector2>();
-        float vert = inputVec.y;
-
-
-        if (!onLadder && currentLadder != null && Mathf.Abs(vert) > 0.1f)
-        {
+        // סולמות – לפי moveInputY
+        if (!onLadder && currentLadder != null && Mathf.Abs(moveInputY) > 0.1f)
             EnterLadder();
-        }
-        
+
         if (onLadder && jumpAction.action.triggered)
         {
             ExitLadder();
+            // גם את זה עדיף לתור, אבל נשאיר פשוט:
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, ladderDetachJumpBoost);
         }
 
-        
         if (!isGrounded && wasGroundedLastFrame)
         {
-            // אם נכנסנו לסולם או כבר עליו – לא להדליק קפיצה
             if (!onLadder && currentLadder == null)
             {
                 if (animator) animator.SetTrigger(T_Jump);
@@ -238,8 +242,8 @@ public class PlayerMover : MonoBehaviour
         }
 
         TrackContinuousMovementSugar();
-
     }
+
 
     private void UpdateCurrentPlatform()
     {
@@ -254,15 +258,11 @@ public class PlayerMover : MonoBehaviour
     {
         if (onLadder)
         {
-            Vector2 input = moveAction.action.ReadValue<Vector2>();
-            float vx = input.x * _speed * speedFactor * ladderHorizontalFactor;
+            float vx = moveInputX * _speed * speedFactor * ladderHorizontalFactor;
             float vy = 0f;
-            
-            if (currentLadder != null)
-            {
-                vy = input.y * currentLadder.climbSpeed;
-            }
-            
+
+            if (currentLadder != null) vy = moveInputY * currentLadder.climbSpeed;
+
             if (currentLadder != null && currentLadder.snapXToCenter)
             {
                 vx = 0f;
@@ -271,13 +271,12 @@ public class PlayerMover : MonoBehaviour
             }
 
             rb.linearVelocity = new Vector2(vx, vy);
-            
+
             if (animator)
             {
                 animator.SetBool(animClimbBool, true);
                 animator.SetFloat(animClimbSpeedFloat, Mathf.Abs(vy));
             }
-            
             return;
         }
 
@@ -287,26 +286,45 @@ public class PlayerMover : MonoBehaviour
             return;
         }
 
-        float moveInput = moveAction.action.ReadValue<Vector2>().x;
-
         Vector2 v = rb.linearVelocity;
-        v.x = moveInput * _speed * speedFactor;
 
+        float targetX = moveInputX * _speed * speedFactor;
+
+        // פלטפורמה נעה
+        float platformX = 0f;
+        float platformY = 0f;
         if (isGrounded && currentPlatform != null)
         {
-            Vector2 pv = currentPlatform.Velocity;
-            v.x += pv.x;
-
-            if (pv.y > 0f && v.y < pv.y)
-                v.y = pv.y;
+            platformX = currentPlatform.Velocity.x;
+            platformY = currentPlatform.Velocity.y;
         }
 
+        float desiredX = targetX + platformX;
+
+        float accel = Mathf.Abs(targetX) > 0.01f ? acceleration : deceleration;
+        v.x = Mathf.MoveTowards(v.x, desiredX, accel * Time.fixedDeltaTime);
+
+        // קפיצה מתבצעת כאן, פיזיקלית ובזמן נכון
+        if (jumpQueued)
+        {
+            jumpQueued = false;
+            v.y = CurrentJumpForce();
+            // אם תרצי שה-X בזמן קפיצה יהיה "חד", אפשר גם:
+            // v.x = desiredX;
+        }
+
+        if (platformY > 0f && v.y < platformY)
+            v.y = platformY;
+
         rb.linearVelocity = v;
-        if (moveInput > 0.01f)
+
+        // Flip לפי קלט
+        if (moveInputX > 0.01f)
             transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
-        else if (moveInput < -0.01f)
+        else if (moveInputX < -0.01f)
             transform.localScale = new Vector3(-Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
     }
+
     
     private float CurrentJumpForce()
     {

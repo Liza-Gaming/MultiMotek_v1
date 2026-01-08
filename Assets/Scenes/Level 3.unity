@@ -97523,12 +97523,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u05D4\u05E2\u05E9 \u05DC\u05E9 \u05D7\u05D5\u05D5\u05D8\u05D1 \u05EA\u05D5\u05E6\u05D9\u05D7\u05DC
-    3\n\u05EA\u05D5\u05D0\u05D9\u05D1\u05DE\u05D5 \u05DD\u05D9\u05DE \u05DC''\u05DE
-    100-\u05DC \u05EA\u05D5\u05D5\u05E9\n\u05D9\u05E6\u05D7\u05D5 \u05D4\u05E2\u05E9\u05D1
-    \u05E8\u05DB\u05D5\u05E1 2 \u05DC\u05E9 \u05D4\u05D3\u05D9\u05E8\u05D9\u05DC\n'\u05E7\u05D3
-    15 :3-\u05D4 \u05D4\u05E6\u05D9\u05D7\u05DC\u05D4\u05DE \u05D4\u05E2\u05E4\u05E9\u05D4
-    \u05DF\u05DE\u05D6"
+  m_Text: " \u05D4\u05E2\u05E9 \u05DC\u05E9 \u05D7\u05D5\u05D5\u05D8\u05D1 \u05EA\u05D5\u05DE\u05D9\u05D2\u05DC
+    3\n\u05DD\u05D9\u05DE \u05DC\"\u05DE 100 =\n\u05DF\u05D9\u05DC\u05D5\u05E1\u05E0\u05D9\u05D0\u05DC
+    \u05D5\u05E2\u05D9\u05D9\u05E1\u05D9 \u05DD\u05D9\u05DE\n\u05DD\u05D9\u05D4\u05D5\u05D1\u05D2
+    \u05DD\u05D9\u05DB\u05E8\u05E2\u05D4\u05E9\u05DB \u05E8\u05DB\u05D5\u05E1\u05D4
+    \u05EA\u05D3\u05E8\u05D5\u05D4\u05D1"
 --- !u!222 &1782285348
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -98188,7 +98187,9 @@ MonoBehaviour:
   animator: {fileID: 1800796064}
   baseController: {fileID: 9100000, guid: f27fab15c0eae7847a53928f223dead9, type: 2}
   stage3Override: {fileID: 22100000, guid: 29d2242917c00b84bbf8f10d42696d57, type: 2}
-  stageBuildIndexToSwitch: 3
+  stage5Override: {fileID: 22100000, guid: 709bbdf06b4a7c6449fad259f3b27086, type: 2}
+  stage3BuildIndexToSwitch: 3
+  stage5BuildIndexToSwitch: 5
   stateToReenterAfterSwap: Idle
 --- !u!1 &1803246604
 GameObject:

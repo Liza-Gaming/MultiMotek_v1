@@ -24,7 +24,7 @@
                 warningPanel.SetActive(show);
 
             if (show && warningText)
-                warningText.text = $":הבאשמ תארתה\nתוקד 30 דועב\n70 לע היהי רכוסה {Mathf.CeilToInt(predictor.LastEtaGameMin)} ";
+                warningText.text = $":הבאשמ תארתה\nתוקד 30 דועב\n70 ל עיגי רכוסה {Mathf.CeilToInt(predictor.LastEtaGameMin)} ";
         }
     }
 

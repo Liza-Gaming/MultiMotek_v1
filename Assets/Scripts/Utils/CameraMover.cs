@@ -37,7 +37,7 @@ public class CameraMover : MonoBehaviour
     
     private void ApplyBoundsForScene(Scene s)
     {
-        // אופציה א: אם יש קומפוננטה בסצנה שמחזיקה גבולות – נעדיף אותה (נחמד למעצבים)
+
         var marker = FindFirstObjectByType<LevelCameraBounds>(FindObjectsInactive.Include);
         if (marker != null) {
             minX = marker.minX;
@@ -63,6 +63,10 @@ public class CameraMover : MonoBehaviour
             case "Level 4":
                 minX = 0f;
                 maxX = 190f;
+                break;
+            case "Level 5":
+                minX = -10f;
+                maxX = 220f;
                 break;
             default:
                 minX = -999f;

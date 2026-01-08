@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Pump Player
+  m_Controller: {fileID: 9100000, guid: f27fab15c0eae7847a53928f223dead9, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 401311dd38eb689479c41099b75930d3, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 401311dd38eb689479c41099b75930d3, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: bc1f94a81e76edf408d3c5adbdb98a8f, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 1e55c546dcaac254ca2f066cef1700e2, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 6d4eb1ed0d14535438621f685233be73, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b211aa46cbddf5f488e2ebc4fdc93d1f, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 49ecc6b1ae7d56c4cb0d7af1e81ece81, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 93ba2ce5b31c6794daf27580d63c2c58, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 8c4b92302d9c138459685c525e64cd63, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 4f4af7b1d93637346b7ad200848c6f5e, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: f0a418e1a4c2da948b8fccc7c38c3cd9, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 2c10e1a2b40285a41a62f4e49d4aad68, type: 2}
