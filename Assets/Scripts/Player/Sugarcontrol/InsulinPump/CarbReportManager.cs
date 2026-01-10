@@ -32,6 +32,7 @@ public class CarbReportManager : MonoBehaviour
     private int _expected;
     private Action _onCorrect;
     private bool _active;
+    private System.Action<int> _onCorrectInt;
     [SerializeField] private string titleString = "תומימחפ חוויד";
 
     private void Awake()
@@ -59,11 +60,12 @@ public class CarbReportManager : MonoBehaviour
     private bool EnabledThisScene()
         => SceneManager.GetActiveScene().buildIndex >= enableFromBuildIndex;
 
-    public bool RequestReport(int expectedCarbs, Action onCorrect)
+    public bool RequestReport(int expectedCarbs, System.Action<int> onCorrect)
     {
+        
         if (!EnabledThisScene())
         {
-            onCorrect?.Invoke();
+            onCorrect?.Invoke(expectedCarbs); 
             return false;
         }
 
@@ -71,7 +73,7 @@ public class CarbReportManager : MonoBehaviour
 
         _active = true;
         _expected = expectedCarbs;
-        _onCorrect = onCorrect;
+        _onCorrectInt = onCorrect;
 
         if (playerMover == null) playerMover = FindObjectOfType<PlayerMover>();
         playerMover?.SetInputLocked(true);
@@ -128,8 +130,8 @@ public class CarbReportManager : MonoBehaviour
         if (reported == _expected)
         {
             Close();
-            _onCorrect?.Invoke();
-            _onCorrect = null;
+            _onCorrectInt?.Invoke(reported);
+            _onCorrectInt = null;
         }
         else
         {

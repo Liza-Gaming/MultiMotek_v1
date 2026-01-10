@@ -248,41 +248,58 @@ public class PlayerManager : MonoBehaviour
         Debug.Log($"Spawned floating sugar text: {sugarValue} at {worldPos}");
     }
 
-    private void ApplyItemSugarEffect(
-        float amountSigned,
-        float durationGameMin,
-        float entryGameMin,
-        bool showFloatingText,
-        float floatingDisplayValue,
-        Color floatingColor,
-        Color fxColor)
+private void ApplyItemSugarEffect(
+    float amountSigned,
+    float durationGameMin,
+    float entryGameMin,
+    bool showFloatingText,
+    float floatingDisplayValue,
+    Color floatingColor,
+    Color fxColor)
+{
+    bool isFoodRise = amountSigned > 0f;
+
+    // אל תחשב carbs מתוך amountSigned אלא אם זה באמת הקשר אצלך.
+    // אם אין לך מידע אחר, אפשר fallback, אבל עדיף reportedCarbs מהפאנל.
+    int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
+
+    if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f)
     {
-        if (amountSigned > 0f && CarbReportManager.Instance != null && entryGameMin > 0 )
+        bool opened = CarbReportManager.Instance.RequestReport(expectedCarbsForQuiz, (reportedCarbs) =>
         {
-            int expectedCarbs = Mathf.RoundToInt(floatingDisplayValue);
-            bool opened = CarbReportManager.Instance.RequestReport(expectedCarbs, () =>
-            {
-                if (sugarMeter != null)
-                    sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+            // 1) העלייה של האוכל
+            if (sugarMeter != null)
+                sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
 
-                if (showFloatingText)
-                    ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+            // 2) PID: מפעיל משאבה “במהלך העלייה”
+            PumpLogic.Instance?.OnMealReportedPID(
+                carbsGrams: reportedCarbs,
+                expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
+                foodDelayGameMin: entryGameMin,
+                foodDurationGameMin: durationGameMin
+            );
 
-                playerFeedback?.PlayUseItemFX(fxColor);
-            });
+            if (showFloatingText)
+                ShowFloatingSugarText(floatingDisplayValue, floatingColor);
 
-            if (opened) return;
-        }
+            playerFeedback?.PlayUseItemFX(fxColor);
+        });
 
-        if (sugarMeter != null)
-            sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
-
-        if (showFloatingText)
-            ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-
-        playerFeedback?.PlayUseItemFX(fxColor);
+        return; // כדי לא להכפיל את אפקט האוכל
     }
-    
+
+    // אם אין פאנל דיווח (למשל לפני שלב 5) – רק האוכל עובד, בלי משאבה
+    if (sugarMeter != null)
+        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+
+    if (showFloatingText)
+        ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+
+    playerFeedback?.PlayUseItemFX(fxColor);
+}
+
+
+
     public void ApplyEnemySugarEffect(
         float amountSigned,
         float durationGameMin,
