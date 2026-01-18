@@ -265,28 +265,26 @@ private void ApplyItemSugarEffect(
 
     if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f)
     {
-        bool opened = CarbReportManager.Instance.RequestReport(expectedCarbsForQuiz, (reportedCarbs) =>
-        {
-            // 1) העלייה של האוכל
-            if (sugarMeter != null)
-                sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+        CarbReportManager.Instance.RequestReport(
+            expectedCarbsForQuiz,
+            expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
+            foodDurationGameMin: durationGameMin,
+            onCorrect: (reportedCarbs) =>
+            {
+                // 1) העלייה של האוכל בלבד (המשאבה תופעל מתוך CarbReportManager.OnConfirm)
+                if (sugarMeter != null)
+                    sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
 
-            // 2) PID: מפעיל משאבה “במהלך העלייה”
-            PumpLogic.Instance?.OnMealReportedPID(
-                carbsGrams: reportedCarbs,
-                expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
-                foodDelayGameMin: entryGameMin,
-                foodDurationGameMin: durationGameMin
-            );
+                if (showFloatingText)
+                    ShowFloatingSugarText(floatingDisplayValue, floatingColor);
 
-            if (showFloatingText)
-                ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-
-            playerFeedback?.PlayUseItemFX(fxColor);
-        });
+                playerFeedback?.PlayUseItemFX(fxColor);
+            }
+        );
 
         return; // כדי לא להכפיל את אפקט האוכל
     }
+
 
     // אם אין פאנל דיווח (למשל לפני שלב 5) – רק האוכל עובד, בלי משאבה
     if (sugarMeter != null)

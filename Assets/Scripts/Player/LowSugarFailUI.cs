@@ -6,12 +6,12 @@ public class LowSugarFailUI : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private Image blackPanel;
-    [SerializeField] private GameObject failButton;   // 👈 הכפתור
+    [SerializeField] private GameObject failButton;
     [SerializeField] private float fadeDuration = 2f;
 
     [Header("Low Sugar Settings")]
     [SerializeField] private float sugarThreshold = 60f;
-    [SerializeField] private float requiredGameMinutesBelow = 60f; // שעה משחק
+    [SerializeField] private float requiredGameMinutesBelow = 60f;
 
     private float accumulatedGameMinutes = 0f;
     private bool faintTriggered = false;

@@ -1131,7 +1131,7 @@ MonoBehaviour:
   failButton: {fileID: 388647919}
   fadeDuration: 2
   sugarThreshold: 60
-  requiredGameMinutesBelow: 70
+  requiredGameMinutesBelow: 90
 --- !u!1 &130254104
 GameObject:
   m_ObjectHideFlags: 0
