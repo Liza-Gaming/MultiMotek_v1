@@ -6,7 +6,7 @@ public class TimerUIBinder : MonoBehaviour
     [SerializeField] private Text clockText;
     [SerializeField] private Image background;
 
-    void Start()
+    void OnEnable()
     {
         if (Timer.Instance != null)
             Timer.Instance.BindUI(clockText, background);

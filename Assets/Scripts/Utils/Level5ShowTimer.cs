@@ -68,7 +68,7 @@ public class Level5ShowTimer : MonoBehaviour
             // עצירה רגעית אופציונלית כדי למנוע "דליפות זמן" תוך כדי פריימי הטעינה
             Timer.Instance.PauseClock(true);
             Timer.Instance.SetTime(7, 0);    // ← תמיד מתחיל 07:00 בשלב 5
-            Timer.Instance.PauseClock(false);
+            //Timer.Instance.PauseClock(false);
         }
 
         Debug.Log("[Level5ShowTimer] Timer UI restored successfully!");

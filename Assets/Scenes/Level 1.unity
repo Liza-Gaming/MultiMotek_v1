@@ -34690,13 +34690,13 @@ RectTransform:
   - {fileID: 752349846}
   - {fileID: 2008443260}
   - {fileID: 1974615899}
-  - {fileID: 1366160825}
   - {fileID: 130254105}
   - {fileID: 1302988140}
   - {fileID: 852020186}
   - {fileID: 1216422117}
   - {fileID: 1041388753}
   - {fileID: 1676788872}
+  - {fileID: 1366160825}
   - {fileID: 2063662816}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
