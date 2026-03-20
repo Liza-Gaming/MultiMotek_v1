@@ -97164,7 +97164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pfItemWorld: {fileID: 8009493552661520784, guid: cd171590ae8b84647acc2cbfb99c0c51, type: 3}
   Insulin: {fileID: -4977017277872440395, guid: 6765757f940d69e4497fcee7cda4421a, type: 3}
-  SugarBag: {fileID: 3662117302869363952, guid: 5c4bf04bd45f7e24d90a9821123b54d9, type: 3}
+  SugarBag: {fileID: -376040704760271200, guid: f84a83f19066a90499a29458e7c34761, type: 3}
   Apple: {fileID: 21300000, guid: acb816f6bd2eb714b98dc454b1f6ca7d, type: 3}
   Bread: {fileID: 4917599475261026392, guid: 2886bbd79acdfc348b2a27f4efea38b9, type: 3}
   EnergyDrink: {fileID: 8465958648692019664, guid: efd031dc1551a82479f83c7cf4bfa152, type: 3}
@@ -97986,6 +97986,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 7917342116553464095, guid: c2fe8fa46eb3dd0418a05b319f6f3857, type: 3}
   animator: {fileID: 1800796064}
   enemyHitCooldown: 1
+  itemIconImage: {fileID: 0}
   playerFeedback: {fileID: 1800796061}
   summaryUI: {fileID: 0}
   uiInventory: {fileID: 826066451}

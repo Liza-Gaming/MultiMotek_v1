@@ -1,0 +1,543 @@
+fileFormatVersion: 2
+guid: 23a4e67118142b54ca4f3d0502df6442
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6567094705365517016
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_0
+  - first:
+      213: -226600483130420128
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_1
+  - first:
+      213: 6667588569800696193
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_2
+  - first:
+      213: 720335871359368719
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_3
+  - first:
+      213: -1655995831370243631
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_4
+  - first:
+      213: -6721753320106741721
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_5
+  - first:
+      213: 5282930540616730119
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_6
+  - first:
+      213: -6301684464552776377
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_7
+  - first:
+      213: 4356990575326280157
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_8
+  - first:
+      213: 1628051580882774962
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_9
+  - first:
+      213: -8207629647188753800
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_10
+  - first:
+      213: 1133852114200614354
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_11
+  - first:
+      213: -8743387084801228850
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_12
+  - first:
+      213: -7558908660072966845
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_13
+  - first:
+      213: 5667709252500784039
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_14
+  - first:
+      213: 8407135925763136745
+    second: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1544
+        width: 351
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d209af27d1032b50800000000000000
+      internalID: 6567094705365517016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_1
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 1544
+        width: 351
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0645419af04fadcf0800000000000000
+      internalID: -226600483130420128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_2
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 1544
+        width: 349
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 181ec635a78088c50800000000000000
+      internalID: 6667588569800696193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_3
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 1544
+        width: 354
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0eb85398a52ff900800000000000000
+      internalID: 720335871359368719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_4
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1030
+        width: 354
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d126a1b098b409e0800000000000000
+      internalID: -1655995831370243631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_5
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 1030
+        width: 353
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7203c3ff7f887b2a0800000000000000
+      internalID: -6721753320106741721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_6
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 1030
+        width: 351
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 706c586265db05940800000000000000
+      internalID: 5282930540616730119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_7
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 1030
+        width: 352
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74debb30e5beb88a0800000000000000
+      internalID: -6301684464552776377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_8
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 516
+        width: 354
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd93c0c08d3277c30800000000000000
+      internalID: 4356990575326280157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_9
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 516
+        width: 351
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bbe78a7940089610800000000000000
+      internalID: 1628051580882774962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_10
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 516
+        width: 349
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 872895f5254a81e80800000000000000
+      internalID: -8207629647188753800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_11
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 516
+        width: 348
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d5d0ce8d704cbf00800000000000000
+      internalID: 1133852114200614354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_12
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 2
+        width: 355
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecf3fa455cf39a680800000000000000
+      internalID: -8743387084801228850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_13
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 2
+        width: 355
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3451aba5f9c591790800000000000000
+      internalID: -7558908660072966845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_14
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 2
+        width: 353
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a3018d498fb7ae40800000000000000
+      internalID: 5667709252500784039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-side-profile-view-of-a-fantasy-checkpoint-flag-r-max-px-16 (1)_15
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 2
+        width: 351
+        height: 511
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ec5981e4952ca470800000000000000
+      internalID: 8407135925763136745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

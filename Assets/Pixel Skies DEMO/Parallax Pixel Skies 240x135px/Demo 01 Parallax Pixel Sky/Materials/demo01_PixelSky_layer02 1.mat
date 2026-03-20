@@ -7,10 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: demo01_PixelSky_layer03
+  m_Name: demo01_PixelSky_layer02 1
   m_Shader: {fileID: 10751, guid: 0000000000000000f000000000000000, type: 0}
-  m_Parent: {fileID: 2100000, guid: 78bddaf3b3deb2240becf62c861afc4a, type: 2}
-  m_ModifiedSerializedProperties: 16
+  m_Parent: {fileID: 2100000, guid: ca747d43eb141834ca315f964d293a47, type: 2}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 45072c61eda3b5a4dbff01e630a5de1c, type: 3}
+        m_Texture: {fileID: 2800000, guid: ee6100725e0a79542adba70d506e1b3f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []

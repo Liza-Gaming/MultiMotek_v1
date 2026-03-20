@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Player.Sugarcontrol.InsulinPump;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class PlayerManager : MonoBehaviour
 
     public float enemyHitCooldown = 1.0f;
     private float lastEnemyHitTime = -999f;
+    
+    [Header("Item Image")]
+    [SerializeField] private Image itemIconImage;
+    
     
     [SerializeField] private PlayerFeedback playerFeedback;
     
@@ -53,14 +58,6 @@ public class PlayerManager : MonoBehaviour
         if (sugarMeter == null) sugarMeter = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         inventory = new Inventory(UseItemAction);
         uiInventory.SetInventory(inventory);
-
-        //ItemWorld.SpawnItemWorld(new Vector3(5f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-        //ItemWorld.SpawnItemWorld(new Vector3(4f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-        //ItemWorld.SpawnItemWorld(new Vector3(3f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-        //ItemWorld.SpawnItemWorld(new Vector3(2f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-        //ItemWorld.SpawnItemWorld(new Vector3(1f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-        //ItemWorld.SpawnItemWorld(new Vector3(0f, 0.5f), new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
-
     }
     
     private void OnEnable()
@@ -83,10 +80,8 @@ public class PlayerManager : MonoBehaviour
     {
         hasRequiredItem = false;
     
-        // 🔧 איפוס והגדרת החץ מחדש בכל סצנה
         if (itemPointer != null)
         {
-            // חיפוש אוטומטי של הפריט הנדרש בסצנה החדשה
             GameObject requiredItem = GameObject.FindGameObjectWithTag("RequiredItem");
         
             if (requiredItem != null)
@@ -95,13 +90,11 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
-                // אין פריט נדרש בסצנה זו
                 itemPointer.SetTarget(null);
             }
         }
     }
 
-// 🔧 שיטה נוספת: קריאה מ-DoorLevelEnd
     public void ResetArrowForNewScene(Transform newTarget)
     {
         if (itemPointer != null)
@@ -114,9 +107,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (isIncrease) sugarArrow?.ShowUp(durationSec);
         else            sugarArrow?.ShowDown(durationSec);
-        
     }
-
 
     public void SetCheckpoint(Transform newCheckpoint)
     {
@@ -147,8 +138,6 @@ public class PlayerManager : MonoBehaviour
     {
         float savedSugar = sugarMeter ? sugarMeter.GetSugarLevel() : 0f;
         
-        //sugarArrow?.SuppressForSeconds(1.0f);
-
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         StartCoroutine(ExplodeAndRespawnCoroutine(savedSugar));
     }
@@ -163,7 +152,6 @@ public class PlayerManager : MonoBehaviour
         if (sugarMeter) sugarMeter.SetSugarInstant(savedSugar);
     }
 
-    
     private static bool InMask(GameObject go, LayerMask mask) => (mask.value & (1 << go.layer)) != 0;
 
     private void TryEnemyHit(Component hitSource)
@@ -186,7 +174,6 @@ public class PlayerManager : MonoBehaviour
         lastEnemyHitTime = Time.time;
     }
 
-
     private void OnTriggerEnter2D(Collider2D collider)
     {
         TryEnemyHit(collider);
@@ -195,12 +182,6 @@ public class PlayerManager : MonoBehaviour
         {
             inventory.AddItem(itemWorld.GetItem());
             itemWorld.DestroySelf();
-            
-            var arrow = GetComponentInChildren<ItemPointerArrow>();
-            if (arrow != null)
-            {
-                
-            }
         }
     }
 
@@ -244,59 +225,53 @@ public class PlayerManager : MonoBehaviour
             Debug.LogWarning("FloatingText component not found on prefab instance.");
             Destroy(textInstance);
         }
-
-        Debug.Log($"Spawned floating sugar text: {sugarValue} at {worldPos}");
     }
 
-private void ApplyItemSugarEffect(
-    float amountSigned,
-    float durationGameMin,
-    float entryGameMin,
-    bool showFloatingText,
-    float floatingDisplayValue,
-    Color floatingColor,
-    Color fxColor)
-{
-    bool isFoodRise = amountSigned > 0f;
-
-    // אל תחשב carbs מתוך amountSigned אלא אם זה באמת הקשר אצלך.
-    // אם אין לך מידע אחר, אפשר fallback, אבל עדיף reportedCarbs מהפאנל.
-    int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
-
-    if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f)
+    // הוספנו את הפרמטר האופציונלי: Sprite itemSprite = null
+    private void ApplyItemSugarEffect(
+        float amountSigned,
+        float durationGameMin,
+        float entryGameMin,
+        bool showFloatingText,
+        float floatingDisplayValue,
+        Color floatingColor,
+        Color fxColor,
+        Sprite itemSprite = null) 
     {
-        CarbReportManager.Instance.RequestReport(
-            expectedCarbsForQuiz,
-            expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
-            foodDurationGameMin: durationGameMin,
-            onCorrect: (reportedCarbs) =>
-            {
-                // 1) העלייה של האוכל בלבד (המשאבה תופעל מתוך CarbReportManager.OnConfirm)
-                if (sugarMeter != null)
-                    sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+        bool isFoodRise = amountSigned > 0f;
 
-                if (showFloatingText)
-                    ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+        int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
 
-                playerFeedback?.PlayUseItemFX(fxColor);
-            }
-        );
+        if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f)
+        {
+            CarbReportManager.Instance.RequestReport(
+                expectedCarbsForQuiz,
+                expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
+                foodDurationGameMin: durationGameMin,
+                itemSprite: itemSprite, // <--- מעבירים את התמונה לפאנל
+                onCorrect: (reportedCarbs) =>
+                {
+                    if (sugarMeter != null)
+                        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
 
-        return; // כדי לא להכפיל את אפקט האוכל
+                    if (showFloatingText)
+                        ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+
+                    playerFeedback?.PlayUseItemFX(fxColor);
+                }
+            );
+
+            return; 
+        }
+
+        if (sugarMeter != null)
+            sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+
+        if (showFloatingText)
+            ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+
+        playerFeedback?.PlayUseItemFX(fxColor);
     }
-
-
-    // אם אין פאנל דיווח (למשל לפני שלב 5) – רק האוכל עובד, בלי משאבה
-    if (sugarMeter != null)
-        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
-
-    if (showFloatingText)
-        ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-
-    playerFeedback?.PlayUseItemFX(fxColor);
-}
-
-
 
     public void ApplyEnemySugarEffect(
         float amountSigned,
@@ -305,6 +280,7 @@ private void ApplyItemSugarEffect(
         float floatingDisplayValue,
         float entryGameMin)
     {
+        // קריאה בלי תמונה (תשתמש בברירת המחדל null)
         ApplyItemSugarEffect(
             amountSigned: amountSigned,
             durationGameMin: durationGameMin,
@@ -315,7 +291,6 @@ private void ApplyItemSugarEffect(
             fxColor: EnemyFlashColor
         );
     }
-
 
     public void UseItemAction(Item item)
     {
@@ -331,7 +306,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: -30f,
                     floatingColor: Color.red,
-                    fxColor: insulinFlashColor
+                    fxColor: insulinFlashColor,
+                    itemSprite: item.GetSprite() // <--- העברת התמונה
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
@@ -348,7 +324,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 4f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.SugarBag, amount = 1 });
@@ -365,7 +342,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 25f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Banana, amount = 1 });
@@ -382,7 +360,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 11f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.WaterMelon, amount = 1 });
@@ -399,7 +378,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: false,
                     floatingDisplayValue: 0f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.ChickenLeg, amount = 1 });
@@ -416,7 +396,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 12f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Bamba, amount = 1 });
@@ -433,7 +414,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 15f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Apple, amount = 1 });
@@ -450,7 +432,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 15f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Bread, amount = 1 });
@@ -467,7 +450,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: false,
                     floatingDisplayValue: 0f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Fish, amount = 1 });
@@ -484,7 +468,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: false,
                     floatingDisplayValue: 0f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Sausages, amount = 1 });
@@ -501,7 +486,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 28f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.EnergyDrink, amount = 1 });
@@ -518,7 +504,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 14f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.BeanBag, amount = 1 });
@@ -535,7 +522,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 17f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.ChocolateCup, amount = 1 });
@@ -552,7 +540,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 12f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Icecream, amount = 1 });
@@ -569,7 +558,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 17f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.LineChocolate, amount = 1 });
@@ -586,7 +576,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 15f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Candy, amount = 1 });
@@ -603,7 +594,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 8f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.DietYogurt, amount = 1 });
@@ -620,7 +612,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 23f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Baigale, amount = 1 });
@@ -637,7 +630,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: false,
                     floatingDisplayValue: 0f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Cucumber, amount = 1 });
@@ -654,7 +648,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: false,
                     floatingDisplayValue: 0f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Carrot, amount = 1 });
@@ -671,7 +666,8 @@ private void ApplyItemSugarEffect(
                     showFloatingText: false,
                     floatingDisplayValue: 0f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Tomato, amount = 1 });
@@ -688,14 +684,14 @@ private void ApplyItemSugarEffect(
                     showFloatingText: true,
                     floatingDisplayValue: 26f,
                     floatingColor: Color.yellow,
-                    fxColor: sugarFlashColor
+                    fxColor: sugarFlashColor,
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.CokeCup, amount = 1 });
                 break;
             }
         }
-
     }
     
     public void HandleWaterBottlePress()
@@ -713,6 +709,7 @@ private void ApplyItemSugarEffect(
         
         _waterPressTimesReal.Clear();
 
+        // קריאה בלי תמונה
         ApplyItemSugarEffect(
             amountSigned: -WATER_SUGAR_DROP,
             durationGameMin: WATER_EFFECT_GAME_MIN,
@@ -724,4 +721,3 @@ private void ApplyItemSugarEffect(
         );
     }
 }
-

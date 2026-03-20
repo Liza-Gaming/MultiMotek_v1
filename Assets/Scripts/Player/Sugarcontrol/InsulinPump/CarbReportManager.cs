@@ -21,6 +21,9 @@ namespace Player.Sugarcontrol.InsulinPump
 
         [SerializeField] private Button plusButton;
         [SerializeField] private Button minusButton;
+        
+        [Header("Item Image")]
+        [SerializeField] private Image itemIconImage;
 
         [Header("Optional lock")]
         [SerializeField] private PlayerMover playerMover;
@@ -115,6 +118,7 @@ namespace Player.Sugarcontrol.InsulinPump
             int expectedCarbs,
             float expectedFoodRiseMgdl,
             float foodDurationGameMin,
+            Sprite itemSprite,
             Action<int> onCorrect
         )
         {
@@ -136,6 +140,19 @@ namespace Player.Sugarcontrol.InsulinPump
             // NEW: reset per open
             _selectedInsulinDelayGameMin = 0f;
             SetSkipInsulin(false);
+            
+            if (itemIconImage != null)
+            {
+                if (itemSprite != null)
+                {
+                    itemIconImage.sprite = itemSprite;
+                    itemIconImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    itemIconImage.gameObject.SetActive(false);
+                }
+            }
 
             if (playerMover == null) playerMover = FindObjectOfType<PlayerMover>();
             playerMover?.SetInputLocked(true);
@@ -212,7 +229,7 @@ namespace Player.Sugarcontrol.InsulinPump
             {
                 if (errorText)
                 {
-                    errorText.text = "בוש וסנ ,ןוכנ אל";
+                    errorText.text = "ארקמל ונפ ,ןוכנ אל";
                     errorText.color = Color.red;
                     errorText.gameObject.SetActive(true);
                 }
