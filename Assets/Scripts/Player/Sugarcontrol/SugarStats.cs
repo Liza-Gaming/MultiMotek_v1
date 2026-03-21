@@ -19,6 +19,9 @@ public class SugarStats : MonoBehaviour
     [SerializeField] private float timeInRange = 0f;
     [SerializeField] private float timeAboveRange = 0f;
     [SerializeField] private float timeBelowRange = 0f;
+    
+    [Header("Visual Effects")]
+    [SerializeField] private GameObject blurVolumeObject;
 
     private float uiTimer = 0f;
     

@@ -47173,6 +47173,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3564026850829729314, guid: 4da9b9761848a1848868ed8a0c18f051, type: 3}
   m_PrefabInstance: {fileID: 2026851428}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1163417560
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1163417562}
+  - component: {fileID: 1163417561}
+  m_Layer: 0
+  m_Name: BlurVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1163417561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163417560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 10
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: aa98264345b32244e9d339e9c245e7d5, type: 2}
+--- !u!4 &1163417562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163417560}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 821.57947, y: 229.64339, z: -4.3674345}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1166158785 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8369383532742148377, guid: 5fd9ed34f1f755643b41c4b41d7077e5, type: 3}
@@ -57190,6 +57239,7 @@ MonoBehaviour:
   nextSceneName: Level2
   nextSceneBuildIndex: -1
   heartsDisplay: {fileID: 1975103235}
+  blurVolumeObject: {fileID: 1163417560}
 --- !u!95 &1622559620
 Animator:
   serializedVersion: 7
@@ -58107,6 +58157,7 @@ MonoBehaviour:
   timeInRange: 0
   timeAboveRange: 0
   timeBelowRange: 0
+  blurVolumeObject: {fileID: 0}
 --- !u!4 &1697898869
 Transform:
   m_ObjectHideFlags: 0
@@ -58196,6 +58247,7 @@ MonoBehaviour:
   timeInRange: 0
   timeAboveRange: 0
   timeBelowRange: 0
+  blurVolumeObject: {fileID: 0}
 --- !u!114 &1697898875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64273,3 +64325,4 @@ SceneRoots:
   - {fileID: 1685472717}
   - {fileID: 218097128}
   - {fileID: 1755610840}
+  - {fileID: 1163417562}

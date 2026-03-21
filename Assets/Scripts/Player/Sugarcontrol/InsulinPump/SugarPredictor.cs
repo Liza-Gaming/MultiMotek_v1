@@ -15,7 +15,7 @@ public class SugarPredictor : MonoBehaviour
     [SerializeField] private float threshold = 70f;
 
     [Tooltip("חלון זמן קדימה בדקות משחק (למשל 30)")]
-    [SerializeField] private float lookaheadGameMinutes = 30f;
+    [SerializeField] private float lookaheadGameMinutes = 66f;
 
     [Tooltip("צעד סימולציה בדקות משחק (דיוק/עלות). 0.5-1 מומלץ")]
     [SerializeField] private float stepGameMinutes = 1f;

@@ -24,6 +24,9 @@ namespace Player.Sugarcontrol.InsulinPump
         
         [Header("Item Image")]
         [SerializeField] private Image itemIconImage;
+        
+        [Header("Visual Effects")]
+        [SerializeField] private GameObject blurVolumeObject;
 
         [Header("Optional lock")]
         [SerializeField] private PlayerMover playerMover;
@@ -66,6 +69,8 @@ namespace Player.Sugarcontrol.InsulinPump
             Instance = this;
 
             if (panel) panel.SetActive(false);
+            
+            if (blurVolumeObject) blurVolumeObject.SetActive(false);
 
             if (errorText)
             {
@@ -180,6 +185,7 @@ namespace Player.Sugarcontrol.InsulinPump
             if (minusButton) minusButton.interactable = (slider != null);
 
             if (panel) panel.SetActive(true);
+            if (blurVolumeObject) blurVolumeObject.SetActive(true);
             return true;
         }
 
@@ -239,6 +245,7 @@ namespace Player.Sugarcontrol.InsulinPump
         private void Close()
         {
             if (panel) panel.SetActive(false);
+            if (blurVolumeObject) blurVolumeObject.SetActive(false);
             pauseManager?.SoftResumeFor("CarbReport");
             playerMover?.SetInputLocked(false);
             _active = false;

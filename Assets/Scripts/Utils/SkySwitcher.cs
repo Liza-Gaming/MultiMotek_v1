@@ -22,9 +22,9 @@ public class SkySwitcher : MonoBehaviour
 
     void OnEnable()
     {
-        // נתעדכן בכל טעינת סצנה (חשוב כש-SkySwitcher נטען מחדש)
+
         SceneManager.sceneLoaded += OnSceneLoaded;
-        // וגם ננסה לקשור מיד
+
         StartCoroutine(EnsureClockBound());
     }
 
@@ -35,16 +35,16 @@ public class SkySwitcher : MonoBehaviour
 
     private void OnSceneLoaded(Scene s, LoadSceneMode m)
     {
-        // כל פעם שסצנה נטענת – ודאי שיש לנו קישור לשעון
+
         StartCoroutine(EnsureClockBound());
-        // תרענני מצב מיד לפי הזמן העדכני
+
         var (h, mnt) = GetTimeHM();
         ApplySet(IsDay(h, mnt));
     }
 
     private IEnumerator EnsureClockBound()
     {
-        // נחכה עד שה-Timer.Instance קיים (Boot יכול ליצור אותו פריים-שניים אחרייך)
+
         while (clockProvider == null)
         {
             clockProvider = Timer.Instance ?? FindObjectOfType<Timer>(true);
@@ -73,14 +73,14 @@ public class SkySwitcher : MonoBehaviour
 
     (int h, int m) GetTimeHM()
     {
-        // Lazy-bind: אם עדיין אין, ננסה לתפוס את הסינגלטון עכשיו
+
         if (clockProvider == null)
             clockProvider = Timer.Instance ?? FindObjectOfType<Timer>(true);
 
         if (clockProvider != null)
             return clockProvider.GetCurrentTime();
 
-        // Fallback
+
         return (debugHour, debugMinute);
     }
 
@@ -100,7 +100,7 @@ public class SkySwitcher : MonoBehaviour
         _isDayActive = day;
         if (dayRoot) dayRoot.SetActive(day);
         if (nightRoot) nightRoot.SetActive(!day);
-        // (לא חובה) אפשר לרענן כאן Parallax אם צריך
+
         Debug.Log($"[SkySwitcher] Applied: Day={day}, DayRoot={dayRoot?.activeSelf}, NightRoot={nightRoot?.activeSelf}");
     }
 }

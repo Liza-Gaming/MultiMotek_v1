@@ -10,7 +10,7 @@ public class LevelMenu : MonoBehaviour
     [SerializeField] private GameObject levelsPanel;
 
     [Header("Level Buttons (Grid)")]
-    [SerializeField] private Button[] levelButtons;   // כפתורי שלבים בתפריט
+    [SerializeField] private Button[] levelButtons;
 
     [Header("Per-Level Confirm Panels")]
     [SerializeField] private LevelPanelEntry[] levelConfirmPanels;
