@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FitnesstrainerIdle
+  m_Name: Fitness Idle 2
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -20,12 +20,10 @@ AnimationClip:
   m_PPtrCurves:
   - serializedVersion: 2
     curve:
-    - time: 0
-      value: {fileID: -8958395655772144946, guid: ed76342eb01de3147b6065187bab656b, type: 3}
     - time: 0.28333333
-      value: {fileID: -9062464107914857659, guid: ed76342eb01de3147b6065187bab656b, type: 3}
+      value: {fileID: -6285958300296757416, guid: 672527316d3bab244868584ca5617d55, type: 3}
     - time: 0.5
-      value: {fileID: 3403080390184496675, guid: ed76342eb01de3147b6065187bab656b, type: 3}
+      value: {fileID: -4570887942467987312, guid: 672527316d3bab244868584ca5617d55, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -48,9 +46,8 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -8958395655772144946, guid: ed76342eb01de3147b6065187bab656b, type: 3}
-    - {fileID: -9062464107914857659, guid: ed76342eb01de3147b6065187bab656b, type: 3}
-    - {fileID: 3403080390184496675, guid: ed76342eb01de3147b6065187bab656b, type: 3}
+    - {fileID: -6285958300296757416, guid: 672527316d3bab244868584ca5617d55, type: 3}
+    - {fileID: -4570887942467987312, guid: 672527316d3bab244868584ca5617d55, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

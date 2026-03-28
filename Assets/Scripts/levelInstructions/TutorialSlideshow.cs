@@ -96,9 +96,10 @@ public class TutorialSlideshow : MonoBehaviour
         if (index > 0)
         {
             index--;
+            Debug.Log("Index: "+index);
             ApplySlide();
             ApplyCharacter();
-            PlaySlideAudio();   // ← חדש
+            PlaySlideAudio();
             UpdateButtons();
         }
     }
@@ -110,8 +111,9 @@ public class TutorialSlideshow : MonoBehaviour
             index++;
             ApplySlide();
             ApplyCharacter();
-            PlaySlideAudio();   // ← חדש
+            PlaySlideAudio();
             UpdateButtons();
+            Debug.Log("Index: "+index);
         }
         else
         {
