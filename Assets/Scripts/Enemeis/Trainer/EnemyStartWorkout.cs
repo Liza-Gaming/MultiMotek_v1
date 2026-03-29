@@ -12,11 +12,7 @@ public class EnemyStartWorkout : MonoBehaviour
     [SerializeField] private float durationGameMinutes = 30f;
     [SerializeField] private float cooldownRealSeconds = 5f;
     [SerializeField] private string workoutBool = "IsTraining";
-
-    [Header("Sugar outcome")]
-    [SerializeField] private float sugarEffectAmount = 20f;
-    [SerializeField] private float sugarEffectDurationGameMin = 120f;
-
+    
     [Header("Optional positioning")]
     [SerializeField] private Transform standPoint;
 
@@ -51,6 +47,8 @@ public class EnemyStartWorkout : MonoBehaviour
 
         float totalGameSeconds = durationGameMinutes * 60f;
         WorkoutStartedGameSeconds?.Invoke(totalGameSeconds);
+        
+        ApplyRandomSugarOutcome();
 
         float waitRealSeconds = GameTime.GameMinutesToRealSeconds(durationGameMinutes);
         yield return new WaitForSeconds(waitRealSeconds);
@@ -59,8 +57,6 @@ public class EnemyStartWorkout : MonoBehaviour
             animator.SetBool(workoutBool, false);
 
         if (mover) mover.SetInputLocked(false);
-
-        ApplyRandomSugarOutcome();
 
         WorkoutEnded?.Invoke();
 
@@ -77,24 +73,23 @@ public class EnemyStartWorkout : MonoBehaviour
     {
         var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         if (sm == null) return;
+        
+        int scenario = UnityEngine.Random.Range(0, 3);
 
-        int roll = UnityEngine.Random.Range(0, 3);
-
-        float signedAmount = roll switch
+        switch (scenario)
         {
-            0 => -sugarEffectAmount,
-            1 => 0f,                
-            2 => +sugarEffectAmount,
-            _ => 0f
-        };
+            case 0:
+                sm.ScheduleEffectGame(-60f, durationGameMin: 90f, entryGameMin: 20f);
+                break;
 
-        if (Mathf.Approximately(signedAmount, 0f))
-            return;
+            case 1:
+                sm.ScheduleEffectGame(150f, durationGameMin: 200f, entryGameMin: 20f);
+                break;
 
-        sm.ScheduleEffectGame(
-            signedAmount,
-            durationGameMin: sugarEffectDurationGameMin,
-            entryGameMin: 0f
-        );
+            case 2:
+                sm.ScheduleEffectGame(150f, durationGameMin: 200f, entryGameMin: 20f);
+                sm.ScheduleEffectGame(-60f, durationGameMin: 270f, entryGameMin: 200f);
+                break;
+        }
     }
 }

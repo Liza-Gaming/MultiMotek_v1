@@ -538,6 +538,7 @@ public class SugarMeter : MonoBehaviour
         if (clearTrends)
         {
             _effects.Clear();
+            _transients.Clear();
             _currentTrendSign = 0;
             _currentTrendEndsAt = -1;
         }
