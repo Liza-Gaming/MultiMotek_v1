@@ -113,12 +113,7 @@ namespace Player.Sugarcontrol.InsulinPump
             
             // אם את רוצה גם לשנות צבע/הדגשה — אפשר פה.
         }
-
-        /// <summary>
-        /// פותח פאנל דיווח.
-        /// expectedFoodRiseMgdl: כמה mg/dL האוכל צפוי להעלות סה"כ (המודל שלך).
-        /// foodDurationGameMin: כמה זמן העלייה נמשכת.
-        /// </summary>
+        
         public bool RequestReport(
             int expectedCarbs,
             float expectedFoodRiseMgdl,

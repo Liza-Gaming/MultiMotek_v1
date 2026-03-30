@@ -226,71 +226,72 @@ public class PlayerManager : MonoBehaviour
             Destroy(textInstance);
         }
     }
-
-    // הוספנו את הפרמטר האופציונלי: Sprite itemSprite = null
-    private void ApplyItemSugarEffect(
-        float amountSigned,
-        float durationGameMin,
-        float entryGameMin,
-        bool showFloatingText,
-        float floatingDisplayValue,
-        Color floatingColor,
-        Color fxColor,
-        Sprite itemSprite = null) 
+    
+private void ApplyItemSugarEffect(
+    float amountSigned,
+    float durationGameMin,
+    float entryGameMin,
+    bool showFloatingText,
+    float floatingDisplayValue,
+    Color floatingColor,
+    Color fxColor,
+    Sprite itemSprite = null,
+    bool canShowPump = true)
+{
+    bool isFoodRise = amountSigned > 0f;
+    int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
+    
+    if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f && canShowPump)
     {
-        bool isFoodRise = amountSigned > 0f;
+        CarbReportManager.Instance.RequestReport(
+            expectedCarbsForQuiz,
+            expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
+            foodDurationGameMin: durationGameMin,
+            itemSprite: itemSprite,
+            onCorrect: (reportedCarbs) =>
+            {
+                if (sugarMeter != null)
+                    sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
 
-        int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
+                if (showFloatingText)
+                    ShowFloatingSugarText(floatingDisplayValue, floatingColor);
 
-        if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f)
-        {
-            CarbReportManager.Instance.RequestReport(
-                expectedCarbsForQuiz,
-                expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
-                foodDurationGameMin: durationGameMin,
-                itemSprite: itemSprite, // <--- מעבירים את התמונה לפאנל
-                onCorrect: (reportedCarbs) =>
-                {
-                    if (sugarMeter != null)
-                        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
-
-                    if (showFloatingText)
-                        ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-
-                    playerFeedback?.PlayUseItemFX(fxColor);
-                }
-            );
-
-            return; 
-        }
-
-        if (sugarMeter != null)
-            sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
-
-        if (showFloatingText)
-            ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-
-        playerFeedback?.PlayUseItemFX(fxColor);
-    }
-
-    public void ApplyEnemySugarEffect(
-        float amountSigned,
-        float durationGameMin,
-        Color floatingColor,
-        float floatingDisplayValue,
-        float entryGameMin)
-    {
-        // קריאה בלי תמונה (תשתמש בברירת המחדל null)
-        ApplyItemSugarEffect(
-            amountSigned: amountSigned,
-            durationGameMin: durationGameMin,
-            entryGameMin: entryGameMin,
-            showFloatingText: true,
-            floatingDisplayValue: floatingDisplayValue,
-            floatingColor: floatingColor,
-            fxColor: EnemyFlashColor
+                playerFeedback?.PlayUseItemFX(fxColor);
+            }
         );
+
+        return; 
     }
+
+    // אם הגענו לכאן, זה או ירידת סוכר, או אויב (ששלח false), או פריט שלא דורש משאבה
+    if (sugarMeter != null)
+        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+
+    if (showFloatingText)
+        ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+
+    playerFeedback?.PlayUseItemFX(fxColor);
+}
+
+public void ApplyEnemySugarEffect(
+    float amountSigned,
+    float durationGameMin,
+    Color floatingColor,
+    float floatingDisplayValue,
+    float entryGameMin)
+{
+    ApplyItemSugarEffect(
+        amountSigned: amountSigned,
+        durationGameMin: durationGameMin,
+        entryGameMin: entryGameMin,
+        showFloatingText: true,
+        floatingDisplayValue: floatingDisplayValue,
+        floatingColor: floatingColor,
+        fxColor: EnemyFlashColor,
+        itemSprite: null,
+        canShowPump: false
+    );
+}
 
     public void UseItemAction(Item item)
     {
