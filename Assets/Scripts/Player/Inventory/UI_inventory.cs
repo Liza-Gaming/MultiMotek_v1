@@ -11,6 +11,7 @@ public class UI_inventory : MonoBehaviour
     private Inventory inventory;
     private Transform itemSlotContainer;
     private Transform itemSlotTemplate;
+    
 
     private void Awake()
     {
@@ -64,11 +65,11 @@ public class UI_inventory : MonoBehaviour
                 uiText.text = "";
             }
 
-            x++;
-            if(x > 3f)
+            x+=1.2f;
+            if(x > 5f)
             {
                 x = 0;
-                y-=1f;
+                y-=1.2f;
             }
         }
     }

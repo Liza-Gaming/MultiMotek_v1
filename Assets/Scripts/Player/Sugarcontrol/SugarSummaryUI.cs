@@ -106,8 +106,8 @@ public class SugarSummaryUI : MonoBehaviour
 
     public void ConfirmAndContinue()
     {
-        Time.timeScale = 1f;
         if (blurVolumeObject) blurVolumeObject.SetActive(false);
+        Time.timeScale = 1f;
 
         if (!string.IsNullOrEmpty(nextSceneName))
         {

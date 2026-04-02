@@ -92,28 +92,41 @@ public class SugarPredictor : MonoBehaviour
         
     }
 
-    private bool PredictHitWithinWindow(out float etaGameMin, out float sugarAtHit)
+private bool PredictHitWithinWindow(out float etaGameMin, out float sugarAtHit)
     {
-        
         etaGameMin = -1f;
         sugarAtHit = float.NaN;
-        
+
         float sugar = GetPrivateFloat(_fiSugarLevel);
-        double nowGM = GetPrivateDouble(_fiAbsGM);
+
 
         if (sugar <= threshold)
         {
-            etaGameMin = 0f;
-            sugarAtHit = sugar;
-            return true;
+            return false;
         }
-
-        float baselineRate = GetPrivateBaselineRate(); // כבר 0 החל מסצנה 5 אצלך
 
         var effects = ReadEffects();
         var transients = ReadTransients();
 
-        // סימולציה קדימה
+        bool hasLoweringEffect = false;
+        
+        for (int i = 0; i < effects.Count; i++)
+        {
+            if (effects[i].ratePerGM < 0) hasLoweringEffect = true;
+        }
+        for (int i = 0; i < transients.Count; i++)
+        {
+            if (transients[i].ratePerGM < 0) hasLoweringEffect = true;
+        }
+
+        if (!hasLoweringEffect)
+        {
+            return false;
+        }
+
+        double nowGM = GetPrivateDouble(_fiAbsGM);
+        float baselineRate = GetPrivateBaselineRate(); 
+        
         float t = 0f;
         float step = Mathf.Max(0.05f, stepGameMinutes);
 
@@ -124,29 +137,25 @@ public class SugarPredictor : MonoBehaviour
 
             float rate = 0f;
 
-            // Effects פעילים בזמן gm
+
             for (int i = 0; i < effects.Count; i++)
             {
                 var e = effects[i];
                 if (gm >= e.startAtGM && gm < e.endAtGM)
                     rate += e.ratePerGM;
             }
-
-            // אם אין אפקטים פעילים – baseline
+            
             if (Mathf.Abs(rate) < 1e-6f)
                 rate = baselineRate;
-
-            // Transients: מוסיפים את הקצב שלהם כל עוד נשאר להם זמן
+            
             for (int i = 0; i < transients.Count; i++)
             {
                 if (transients[i].remainingGM > 0f)
                     rate += transients[i].ratePerGM;
             }
-
-            // עדכון סוכר
+            
             sugar += rate * dt;
-
-            // “בזבוז” זמן מה־transients
+            
             for (int i = 0; i < transients.Count; i++)
             {
                 float rem = transients[i].remainingGM;
@@ -167,7 +176,6 @@ public class SugarPredictor : MonoBehaviour
 
         return false;
     }
-
     // ===== Reflection read helpers =====
 
     private float GetPrivateFloat(FieldInfo fi) => fi != null ? (float)fi.GetValue(sugarMeter) : 0f;

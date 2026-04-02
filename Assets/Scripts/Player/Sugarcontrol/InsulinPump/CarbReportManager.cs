@@ -8,6 +8,7 @@ namespace Player.Sugarcontrol.InsulinPump
     public class CarbReportManager : MonoBehaviour
     {
         public static CarbReportManager Instance { get; private set; }
+        [SerializeField] private InventoryUIController inventoryUIController;
 
         [Header("Enable from scene")]
         [SerializeField] private int enableFromBuildIndex = 5;
@@ -114,7 +115,7 @@ namespace Player.Sugarcontrol.InsulinPump
             // אם את רוצה גם לשנות צבע/הדגשה — אפשר פה.
         }
         
-        public bool RequestReport(
+public bool RequestReport(
             int expectedCarbs,
             float expectedFoodRiseMgdl,
             float foodDurationGameMin,
@@ -154,9 +155,12 @@ namespace Player.Sugarcontrol.InsulinPump
                 }
             }
 
-            if (playerMover == null) playerMover = FindObjectOfType<PlayerMover>();
-            playerMover?.SetInputLocked(true);
+            // --- תיקון הניתוקים: מציאת האובייקטים מחדש בסצנה החדשה ---
+            if (playerMover == null) playerMover = FindFirstObjectByType<PlayerMover>();
+            if (pauseManager == null) pauseManager = FindFirstObjectByType<Pause>();
+            if (inventoryUIController == null) inventoryUIController = FindFirstObjectByType<InventoryUIController>();
 
+            playerMover?.SetInputLocked(true);
             pauseManager?.SoftPauseFor("CarbReport");
 
             if (errorText)
@@ -180,6 +184,10 @@ namespace Player.Sugarcontrol.InsulinPump
             if (minusButton) minusButton.interactable = (slider != null);
 
             if (panel) panel.SetActive(true);
+            
+            // עכשיו בטוח להשתמש ב-inventoryUIController כי מצאנו אותו מחדש
+            if (inventoryUIController != null) inventoryUIController.CloseInventory();
+            
             if (blurVolumeObject) blurVolumeObject.SetActive(true);
             return true;
         }
