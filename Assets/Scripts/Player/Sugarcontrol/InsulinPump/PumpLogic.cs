@@ -9,6 +9,19 @@ namespace Player.Sugarcontrol.InsulinPump
     {
         public static PumpLogic Instance { get; private set; }
 
+        [Header("Temp Target 140 (Activity Mode)")]
+        [Tooltip("מאיזה שלב הפיצ'ר פעיל")]
+        [SerializeField] private int enableTempTargetBuildIndex = 6;
+        [SerializeField] private float tempTargetValue = 140f;
+        [Tooltip("לפי איזה קצב זמן לחשב את העלייה ל-140 (בדקות משחק)")]
+        [SerializeField] private float tempRiseDurationGameMin = 60f;
+
+        [SerializeField] private GameObject slider;
+
+        private float _baseTargetSugar; 
+        private bool _isTempTargetActive;
+        private double _nextTempTargetCheckGM; // טיימר לבדיקות העלייה
+        
         [Header("Enable (match your report scene gate)")]
         [SerializeField] private int enableFromBuildIndex = 5;
 
@@ -104,6 +117,8 @@ namespace Player.Sugarcontrol.InsulinPump
                 return;
             }
             Instance = this;
+            
+            _baseTargetSugar = targetSugar; 
         }
 
         private void Update()
@@ -119,6 +134,28 @@ namespace Player.Sugarcontrol.InsulinPump
 
             if (!EnabledThisScene()) return;
             if (SugarMeter.Instance == null) return;
+            
+            if (_isTempTargetActive)
+            {
+                if (_absGameMinutes >= _nextTempTargetCheckGM)
+                {
+                    _nextTempTargetCheckGM = _absGameMinutes + Math.Max(0.5f, checkEveryGameMin);
+                    
+                    float currentSugar = SugarMeter.Instance.GetSugarLevel();
+                    if (currentSugar < tempTargetValue)
+                    {
+                        // חישוב הקצב: כמה סוכר חסר חלקי 60 דקות
+                        float diff = tempTargetValue - currentSugar;
+                        float ratePerMinute = diff / tempRiseDurationGameMin;
+                        
+                        // מחשבים את המנה שצריך להוסיף רק עבור חלון הבדיקה הנוכחי (למשל 5 דקות)
+                        float chunkAmount = ratePerMinute * checkEveryGameMin;
+                        
+                        // מוסיפים את הסוכר בהדרגה לאורך 5 דקות המשחק הקרובות
+                        SugarMeter.Instance.AddSugarGame(chunkAmount, checkEveryGameMin, 0f);
+                    }
+                }
+            }
 
             // 1) no meal: always-on correction
             if (!_active && alwaysOnCorrection)
@@ -455,6 +492,31 @@ namespace Player.Sugarcontrol.InsulinPump
             }
 
             return Mathf.Max(0f, maxUnitsPerHourNoMeal - used);
+        }
+        
+        /// <summary>
+        /// מופעל על ידי כפתור ה-Toggle ב-UI (לשים לב שה-V מסומן ב-Inspector!)
+        /// </summary>
+        public void ToggleTempTarget140(bool activate)
+        {
+            if (SceneManager.GetActiveScene().buildIndex < enableTempTargetBuildIndex) return;
+
+            _isTempTargetActive = activate;
+            slider.SetActive(true);
+            
+            if (_isTempTargetActive)
+            {
+                // משנים את יעד התיקון של המשאבה ל-140 (היא תפסיק לתת אינסולין מתחת לזה)
+                targetSugar = tempTargetValue;
+                
+                // מאפסים את הטיימר כדי שהבדיקה הראשונה ב-Update תקרה מיד
+                _nextTempTargetCheckGM = _absGameMinutes;
+            }
+            else
+            {
+                // מכבים את המצב וחוזרים ליעד הרגיל (105)
+                targetSugar = _baseTargetSugar;
+            }
         }
     }
 }
