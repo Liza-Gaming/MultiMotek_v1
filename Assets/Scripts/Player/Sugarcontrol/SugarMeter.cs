@@ -60,7 +60,7 @@ public class SugarMeter : MonoBehaviour
     {
         get
         {
-            int sceneNumber = SceneManager.GetActiveScene().buildIndex + 1;
+            int sceneNumber = SceneManager.GetActiveScene().buildIndex;
             return sceneNumber < 5;
         }
     }

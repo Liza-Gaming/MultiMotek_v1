@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: demo01_PixelSky_layer01
+  m_Name: night clouds
   m_Shader: {fileID: 10751, guid: 0000000000000000f000000000000000, type: 0}
-  m_Parent: {fileID: 2100000, guid: 6b5c9fb874ceb294b8b530170f218e92, type: 2}
+  m_Parent: {fileID: 2100000, guid: ad160d58fdfe7ea49833c3777eeb5816, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: dfb210b6aa7d725449f772faf601ae0c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3e0d1a87f239d1746aaa8b5fb95fad41, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []

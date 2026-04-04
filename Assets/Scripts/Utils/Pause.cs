@@ -90,6 +90,7 @@ public class Pause : MonoBehaviour
 
     public void Menu()
     {
+        this.Resume();   
         SceneManager.LoadScene("Intro");
     }
     public void Resume()

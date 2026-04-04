@@ -171,6 +171,7 @@ public class TutorialSlideshow : MonoBehaviour
     {
         if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
         if (rootPanel) rootPanel.SetActive(false);
+        narrationSource.Stop();
 
         if (playerMover)
             playerMover.SetInputLocked(false);

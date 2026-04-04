@@ -86311,7 +86311,7 @@ MonoBehaviour:
   enableTempTargetBuildIndex: 6
   tempTargetValue: 140
   tempRiseDurationGameMin: 60
-  slider: {fileID: 0}
+  slider: {fileID: 418875576}
   enableFromBuildIndex: 5
   targetSugar: 105
   mgdlPerUnitTotal: 30
@@ -87143,7 +87143,7 @@ Transform:
   m_GameObject: {fileID: 1108983577}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.237, y: 0.679, z: 0.063543335}
+  m_LocalPosition: {x: -4.237, y: 0.814, z: 0.063543335}
   m_LocalScale: {x: 0.05, y: 0.05, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
