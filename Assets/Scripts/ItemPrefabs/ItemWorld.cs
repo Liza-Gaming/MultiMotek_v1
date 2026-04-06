@@ -17,6 +17,8 @@ public class ItemWorld : MonoBehaviour
     private Vector3 baseLocalPos;
     private Vector3 baseLocalScale;
     private float phase;
+    
+    [SerializeField] private AudioClip pickupSound;
 
     public static ItemWorld SpawnItemWorld(Vector3 position, Item item)
     {
@@ -64,6 +66,10 @@ public class ItemWorld : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         if (item == null) return;
 
+        if (pickupSound != null)
+        {
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+        }
         
         var inventory = other.GetComponent<Inventory>();
         if (inventory != null) inventory.AddItem(item);

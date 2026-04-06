@@ -9,7 +9,7 @@ public class Inventory:MonoBehaviour
 
     private List<Item> itemList;
     private Action<Item> useItemAction;
-
+    
     public Inventory(Action<Item> useItemAction)
     {
         this.useItemAction = useItemAction;
@@ -60,6 +60,28 @@ public class Inventory:MonoBehaviour
         if (itemInInventory != null && itemInInventory.amount <= 0)
         {
             itemList.Remove(itemInInventory);
+        }
+        if (ItemAssets.Instance != null)
+        {
+            AudioSource audio = ItemAssets.Instance.GetComponent<AudioSource>();
+            if (audio != null)
+            {
+                AudioClip clipToPlay = ItemAssets.Instance.useItemSound;
+
+                if (item.itemType == Item.ItemType.Insulin)
+                {
+
+                    if (ItemAssets.Instance.useInsulinSound != null)
+                    {
+                        clipToPlay = ItemAssets.Instance.useInsulinSound;
+                    }
+                }
+
+                if (clipToPlay != null)
+                {
+                    audio.PlayOneShot(clipToPlay);
+                }
+            }
         }
         OnItemListChanged?.Invoke (this, EventArgs.Empty);
     }

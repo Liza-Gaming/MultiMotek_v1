@@ -60,6 +60,8 @@ namespace Player.Sugarcontrol.InsulinPump
 
         // NEW: should we skip pump injection entirely for this meal?
         private bool _skipInsulinThisMeal = false;
+        
+        public AudioClip useInsulinSound;
 
         private bool EnabledThisScene()
             => SceneManager.GetActiveScene().buildIndex >= enableFromBuildIndex;
@@ -99,6 +101,11 @@ namespace Player.Sugarcontrol.InsulinPump
         private void SetInsulinDelay(float delayGameMin)
         {
             _selectedInsulinDelayGameMin = delayGameMin;
+            AudioSource audio = GetComponent<AudioSource>();
+            if (audio != null && useInsulinSound != null)
+            {
+                audio.PlayOneShot(useInsulinSound);
+            }
         }
 
         // NEW: toggle skip
@@ -112,7 +119,6 @@ namespace Player.Sugarcontrol.InsulinPump
         {
             _skipInsulinThisMeal = skip;
             
-            // אם את רוצה גם לשנות צבע/הדגשה — אפשר פה.
         }
         
 public bool RequestReport(
@@ -154,8 +160,7 @@ public bool RequestReport(
                     itemIconImage.gameObject.SetActive(false);
                 }
             }
-
-            // --- תיקון הניתוקים: מציאת האובייקטים מחדש בסצנה החדשה ---
+            
             if (playerMover == null) playerMover = FindFirstObjectByType<PlayerMover>();
             if (pauseManager == null) pauseManager = FindFirstObjectByType<Pause>();
             if (inventoryUIController == null) inventoryUIController = FindFirstObjectByType<InventoryUIController>();
@@ -228,7 +233,7 @@ public bool RequestReport(
                         foodDurationGameMin: _foodDurationGameMin
                     );
                 }
-
+                
                 Close();
 
                 _onCorrectInt?.Invoke(reported);

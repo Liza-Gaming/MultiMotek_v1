@@ -4,14 +4,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-/**
- *  I learned about 2D animation changing from here: https://www.youtube.com/watch?v=hkaysu1Z-N8&t=147s&ab_channel=Brackeys
- *  I learned about moving objects from here: https://www.youtube.com/watch?v=WxCsnNiJnhA&ab_channel=PPHGames
- *  To implement the player movements with the new input system (Unity 6) I watched this: https://www.youtube.com/watch?v=HmXU4dZbaMw&t=89s&ab_channel=SpudMasterStudios
- *  Minimaps:
- *  https://www.youtube.com/watch?v=kWhOMJMihC0&t=274s&ab_channel=CodeMonkey
- *  https://www.youtube.com/watch?v=TkegkmRbrN0&t=640s&ab_channel=MuddyWolf
- */
 public class PlayerMover : MonoBehaviour
 {
 
@@ -30,6 +22,11 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private float ladderDetachJumpBoost = 5f;
     [SerializeField] private float ladderHorizontalFactor = 0.4f;  
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip jumpSound;
+    [SerializeField] private AudioClip landSound;
+    private AudioSource audioSource; // הרפרנס לאודיו סורס של השחקן
+
     private bool isGrounded;
 
     private static readonly int P_IsGrounded = Animator.StringToHash("IsGrounded");
@@ -43,8 +40,6 @@ public class PlayerMover : MonoBehaviour
     private Rigidbody2D rb;
 
     [SerializeField] private Animator animator;
-
-    //private bool facingRight = true; // Tells the direction that the player is facing
 
     private Vector3 initialScale;
 
@@ -108,6 +103,8 @@ public class PlayerMover : MonoBehaviour
         if (!animator) animator = GetComponent<Animator>();
         originalGravityScale = rb.gravityScale;
         
+        // משיכת הרכיב שהוספנו דרך יוניטי
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Start()
@@ -198,30 +195,50 @@ public class PlayerMover : MonoBehaviour
 
         if (animator) animator.SetBool(P_IsGrounded, onLadder ? false : isGrounded);
 
+        // ==== נחיתה ====
         if (isGrounded && !wasGroundedLastFrame)
         {
             if (landingEffectPrefab)
                 Instantiate(landingEffectPrefab, landingEffectPoint.position, Quaternion.identity);
 
             if (animator) animator.SetTrigger(T_Land);
-        }
 
-        // לתור קפיצה (לא לשנות rb פה)
+            // הפעלת סאונד הנחיתה
+            if (audioSource != null && landSound != null)
+            {
+                audioSource.PlayOneShot(landSound);
+            }
+        }
+        
+        // ==== קפיצה רגילה ====
         if (jumpAction.action.triggered && CanJumpNow())
         {
             jumpQueued = true;
             if (animator) animator.SetTrigger(T_Jump);
+
+            // הפעלת סאונד הקפיצה
+            if (audioSource != null && jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
         }
 
         // סולמות – לפי moveInputY
         if (!onLadder && currentLadder != null && Mathf.Abs(moveInputY) > 0.1f)
             EnterLadder();
 
+        // ==== קפיצה מסולם ====
         if (onLadder && jumpAction.action.triggered)
         {
             ExitLadder();
             // גם את זה עדיף לתור, אבל נשאיר פשוט:
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, ladderDetachJumpBoost);
+
+            // הפעלת סאונד הקפיצה גם כשקופצים מסולם
+            if (audioSource != null && jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
         }
 
         if (!isGrounded && wasGroundedLastFrame)
@@ -309,8 +326,6 @@ public class PlayerMover : MonoBehaviour
         {
             jumpQueued = false;
             v.y = CurrentJumpForce();
-            // אם תרצי שה-X בזמן קפיצה יהיה "חד", אפשר גם:
-            // v.x = desiredX;
         }
 
         if (platformY > 0f && v.y < platformY)
@@ -479,6 +494,4 @@ public class PlayerMover : MonoBehaviour
             animator.ResetTrigger(T_Jump);
         }
     }
-
-
 }

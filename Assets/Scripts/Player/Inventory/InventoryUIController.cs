@@ -46,12 +46,6 @@ public class InventoryUIController : MonoBehaviour
                     }
                 }
             }
-
-            if (blurVolumeObject == null)
-            {
-                // אם הגענו לכאן, סימן שיש בעיה בשם
-                Debug.LogError($"[InventoryUI] עדיין לא מצאתי אובייקט בשם '{blurObjectName}'. בדקי שוב שהשם באינספקטור תואם ב-100% לשם בהיררכיה!");
-            }
         }
     }
 

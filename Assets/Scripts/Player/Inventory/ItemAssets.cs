@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public class ItemAssets : MonoBehaviour
 {
     public static ItemAssets Instance { get; private set; }
-
+    public AudioClip useItemSound;
+    public AudioClip useInsulinSound;
     private void Awake()
     {
         Instance = this;

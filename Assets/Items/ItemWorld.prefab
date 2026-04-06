@@ -153,3 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e297765311999f4593c713560ba6f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  visual: {fileID: 0}
+  hoverAmplitude: 0.15
+  hoverSpeed: 1.8
+  randomizePhase: 1
+  pickupSound: {fileID: 8300000, guid: 29bde6326b4c34ad8a12da475f79b50a, type: 3}

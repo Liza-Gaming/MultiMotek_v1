@@ -5,6 +5,9 @@ public class RequiredItem : MonoBehaviour
 {
 
     [SerializeField] Image[] itemImage;
+    
+    [SerializeField] private AudioClip pickupSound;
+    
     private void Reset()
     {
         var col = GetComponent<Collider2D>();
@@ -17,6 +20,11 @@ public class RequiredItem : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             PlayerManager collector = other.GetComponent<PlayerManager>();
+            
+            if (pickupSound != null)
+            {
+                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+            }
             
             if (collector != null)
             {
