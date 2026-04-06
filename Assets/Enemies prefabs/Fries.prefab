@@ -172,7 +172,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   flipSpriteByVelocityX: 1
-  EnemyAmount: 32
+  EnemyAmount: 60
   EnemyDurationGameMin: 120
-  EnemyDelayGameMin: 15
+  EnemyDelayGameMin: 20
   simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
