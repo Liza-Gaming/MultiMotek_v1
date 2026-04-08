@@ -11,34 +11,47 @@ public class InventoryUIController : MonoBehaviour
     [SerializeField] private GameObject blurVolumeObject;
     
     [Tooltip("הכניסי כאן את השם המדויק של אובייקט הבלור כפי שהוא מופיע בהיררכיה")]
-    [SerializeField] private string blurObjectName = "PauseBlur"; // תשני את זה לשם האמיתי של האובייקט שלך
+    [SerializeField] private string blurObjectName = "PauseBlur";
     
     private Pause pauseManager;
+    private bool isInventoryOpen = false; // משתנה למעקב אחרי מצב האינבנטורי
 
     void Awake()
     {
-        // החלפתי ל-FindFirstObjectByType כי זה יעיל יותר
         pauseManager = FindFirstObjectByType<Pause>(); 
         background.SetActive(false);
         itemSlotContainer.SetActive(false);
         openInventoryButton.SetActive(true);
+        isInventoryOpen = false;
+    }
+
+    void Update()
+    {
+        // בדיקה אם מקש E נלחץ
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (isInventoryOpen)
+            {
+                CloseInventory();
+            }
+            else
+            {
+                OpenInventory();
+            }
+        }
     }
 
     private void EnsureBlurVolumeExists()
     {
         if (blurVolumeObject == null)
         {
-            // ניסיון ראשון: חיפוש רגיל (מוצא רק אובייקטים דולקים)
             blurVolumeObject = GameObject.Find(blurObjectName);
             
-            // ניסיון שני: אם האובייקט לא נמצא, הוא כנראה כבוי
             if (blurVolumeObject == null)
             {
-                // פקודה זו שולפת את כל האובייקטים בזיכרון, כולל הכבויים
                 GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
                 foreach (GameObject go in allObjects)
                 {
-                    // מוודאים שהאובייקט ממש קיים בסצנה הפעילה (ולא סתם פריפאב בתיקיות למטה) והשם תואם
                     if (go.scene.isLoaded && go.name == blurObjectName)
                     {
                         blurVolumeObject = go;
@@ -51,7 +64,6 @@ public class InventoryUIController : MonoBehaviour
 
     public void OpenInventory()
     {
-
         if (pauseManager == null) pauseManager = FindFirstObjectByType<Pause>();
 
         if (pauseManager != null)
@@ -59,7 +71,7 @@ public class InventoryUIController : MonoBehaviour
             pauseManager.SoftPauseFor("Inventory");
         }
 
-        EnsureBlurVolumeExists(); // מוודאים שהבלור מחובר
+        EnsureBlurVolumeExists();
 
         if (blurVolumeObject) blurVolumeObject.SetActive(true);
         background.SetActive(true);
@@ -68,11 +80,13 @@ public class InventoryUIController : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        
+        isInventoryOpen = true; // עדכון מצב
     }
 
     public void CloseInventory()
     {
-        EnsureBlurVolumeExists(); // מוודאים שהבלור מחובר
+        EnsureBlurVolumeExists();
 
         if (blurVolumeObject) blurVolumeObject.SetActive(false);
         background.SetActive(false);
@@ -85,5 +99,7 @@ public class InventoryUIController : MonoBehaviour
         {
             pauseManager.SoftResumeFor("Inventory");
         }
+
+        isInventoryOpen = false; // עדכון מצב
     }
 }

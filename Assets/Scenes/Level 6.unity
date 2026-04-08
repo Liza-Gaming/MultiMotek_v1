@@ -6264,8 +6264,8 @@ Transform:
   m_GameObject: {fileID: 66348032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.3808, y: -1.5344, z: 13.6}
-  m_LocalScale: {x: 2.3993003, y: 1, z: 1.3798822}
+  m_LocalPosition: {x: -12.1945, y: -2.466, z: 13.6}
+  m_LocalScale: {x: 2.128369, y: 1, z: 1.1020297}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -7491,8 +7491,8 @@ Transform:
   m_GameObject: {fileID: 146826197}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.3733, y: -4.01, z: 9.3}
-  m_LocalScale: {x: 2.3960297, y: 1, z: 1.4235958}
+  m_LocalPosition: {x: -12.1878, y: -4.4431, z: 9.3}
+  m_LocalScale: {x: 2.1254678, y: 1, z: 1.1369411}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -81745,7 +81745,7 @@ MonoBehaviour:
   projectileSpeed: 12
   shootInterval: 2
   shootIntervalJitter: {x: 0, y: 0.4}
-  flipByScaleX: 1
+  flipByScaleX: 0
   faceDeadZone: 0.05
   requireLineOfSight: 0
 --- !u!61 &443905143
@@ -95156,8 +95156,8 @@ Transform:
   m_GameObject: {fileID: 1142125076}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.3733, y: -4.01, z: 9.3}
-  m_LocalScale: {x: 2.3960297, y: 1, z: 1.4235958}
+  m_LocalPosition: {x: -12.1878, y: -4.4431, z: 9.3}
+  m_LocalScale: {x: 2.1254678, y: 1, z: 1.1369411}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1922324196}
@@ -95256,8 +95256,8 @@ Transform:
   m_GameObject: {fileID: 1151583025}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.3808, y: -1.5344, z: 13.6}
-  m_LocalScale: {x: 2.3993003, y: 1, z: 1.3798822}
+  m_LocalPosition: {x: -12.1945, y: -2.466, z: 13.6}
+  m_LocalScale: {x: 2.128369, y: 1, z: 1.1020297}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1922324196}
@@ -96278,8 +96278,8 @@ Transform:
   m_GameObject: {fileID: 1219988066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.3933, y: -4.9222, z: 4.6}
-  m_LocalScale: {x: 2.3960814, y: 1, z: 1.2442143}
+  m_LocalPosition: {x: -12.2055, y: -5.1715, z: 4.6}
+  m_LocalScale: {x: 2.1255136, y: 1, z: 0.9936798}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -101455,8 +101455,8 @@ Transform:
   m_GameObject: {fileID: 1446748307}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.3933, y: -4.8846, z: 4.6}
-  m_LocalScale: {x: 2.3960814, y: 1, z: 1.2516729}
+  m_LocalPosition: {x: -12.2055, y: -5.1415, z: 4.6}
+  m_LocalScale: {x: 2.1255136, y: 1, z: 0.99963653}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1922324196}
@@ -103124,8 +103124,8 @@ Transform:
   m_GameObject: {fileID: 1546141251}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -20.519573, y: -2.0154996, z: 13.6}
-  m_LocalScale: {x: 1.3192092, y: 1.2960469, z: 1}
+  m_LocalPosition: {x: -19.4145, y: -2.8502, z: 13.6}
+  m_LocalScale: {x: 1.1702428, y: 1.0350753, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -107939,7 +107939,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!212 &1800796068
 SpriteRenderer:
@@ -108005,8 +108005,8 @@ Transform:
   m_GameObject: {fileID: 1800796060}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.9800005, y: -1.22, z: 0}
-  m_LocalScale: {x: 0.22, y: 0.22, z: 1}
+  m_LocalPosition: {x: -12.9800005, y: -1.35, z: 0}
+  m_LocalScale: {x: 0.19, y: 0.19, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 690411772}
@@ -115075,7 +115075,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6.961036
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
