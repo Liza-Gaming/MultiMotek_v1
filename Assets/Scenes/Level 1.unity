@@ -361,8 +361,8 @@ Transform:
   m_GameObject: {fileID: 22635899}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1664, y: -2.5142, z: 13.6}
-  m_LocalScale: {x: 2.1276557, y: 1, z: 1.0954164}
+  m_LocalPosition: {x: -12.0643, y: -2.2885, z: 13.6}
+  m_LocalScale: {x: 2.3421402, y: 1, z: 1.2433646}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 396641033}
@@ -1603,7 +1603,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b6605e33662e954eb4ff8943ef1c809, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 953de0a59c3f3c7498ecb7496a450d69, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9053,7 +9053,7 @@ Transform:
   m_GameObject: {fileID: 485086501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.1, y: -1.24, z: 0}
+  m_LocalPosition: {x: -4.36, y: -1.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9698,7 +9698,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 6.6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -9984,8 +9984,8 @@ Transform:
   m_GameObject: {fileID: 531014306}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1597, y: -4.4795, z: 9.3}
-  m_LocalScale: {x: 2.1247556, y: 1, z: 1.1301183}
+  m_LocalPosition: {x: -12.0569, y: -4.5192, z: 9.3}
+  m_LocalScale: {x: 2.3389475, y: 1, z: 1.2827533}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 396641033}
@@ -11239,8 +11239,8 @@ Transform:
   m_GameObject: {fileID: 614588760}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1664, y: -2.5142, z: 13.6}
-  m_LocalScale: {x: 2.1276557, y: 1, z: 1.0954164}
+  m_LocalPosition: {x: -12.0643, y: -2.2885, z: 13.6}
+  m_LocalScale: {x: 2.3421402, y: 1, z: 1.2433646}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1071469910}
@@ -28505,8 +28505,8 @@ Transform:
   m_GameObject: {fileID: 900296277}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1775, y: -3.8166, z: 4.6}
-  m_LocalScale: {x: 2.1248014, y: 1, z: 1.2652242}
+  m_LocalPosition: {x: -12.0765, y: -3.55, z: 4.6}
+  m_LocalScale: {x: 2.338998, y: 1, z: 1.5863236}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1071469910}
@@ -29107,8 +29107,8 @@ Transform:
   m_GameObject: {fileID: 982840835}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1775, y: -3.8166, z: 4.6}
-  m_LocalScale: {x: 2.1248014, y: 1, z: 1.2652242}
+  m_LocalPosition: {x: -12.0765, y: -3.55, z: 4.6}
+  m_LocalScale: {x: 2.338998, y: 1, z: 1.5863236}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 396641033}
@@ -30971,14 +30971,14 @@ MonoBehaviour:
   ChocolateCup: {fileID: 2004806222685241845, guid: cac5ceb54a44c154badbdcdc8e2bf1f9, type: 3}
   CokeCup: {fileID: 21300000, guid: c18afbc1abc1f6b46bac1248ec799eca, type: 3}
   Candy: {fileID: -5040778147885213409, guid: e90f172e99fa7614f92474d57a7c5bd6, type: 3}
-  LineChocolate: {fileID: -7803652017912114495, guid: 9af571889cad4c7428dde929114e9b27, type: 3}
+  LineChocolate: {fileID: 1611464120708963314, guid: b197d26be71aa0f408e5a4f17367247c, type: 3}
   ChickenLeg: {fileID: 1518207682172366208, guid: 9ee88e6fec7e26349821874bba9bf139, type: 3}
   Fish: {fileID: 599191344211904797, guid: 68e15e11ef1811d4a81e544667ff9d7b, type: 3}
   Sausages: {fileID: 6862163376538571222, guid: a5930dc566ec91141b8c66b3b873d650, type: 3}
   DietYogurt: {fileID: -5771902089576168972, guid: 9afe653436d0f29489e24909a9090f00, type: 3}
   Banana: {fileID: 6844666817133349423, guid: 1ba0e16f4d88d934a9abcc54abf89257, type: 3}
   WaterMelon: {fileID: 287148983159985998, guid: e8b0701554efbf647a71205b31b7521e, type: 3}
-  BeanBag: {fileID: 8648599435035203585, guid: da5b79275e814e042bc23a8ac2800216, type: 3}
+  BeanBag: {fileID: 42744576618933467, guid: 755b6974da116824289e8ec457c942f2, type: 3}
   Bamba: {fileID: 6808739103522278753, guid: f4efefc379bf57648a2f50ef386a45fd, type: 3}
   Baigale: {fileID: 1683881033312115472, guid: 84a7ed2ab19b00344814f27d7340cf92, type: 3}
   Icecream: {fileID: 8729019308651151237, guid: 9434fb0258632bd41a7911c4524f81ab, type: 3}
@@ -36563,8 +36563,8 @@ Transform:
   m_GameObject: {fileID: 1459554531}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1597, y: -4.4795, z: 9.3}
-  m_LocalScale: {x: 2.1247556, y: 1, z: 1.1301183}
+  m_LocalPosition: {x: -12.0569, y: -4.5192, z: 9.3}
+  m_LocalScale: {x: 2.3389475, y: 1, z: 1.2827533}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1071469910}
@@ -42889,7 +42889,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b6605e33662e954eb4ff8943ef1c809, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 953de0a59c3f3c7498ecb7496a450d69, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

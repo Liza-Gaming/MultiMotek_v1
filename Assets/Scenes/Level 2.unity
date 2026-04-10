@@ -1169,8 +1169,8 @@ Transform:
   m_GameObject: {fileID: 68324728}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -20.519573, y: -2.0154996, z: 13.6}
-  m_LocalScale: {x: 1.3192092, y: 1.2960469, z: 1}
+  m_LocalPosition: {x: -21.555, y: -1.912, z: 13.6}
+  m_LocalScale: {x: 1.490939, y: 1.5215353, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1380106355}
@@ -1861,8 +1861,8 @@ Transform:
   m_GameObject: {fileID: 146506345}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.177, y: -2.5503, z: 13.6}
-  m_LocalScale: {x: 2.0630527, y: 1, z: 1.0265538}
+  m_LocalPosition: {x: -12.1264, y: -2.5398, z: 13.6}
+  m_LocalScale: {x: 2.3316133, y: 1, z: 1.2051553}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1380106355}
@@ -2337,8 +2337,8 @@ Transform:
   m_GameObject: {fileID: 188359467}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.177, y: -2.5503, z: 13.6}
-  m_LocalScale: {x: 2.0630527, y: 1, z: 1.0265538}
+  m_LocalPosition: {x: -12.1264, y: -2.5398, z: 13.6}
+  m_LocalScale: {x: 2.3316133, y: 1, z: 1.2051553}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 72848070}
@@ -41279,7 +41279,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b6605e33662e954eb4ff8943ef1c809, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 953de0a59c3f3c7498ecb7496a450d69, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -41577,7 +41577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b6605e33662e954eb4ff8943ef1c809, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 953de0a59c3f3c7498ecb7496a450d69, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -43668,8 +43668,8 @@ Transform:
   m_GameObject: {fileID: 830100864}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1705, y: -4.3919, z: 9.3}
-  m_LocalScale: {x: 2.0602403, y: 1, z: 1.0590742}
+  m_LocalPosition: {x: -12.1191, y: -4.7018, z: 9.3}
+  m_LocalScale: {x: 2.3284347, y: 1, z: 1.2433337}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 72848070}
@@ -48111,7 +48111,7 @@ Transform:
   m_GameObject: {fileID: 1132682724}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.4, y: -1.2, z: -0.9169444}
+  m_LocalPosition: {x: -8.56, y: -1.2, z: -0.9169444}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -52441,8 +52441,8 @@ Transform:
   m_GameObject: {fileID: 1550908068}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1877, y: -3.7706, z: 4.6}
-  m_LocalScale: {x: 2.0602846, y: 1, z: 1.1856867}
+  m_LocalPosition: {x: -12.090001, y: -4.1313, z: 4.6}
+  m_LocalScale: {x: 2.328485, y: 1, z: 1.5634844}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1380106355}
@@ -58780,7 +58780,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage:
   - {fileID: 1816053445}
-  pickupSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
 --- !u!114 &1655818271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60850,14 +60850,14 @@ MonoBehaviour:
   ChocolateCup: {fileID: 2004806222685241845, guid: cac5ceb54a44c154badbdcdc8e2bf1f9, type: 3}
   CokeCup: {fileID: 21300000, guid: c18afbc1abc1f6b46bac1248ec799eca, type: 3}
   Candy: {fileID: -5040778147885213409, guid: e90f172e99fa7614f92474d57a7c5bd6, type: 3}
-  LineChocolate: {fileID: -7803652017912114495, guid: 9af571889cad4c7428dde929114e9b27, type: 3}
+  LineChocolate: {fileID: 1611464120708963314, guid: b197d26be71aa0f408e5a4f17367247c, type: 3}
   ChickenLeg: {fileID: 1518207682172366208, guid: 9ee88e6fec7e26349821874bba9bf139, type: 3}
   Fish: {fileID: 599191344211904797, guid: 68e15e11ef1811d4a81e544667ff9d7b, type: 3}
   Sausages: {fileID: 6862163376538571222, guid: a5930dc566ec91141b8c66b3b873d650, type: 3}
   DietYogurt: {fileID: -5771902089576168972, guid: 9afe653436d0f29489e24909a9090f00, type: 3}
   Banana: {fileID: 6844666817133349423, guid: 1ba0e16f4d88d934a9abcc54abf89257, type: 3}
   WaterMelon: {fileID: 287148983159985998, guid: e8b0701554efbf647a71205b31b7521e, type: 3}
-  BeanBag: {fileID: 8648599435035203585, guid: da5b79275e814e042bc23a8ac2800216, type: 3}
+  BeanBag: {fileID: 42744576618933467, guid: 755b6974da116824289e8ec457c942f2, type: 3}
   Bamba: {fileID: 6808739103522278753, guid: f4efefc379bf57648a2f50ef386a45fd, type: 3}
   Baigale: {fileID: 1683881033312115472, guid: 84a7ed2ab19b00344814f27d7340cf92, type: 3}
   Icecream: {fileID: 8729019308651151237, guid: 9434fb0258632bd41a7911c4524f81ab, type: 3}
@@ -61304,8 +61304,8 @@ Transform:
   m_GameObject: {fileID: 1790684752}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1877, y: -3.7706, z: 4.6}
-  m_LocalScale: {x: 2.0602846, y: 1, z: 1.1856867}
+  m_LocalPosition: {x: -12.09, y: -4.1313, z: 4.6}
+  m_LocalScale: {x: 2.328485, y: 1, z: 1.5634844}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 72848070}
@@ -62066,8 +62066,8 @@ Transform:
   m_GameObject: {fileID: 1804468395}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1705, y: -4.3919, z: 9.3}
-  m_LocalScale: {x: 2.0602403, y: 1, z: 1.0590742}
+  m_LocalPosition: {x: -12.1191, y: -4.7018, z: 9.3}
+  m_LocalScale: {x: 2.3284347, y: 1, z: 1.2433337}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1380106355}
@@ -67192,7 +67192,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 6.6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

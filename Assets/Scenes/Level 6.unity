@@ -6264,8 +6264,8 @@ Transform:
   m_GameObject: {fileID: 66348032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1945, y: -2.466, z: 13.6}
-  m_LocalScale: {x: 2.128369, y: 1, z: 1.1020297}
+  m_LocalPosition: {x: -12.1685, y: -2.1483, z: 13.6}
+  m_LocalScale: {x: 2.3518937, y: 1, z: 1.1476537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -7491,8 +7491,8 @@ Transform:
   m_GameObject: {fileID: 146826197}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1878, y: -4.4431, z: 9.3}
-  m_LocalScale: {x: 2.1254678, y: 1, z: 1.1369411}
+  m_LocalPosition: {x: -12.1611, y: -4.2072, z: 9.3}
+  m_LocalScale: {x: 2.3486876, y: 1, z: 1.1840104}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -85707,7 +85707,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b6605e33662e954eb4ff8943ef1c809, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 953de0a59c3f3c7498ecb7496a450d69, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -86620,7 +86620,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b6605e33662e954eb4ff8943ef1c809, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 953de0a59c3f3c7498ecb7496a450d69, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -95157,8 +95157,8 @@ Transform:
   m_GameObject: {fileID: 1142125076}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1878, y: -4.4431, z: 9.3}
-  m_LocalScale: {x: 2.1254678, y: 1, z: 1.1369411}
+  m_LocalPosition: {x: -12.1611, y: -4.2072, z: 9.3}
+  m_LocalScale: {x: 2.3486876, y: 1, z: 1.1840104}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1922324196}
@@ -95257,8 +95257,8 @@ Transform:
   m_GameObject: {fileID: 1151583025}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.1945, y: -2.466, z: 13.6}
-  m_LocalScale: {x: 2.128369, y: 1, z: 1.1020297}
+  m_LocalPosition: {x: -12.1685, y: -2.1483, z: 13.6}
+  m_LocalScale: {x: 2.3518937, y: 1, z: 1.1476537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1922324196}
@@ -96279,8 +96279,8 @@ Transform:
   m_GameObject: {fileID: 1219988066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.2055, y: -5.1715, z: 4.6}
-  m_LocalScale: {x: 2.1255136, y: 1, z: 0.9936798}
+  m_LocalPosition: {x: -12.1807, y: -5.27, z: 4.6}
+  m_LocalScale: {x: 2.3487382, y: 1, z: 1.3442056}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -97270,7 +97270,7 @@ MonoBehaviour:
   prevButton: {fileID: 881006937}
   nextButton: {fileID: 1949613612}
   slides:
-  - {fileID: 0}
+  - {fileID: -7664446852134479058, guid: 619c50fa984cd7b438352d16f52cc25b, type: 3}
   closeOnLastNext: 1
   showOnce: 0
   playerPrefsKey: Level1_TutorialShown
@@ -97283,7 +97283,8 @@ MonoBehaviour:
   pauseOnlyInFirstScene: 1
   firstSceneBuildIndex: 1
   narrationSource: {fileID: 1045225212}
-  slideClips: []
+  slideClips:
+  - {fileID: 8300000, guid: 57f44315c41417940a79822b2b996d14, type: 3}
 --- !u!114 &1266301342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101456,8 +101457,8 @@ Transform:
   m_GameObject: {fileID: 1446748307}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: -12.2055, y: -5.1415, z: 4.6}
-  m_LocalScale: {x: 2.1255136, y: 1, z: 0.99963653}
+  m_LocalPosition: {x: -12.1807, y: -5.2293, z: 4.6}
+  m_LocalScale: {x: 2.3487382, y: 1, z: 1.3522636}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1922324196}
@@ -103212,8 +103213,8 @@ Transform:
   m_GameObject: {fileID: 1546141251}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -19.4145, y: -2.8502, z: 13.6}
-  m_LocalScale: {x: 1.1702428, y: 1.0350753, z: 1}
+  m_LocalPosition: {x: -20.1468, y: -2.5484, z: 13.6}
+  m_LocalScale: {x: 1.2931435, y: 1.0779274, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 105439218}
@@ -107052,14 +107053,14 @@ MonoBehaviour:
   ChocolateCup: {fileID: 2004806222685241845, guid: cac5ceb54a44c154badbdcdc8e2bf1f9, type: 3}
   CokeCup: {fileID: 21300000, guid: c18afbc1abc1f6b46bac1248ec799eca, type: 3}
   Candy: {fileID: -5040778147885213409, guid: e90f172e99fa7614f92474d57a7c5bd6, type: 3}
-  LineChocolate: {fileID: -7803652017912114495, guid: 9af571889cad4c7428dde929114e9b27, type: 3}
+  LineChocolate: {fileID: 1611464120708963314, guid: b197d26be71aa0f408e5a4f17367247c, type: 3}
   ChickenLeg: {fileID: 1518207682172366208, guid: 9ee88e6fec7e26349821874bba9bf139, type: 3}
   Fish: {fileID: 599191344211904797, guid: 68e15e11ef1811d4a81e544667ff9d7b, type: 3}
   Sausages: {fileID: 6862163376538571222, guid: a5930dc566ec91141b8c66b3b873d650, type: 3}
   DietYogurt: {fileID: -5771902089576168972, guid: 9afe653436d0f29489e24909a9090f00, type: 3}
   Banana: {fileID: 6844666817133349423, guid: 1ba0e16f4d88d934a9abcc54abf89257, type: 3}
   WaterMelon: {fileID: 287148983159985998, guid: e8b0701554efbf647a71205b31b7521e, type: 3}
-  BeanBag: {fileID: 8648599435035203585, guid: da5b79275e814e042bc23a8ac2800216, type: 3}
+  BeanBag: {fileID: 42744576618933467, guid: 755b6974da116824289e8ec457c942f2, type: 3}
   Bamba: {fileID: 6808739103522278753, guid: f4efefc379bf57648a2f50ef386a45fd, type: 3}
   Baigale: {fileID: 1683881033312115472, guid: 84a7ed2ab19b00344814f27d7340cf92, type: 3}
   Icecream: {fileID: 8729019308651151237, guid: 9434fb0258632bd41a7911c4524f81ab, type: 3}
@@ -114060,7 +114061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage:
   - {fileID: 491741876}
-  pickupSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
 --- !u!114 &2088201779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115163,7 +115164,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 6.6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
