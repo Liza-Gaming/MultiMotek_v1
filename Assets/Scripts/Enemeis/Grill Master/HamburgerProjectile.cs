@@ -9,6 +9,10 @@ public class HamburgerProjectile : MonoBehaviour
     [SerializeField] private LayerMask hitMask = ~0;
     [SerializeField] private bool flipSpriteByVelocityX = true;
 
+    [Header("Audio")]
+    [Tooltip("הסאונד שיתנגן בשיגור. אין צורך להוסיף AudioSource לפריפאב!")]
+    [SerializeField] private AudioClip launchSound;
+
     private Rigidbody2D _rb;
     private Collider2D _col;
     private float _t;
@@ -34,7 +38,7 @@ public class HamburgerProjectile : MonoBehaviour
     public void Launch(Vector2 dirNormalized, float speed, MonoBehaviour owner)
     {
         _owner = owner ? owner.transform : null;
-        
+        PlaySound2D(launchSound);
         if (_owner)
         {
             foreach (var c in _owner.GetComponentsInChildren<Collider2D>())
@@ -50,6 +54,30 @@ public class HamburgerProjectile : MonoBehaviour
                 s.x = Mathf.Abs(s.x) * (_rb.linearVelocity.x >= 0f ? 1f : -1f);
             transform.localScale = s;
         }
+        
+    }
+
+    // פונקציית קסם שמייצרת אובייקט זמני לסאונד ומשמידה אותו בסוף
+    private void PlaySound2D(AudioClip clip)
+    {
+        if (clip == null) return;
+
+        // יצירת אובייקט ריק וחדש
+        GameObject audioObject = new GameObject("TempShootSound");
+        
+        // הוספת רכיב אודיו לאובייקט
+        AudioSource source = audioObject.AddComponent<AudioSource>();
+        
+        // הגדרות הסאונד
+        source.clip = clip;
+        source.spatialBlend = 0f; // חשוב מאוד - מוודא שהסאונד הוא 2D ושומעים אותו תמיד
+        source.volume = 1f; // אפשר לשנות כאן את הווליום אם צריך
+        
+        // ניגון הסאונד
+        source.Play();
+        
+        // השמדת האובייקט הזמני בדיוק כשאורך הסאונד מסתיים
+        Destroy(audioObject, clip.length);
     }
 
     private void Update()
@@ -78,19 +106,18 @@ public class HamburgerProjectile : MonoBehaviour
 
     public void ApplyEffect(GameObject playerObj)
     {
+        float totalGameMin = EnemyDelayGameMin + EnemyDurationGameMin;
+        float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
 
-            float totalGameMin = EnemyDelayGameMin + EnemyDurationGameMin;
-            float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
-
-            var pm = playerObj.GetComponent<PlayerManager>();
-            pm?.SuppressSugarArrowRealSeconds(0.3f);
-          
-            pm.ApplyEnemySugarEffect(
-                amountSigned: EnemyAmount,
-                durationGameMin: EnemyDurationGameMin,
-                floatingColor: simpleFloatingColor,
-                entryGameMin: EnemyDelayGameMin,
-                floatingDisplayValue: EnemyAmount/4
-            );
+        var pm = playerObj.GetComponent<PlayerManager>();
+        pm?.SuppressSugarArrowRealSeconds(0.3f);
+        
+        pm.ApplyEnemySugarEffect(
+            amountSigned: EnemyAmount,
+            durationGameMin: EnemyDurationGameMin,
+            floatingColor: simpleFloatingColor,
+            entryGameMin: EnemyDelayGameMin,
+            floatingDisplayValue: EnemyAmount/4
+        );
     }
 }

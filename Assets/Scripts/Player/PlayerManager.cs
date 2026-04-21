@@ -48,6 +48,11 @@ public class PlayerManager : MonoBehaviour
     private const float WATER_SUGAR_DROP        = 2f;
     
     
+    [Header("Audio")]
+    [SerializeField] private AudioClip collision;
+    private AudioSource audioSource;
+    
+    
     [Header("Floating Text")]
     [SerializeField] private GameObject floatingTextPrefab;
     [SerializeField] private Vector3 floatingTextOffset = new Vector3(0, 1.5f, 0);
@@ -58,6 +63,7 @@ public class PlayerManager : MonoBehaviour
         if (sugarMeter == null) sugarMeter = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         inventory = new Inventory(UseItemAction);
         uiInventory.SetInventory(inventory);
+        audioSource = GetComponent<AudioSource>();
     }
     
     private void OnEnable()
@@ -168,6 +174,8 @@ public class PlayerManager : MonoBehaviour
         playerFeedback?.PlayUseItemFX(EnemyFlashColor, withEyesClosed: true);
         
         effect?.ApplyEffect(this.gameObject);
+        
+        audioSource.PlayOneShot(this.collision);
         
         sugarArrow?.ShowUp(3f);
 

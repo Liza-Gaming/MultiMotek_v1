@@ -1,7 +1,5 @@
 using UnityEngine;
 
-using UnityEngine;
-
 public class ItemWorld : MonoBehaviour
 {
     private Item item;
@@ -12,13 +10,14 @@ public class ItemWorld : MonoBehaviour
     [SerializeField] private float hoverAmplitude = 0.15f;
     [SerializeField] private float hoverSpeed = 1.8f;
     [SerializeField] private bool randomizePhase = true;
-    
 
     private Vector3 baseLocalPos;
     private Vector3 baseLocalScale;
     private float phase;
     
+    [Header("Audio")]
     [SerializeField] private AudioClip pickupSound;
+    [SerializeField, Range(0f, 1f)] private float pickupVolume = 1f;
 
     public static ItemWorld SpawnItemWorld(Vector3 position, Item item)
     {
@@ -28,7 +27,6 @@ public class ItemWorld : MonoBehaviour
         return itemWorld;
     }
     
-
     private void Awake()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
@@ -60,26 +58,36 @@ public class ItemWorld : MonoBehaviour
         visual.localPosition = lp;
     }
 
-    
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
         if (item == null) return;
 
-        if (pickupSound != null)
-        {
-            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
-        }
+        PlaySound2D();
         
         var inventory = other.GetComponent<Inventory>();
         if (inventory != null) inventory.AddItem(item);
         
-
         DestroySelf();
+    }
+
+
+    private void PlaySound2D()
+    {
+        if (pickupSound == null) return;
+        
+        GameObject audioObject = new GameObject("TempPickupSound");
+        AudioSource source = audioObject.AddComponent<AudioSource>();
+        
+        source.clip = pickupSound;
+        source.spatialBlend = 0f;
+        source.volume = pickupVolume;
+        
+        source.Play();
+        Destroy(audioObject, pickupSound.length);
     }
 
     public Item GetItem() => item;
 
     public void DestroySelf() => Destroy(gameObject);
 }
-

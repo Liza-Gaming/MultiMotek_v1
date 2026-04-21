@@ -25,7 +25,7 @@ public class PlayerMover : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip landSound;
-    private AudioSource audioSource; // הרפרנס לאודיו סורס של השחקן
+    private AudioSource audioSource;
 
     private bool isGrounded;
 
@@ -96,7 +96,7 @@ public class PlayerMover : MonoBehaviour
     private float moveInputX;
     private float moveInputY;
     private bool jumpQueued;
-
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

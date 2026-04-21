@@ -171,6 +171,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   flipSpriteByVelocityX: 1
+  launchSound: {fileID: 8300000, guid: fe0b1f9aeb45b41b089175aeeabd5d95, type: 3}
   EnemyAmount: 196
   EnemyDurationGameMin: 180
   EnemyDelayGameMin: 15
+  simpleFloatingColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

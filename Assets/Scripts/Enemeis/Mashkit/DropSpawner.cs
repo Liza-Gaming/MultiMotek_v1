@@ -13,7 +13,7 @@ public class DropSpawner : MonoBehaviour
     public float spawnInterval = 5f;
 
     private float timer; // To countdown
-
+    [SerializeField] private bool isSpawnning;
 
     void Start()
     {
@@ -27,7 +27,7 @@ public class DropSpawner : MonoBehaviour
         timer -= Time.deltaTime;
 
         // Check if it's time to spawn
-        if (timer <= 0f)
+        if (timer <= 0f && isSpawnning)
         {
             SpawnDrop();
             timer = spawnInterval; // Reset the timer

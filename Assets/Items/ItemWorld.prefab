@@ -157,4 +157,5 @@ MonoBehaviour:
   hoverAmplitude: 0.15
   hoverSpeed: 1.8
   randomizePhase: 1
-  pickupSound: {fileID: 8300000, guid: 29bde6326b4c34ad8a12da475f79b50a, type: 3}
+  pickupSound: {fileID: 8300000, guid: cf6c0e7fbef9449c98a0cdb5ea0c4d9f, type: 3}
+  pickupVolume: 1

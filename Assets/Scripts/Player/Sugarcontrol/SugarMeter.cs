@@ -24,7 +24,7 @@ public class SugarMeter : MonoBehaviour
     private int  currentHearts;
 
     public float minSugar = 70f, maxSugar = 180f;
-    public float minSugarClamp = 0f, maxSugarClamp = 250f;
+    public float minSugarClamp = 0f, maxSugarClamp = 700f;
     
 
     private float timeOutsideSafeRange = 0f, timeInsideSafeRange = 0f;
@@ -194,9 +194,21 @@ public class SugarMeter : MonoBehaviour
             _currentTrendEndsAt = -1;
         }
 
-
         float totalRate = (sign == 0) ? BaselineRatePerGameMin : effectsRate;
-        
+
+        if (sugarLevel >= maxSugarClamp && totalRate > 0)
+        {
+            totalRate = 0;
+            _effects.Clear();
+            _transients.Clear();
+        }
+        else if (sugarLevel <= minSugarClamp && totalRate < 0)
+        {
+            totalRate = 0;
+            _effects.Clear();
+            _transients.Clear();
+        }
+
         sugarLevel = Mathf.Clamp(
             sugarLevel + totalRate * gameMinutesThisFrame,
             minSugarClamp, maxSugarClamp
@@ -239,7 +251,6 @@ public class SugarMeter : MonoBehaviour
     private double ComputeNextSignFlipTime(double nowGM)
     {
         int signNow = GetSign(EffectsRateAt(nowGM));
-        // אוספים נקודות מבנה קדימה
         var events = new List<double>();
         foreach (var e in _effects)
         {
@@ -358,8 +369,6 @@ public class SugarMeter : MonoBehaviour
             _currentTrendEndsAt = endsAt;
         }
     }
-
-
     
     private int GetSign(float rate)
     {
@@ -494,18 +503,26 @@ public class SugarMeter : MonoBehaviour
     
     void UpdateSugarUI()
     {
-        if (sugarText)
-            if (sugarLevel > 500)
-            {
-                sugarText.text = "HIGH";
-                sugarText.color = Color.yellow;
-            }
-            else
-            {
-                sugarText.color = Color.white;
-                sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
-            }
-            
+        if (sugarText == null) return;
+
+        if (sugarLevel >= 500f) 
+        {
+            // אם הסוכר 500 ומעלה - רשום HIGH
+            sugarText.text = "HIGH";
+            sugarText.color = Color.yellow;
+        }
+        else if (sugarLevel <= 20f) 
+        {
+            // אם הסוכר 20 ומטה - רשום LOW
+            sugarText.text = "LOW";
+            sugarText.color = Color.yellow;
+        }
+        else 
+        {
+            // בכל מצב אחר (בין 21 ל-499) - הצג את המספר הלבן
+            sugarText.color = Color.white;
+            sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
+        }
     }
 
     void UpdateHeartsUI()
