@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UnityEngine.Rendering.Universal; // חובה בשביל ה-Light2D של URP
+using UnityEngine.Rendering.Universal;
 
 public class SkySwitcher : MonoBehaviour
 {
@@ -10,8 +10,8 @@ public class SkySwitcher : MonoBehaviour
     [SerializeField] private GameObject nightRoot;
 
     [Header("Switch Times (24h)")]
-    [SerializeField] private int dayStartHour = 7;   // שיניתי ל-07:00 לפי בקשתך
-    [SerializeField] private int nightStartHour = 19; // 19:00
+    [SerializeField] private int dayStartHour = 7;
+    [SerializeField] private int nightStartHour = 19;
 
     [Header("Global Lighting")]
     [Tooltip("גררי לכאן את ה-Global Light 2D שלך")]
@@ -20,14 +20,18 @@ public class SkySwitcher : MonoBehaviour
     [SerializeField] private Color dayLightColor = Color.white;
     [SerializeField] private float dayLightIntensity = 1f;
     
-    [SerializeField] private Color nightLightColor = new Color(0.3f, 0.3f, 0.5f, 1f); // צבע כחלחל-אפרפר ללילה
-    [SerializeField] private float nightLightIntensity = 0.8f; // עוצמה נמוכה לחושך
+    [SerializeField] private Color nightLightColor = new Color(0.3f, 0.3f, 0.5f, 1f);
+    [SerializeField] private float nightLightIntensity = 0.8f;
 
     [Header("Clock (Optional)")]
     [SerializeField] private Timer clockProvider;  
 
     [SerializeField] private int debugHour = 12;
     [SerializeField] private int debugMinute = 0;
+
+    // ----- התוספת: משתנה שכופה יום -----
+    [Header("Overrides")]
+    public bool forceDayOverride = false; 
 
     private bool _isDayActive;
 
@@ -91,12 +95,15 @@ public class SkySwitcher : MonoBehaviour
 
     bool IsDay(int h, int m)
     {
+        // התנאי החדש - אם הכרחנו יום, פשוט תחזיר שזה יום!
+        if (forceDayOverride) return true; 
+
         int t = h * 60 + m;
         int dayStart = dayStartHour * 60;
         int nightStart = nightStartHour * 60;
         
         if (dayStart < nightStart)
-            return t >= dayStart && t < nightStart; // 07:00–18:59
+            return t >= dayStart && t < nightStart;
         else
             return !(t >= nightStart && t < dayStart);
     }
@@ -105,11 +112,9 @@ public class SkySwitcher : MonoBehaviour
     {
         _isDayActive = day;
         
-        // החלפת הרקעים
         if (dayRoot) dayRoot.SetActive(day);
         if (nightRoot) nightRoot.SetActive(!day);
 
-        // החלפת התאורה
         if (globalLight != null)
         {
             globalLight.color = day ? dayLightColor : nightLightColor;

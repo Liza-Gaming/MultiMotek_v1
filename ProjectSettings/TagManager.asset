@@ -17,6 +17,7 @@ TagManager:
   - ArrowTarget
   - RequiredItem
   - ExitDoorLv7
+  - DestructibleOnBonus
   layers:
   - Default
   - TransparentFX

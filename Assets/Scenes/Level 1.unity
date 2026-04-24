@@ -848,8 +848,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 705.66785, y: -62}
-  m_SizeDelta: {x: 613.658, y: 169.564}
+  m_AnchoredPosition: {x: 638.0073, y: -33.1817}
+  m_SizeDelta: {x: 548.7079, y: 141.3249}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &77348962
 MonoBehaviour:
@@ -958,6 +958,7 @@ GameObject:
   - component: {fileID: 92228406}
   - component: {fileID: 92228405}
   - component: {fileID: 92228404}
+  - component: {fileID: 92228408}
   m_Layer: 5
   m_Name: Btn_OpenInventory
   m_TagString: Untagged
@@ -1090,6 +1091,18 @@ RectTransform:
   m_AnchoredPosition: {x: 93.999886, y: -72.99988}
   m_SizeDelta: {x: 237.0093, y: 166.57}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &92228408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92228403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c568eb82e1d4d519ef46448ac6858bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &120609655
 GameObject:
   m_ObjectHideFlags: 0
@@ -9634,7 +9647,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -17.88, y: -2.44}
+  m_AnchoredPosition: {x: -17.88, y: -2.15}
   m_SizeDelta: {x: 13.3511, y: 3.6819}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &519420028
@@ -11745,9 +11758,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u05EA\u05D5\u05DE\u05D2\u05DE \u05D4\u05D1\u05E8\u05DE \u05EA\u05D5\u05E6\u05D9\u05D7\u05DC
-    \u05D4\u05D1\u05E8\u05DE\n\u05DD\u05D9\u05E2\u05D8\u05E7\u05DE\u05DC \u05EA\u05D5\u05E6\u05D9\u05D7\u05DC\u05D4
-    \u05EA\u05D0 \u05E7\u05E8\u05E4\u05DC \u05D5\u05E1\u05E0"
+  m_Text: "\u05EA\u05E2\u05E4\u05E9\u05D4 \u05EA\u05D0 \u05E7\u05D5\u05D3\u05D1\u05DC
+    \u05D5\u05E1\u05E0\n\u05DF\u05D6\u05D0\u05EA\u05D4\u05DC \u05D7\u05D9\u05DC\u05E6\u05D4\u05DC
+    \u05D9\u05D3\u05DB \u05D3\u05D5\u05D7\u05DC \u05D8\u05D9\u05E8\u05E4 \u05DC\u05DB"
 --- !u!222 &671186643
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12798,8 +12811,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u05DD\u05D9\u05DC\u05D1\u05E7\u05DE \u05D5\u05E0\u05D7\u05E0\u05D0 \u05D3\u05D9\u05DE\u05EA
-    \u05D0\u05DC\n\u05D0\u05E8\u05E7\u05DE \u05DD\u05E2 \u05DF\u05D5\u05D6\u05DE"
+  m_Text: "\u05D0\u05E8\u05E7\u05DE \u05E9\u05D9 \u05DF\u05D5\u05D6\u05DE \u05DC\u05DB\u05DC
+    \u05D0\u05DC"
 --- !u!222 &814959107
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30597,11 +30610,11 @@ MonoBehaviour:
   prevButton: {fileID: 1285595302}
   nextButton: {fileID: 543667204}
   slides:
-  - {fileID: 5672366232145883265, guid: d08fdf76b18078b42ba47b18d3c3d7f9, type: 3}
+  - {fileID: -7904836063630648816, guid: f46f99422f5762740a9b73968ed5ead6, type: 3}
   - {fileID: -6524866416702707243, guid: fdbb605dbf2eb934bb6da7a67aae8771, type: 3}
   - {fileID: 3124370469480815080, guid: 2db8a2e564b86424387f06e8ec263484, type: 3}
-  - {fileID: 21300000, guid: db3e6ea008ccb494bb4a88bea11d70f6, type: 3}
-  - {fileID: -3082233008706153934, guid: aeefae857b73ff34ea1cdc35abbd3ff4, type: 3}
+  - {fileID: 1440802361237271105, guid: e3c1f2e6cb1af2245b31bbf4564ecac7, type: 3}
+  - {fileID: 32256035396200844, guid: 3d0ccff2648ec294098c7f5cf301e172, type: 3}
   - {fileID: 839513732760778288, guid: dc89208fe78497b48946fae06c27534c, type: 3}
   - {fileID: 1389389333919492158, guid: c5373164453974e40b9c3b5f17e3e6f8, type: 3}
   closeOnLastNext: 1
@@ -38184,6 +38197,7 @@ MonoBehaviour:
     m_Bits: 64
   platformRayLen: 0.25
   sugarMeter: {fileID: 1671181921}
+  disableMovementSugarDrain: 0
   continuousMoveThresholdGameMinutes: 20
   sugarDrainPerBlock: 4
   moveSpeedEpsilon: 0.1
@@ -38534,6 +38548,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1676788872}
   - component: {fileID: 1676788873}
+  - component: {fileID: 1676788874}
   m_Layer: 0
   m_Name: Timer
   m_TagString: Untagged
@@ -38572,6 +38587,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clockText: {fileID: 367880307}
   background: {fileID: 2043461361}
+--- !u!114 &1676788874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676788871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c568eb82e1d4d519ef46448ac6858bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1696456124 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3564026850829729314, guid: 91aebb278b095f843a6d4213d7df47fd, type: 3}
@@ -40665,8 +40692,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000015258789}
-  m_SizeDelta: {x: -80.2272, y: 0}
+  m_AnchoredPosition: {x: 35, y: 0}
+  m_SizeDelta: {x: -152.2371, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1872312967
 MonoBehaviour:
@@ -40701,11 +40728,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: " \u05D4\u05E2\u05E9 \u05DC\u05E9 \u05D7\u05D5\u05D5\u05D8\u05D1 \u05EA\u05D5\u05DE\u05D9\u05D2\u05DC
-    3\n\u05DD\u05D9\u05DE \u05DC\"\u05DE 100 =\n\u05DF\u05D9\u05DC\u05D5\u05E1\u05E0\u05D9\u05D0\u05DC
-    \u05D5\u05E2\u05D9\u05D9\u05E1\u05D9 \u05DD\u05D9\u05DE\n\u05DD\u05D9\u05D4\u05D5\u05D1\u05D2
-    \u05DD\u05D9\u05DB\u05E8\u05E2\u05D4\u05E9\u05DB \u05E8\u05DB\u05D5\u05E1\u05D4
-    \u05EA\u05D3\u05E8\u05D5\u05D4\u05D1"
+  m_Text: " = \u05D4\u05E2\u05E9 \u05DC\u05E9 \u05D7\u05D5\u05D5\u05D8\u05D1 \u05EA\u05D5\u05E6\u05D9\u05D7\u05DC
+    3\n\u05DC\"\u05D3/\u05D2\"\u05DE 2 \u05EA\u05D3\u05E8\u05D5\u05D4 = \u05DC\"\u05DE
+    100\n\u05D9\u05E6\u05D7\u05D5 \u05D4\u05E2\u05E9\u05D1"
 --- !u!222 &1872312968
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42322,6 +42347,7 @@ GameObject:
   - component: {fileID: 1974615901}
   - component: {fileID: 1974615900}
   - component: {fileID: 1974615903}
+  - component: {fileID: 1974615904}
   m_Layer: 5
   m_Name: Water
   m_TagString: Untagged
@@ -42488,6 +42514,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &1974615904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974615898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c568eb82e1d4d519ef46448ac6858bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1980238612
 GameObject:
   m_ObjectHideFlags: 0

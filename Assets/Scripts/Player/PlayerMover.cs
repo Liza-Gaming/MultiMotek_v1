@@ -57,6 +57,8 @@ public class PlayerMover : MonoBehaviour
 
     [Header("Continuous Movement → Sugar Drain")] [SerializeField]
     private SugarMeter sugarMeter;
+    
+    public bool disableMovementSugarDrain = false;
 
     [SerializeField, Tooltip("minutes of continuous play before sugar decrease")]
     private float continuousMoveThresholdGameMinutes = 20f;
@@ -395,7 +397,7 @@ public class PlayerMover : MonoBehaviour
 
     private void TrackContinuousMovementSugar()
     {
-        if (inputLocked)
+        if (inputLocked || disableMovementSugarDrain)
         {
             movingGameSecondsAccum = 0f;
             idleForgivenessTimer = 0f;
