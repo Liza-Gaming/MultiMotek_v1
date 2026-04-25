@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class VictorySequenceTrigger : MonoBehaviour
 {
     [Header("Settings")]
-    public string victoryTrigger = "victory";
+    public string victoryTrigger = "VictoeyEnd";
     public float delayBeforeFade = 3f;
     public float fadeDuration = 2f;
 

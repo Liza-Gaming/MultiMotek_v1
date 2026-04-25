@@ -112,6 +112,7 @@ public class PlayerMover : MonoBehaviour
     void Start()
     {
         initialScale = transform.localScale;
+        FaceRight();
         if (!sugarMeter) sugarMeter = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
     }
 
@@ -160,6 +161,7 @@ public class PlayerMover : MonoBehaviour
     void OnSceneLoaded(Scene s, LoadSceneMode m)
     {
         SetInputLocked(false);
+        FaceRight();
         SnapToSpawnIfExists();
         if (!sugarMeter) sugarMeter = SugarMeter.Instance ? SugarMeter.Instance : FindObjectOfType<SugarMeter>();
         SyncDrinkStateNow();
@@ -177,6 +179,13 @@ public class PlayerMover : MonoBehaviour
         }
     }
 
+    private void FaceRight()
+    {
+        if (initialScale != Vector3.zero)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
+        }
+    }
 
     // Update is called once per frame
     void Update()
