@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class VictorySequenceTrigger : MonoBehaviour
 {
     [Header("Settings")]
-    public string victoryTrigger = "VictoeyEnd";
+    public string victoryTrigger = "Victory";
     public float delayBeforeFade = 3f;
     public float fadeDuration = 2f;
 
@@ -21,7 +21,7 @@ public class VictorySequenceTrigger : MonoBehaviour
             GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
             foreach (GameObject obj in allObjects)
             {
-                if (obj.name == "Lose")
+                if (obj.name == "VictoryEnd")
                 {
                     blackPanel = obj.GetComponent<Image>();
                     return;

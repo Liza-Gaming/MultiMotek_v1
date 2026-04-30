@@ -83847,7 +83847,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 230136998}
   posB: {fileID: 1530786908}
-  speed: 3
+  tripTime: 3
 --- !u!61 &778891789
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -91810,7 +91810,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 1237941481}
   posB: {fileID: 691577357}
-  speed: 2
+  tripTime: 2.7
 --- !u!61 &1365120327
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -99230,7 +99230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 838553569}
   posB: {fileID: 857575753}
-  speed: 3.2
+  tripTime: 3.2
 --- !u!61 &1832343272
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -103237,7 +103237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 943206144}
   posB: {fileID: 21898910}
-  speed: 3
+  tripTime: 3
 --- !u!61 &2138724508
 BoxCollider2D:
   m_ObjectHideFlags: 0

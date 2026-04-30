@@ -8598,7 +8598,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 1061448183}
   posB: {fileID: 1333449324}
-  speed: 3.1
+  tripTime: 2.4
 --- !u!61 &425671115
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9201,7 +9201,7 @@ Transform:
   m_GameObject: {fileID: 485086501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.32, y: -1.27, z: 0}
+  m_LocalPosition: {x: -4.23, y: -1.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9778,7 +9778,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -17.88, y: -2.15}
+  m_AnchoredPosition: {x: -17.88, y: -2.54}
   m_SizeDelta: {x: 13.3511, y: 3.6819}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &519420028
@@ -11185,7 +11185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 1205348992}
   posB: {fileID: 612522679}
-  speed: 3
+  tripTime: 2.5
 --- !u!61 &599809938
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12531,7 +12531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 1801409653}
   posB: {fileID: 1311350636}
-  speed: 3
+  tripTime: 2.5
 --- !u!61 &773633235
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -39866,7 +39866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posA: {fileID: 566609095}
   posB: {fileID: 548019359}
-  speed: 3
+  tripTime: 2.7
 --- !u!61 &1738067073
 BoxCollider2D:
   m_ObjectHideFlags: 0
