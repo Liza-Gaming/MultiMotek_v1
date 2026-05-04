@@ -12,7 +12,8 @@ public class InfoSlideshowPanel : MonoBehaviour
     [SerializeField] private Image slideImage;  
     [SerializeField] private Button prevButton;
     [SerializeField] private Button nextButton;
-
+    
+        
     [Header("Slides")]
     [Tooltip("רשימת כל העמודים (Sprites) שיוצגו בספר")]
     [SerializeField] private List<Sprite> slides = new List<Sprite>(); 
@@ -51,7 +52,6 @@ public class InfoSlideshowPanel : MonoBehaviour
             enabled = false;
         }
     }
-    
     
     public void OnClick()
     {
