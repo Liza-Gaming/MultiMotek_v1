@@ -10,8 +10,8 @@ public class HamburgerProjectile : MonoBehaviour
     [SerializeField] private bool flipSpriteByVelocityX = true;
 
     [Header("Audio")]
-    [Tooltip("הסאונד שיתנגן בשיגור. אין צורך להוסיף AudioSource לפריפאב!")]
     [SerializeField] private AudioClip launchSound;
+    [SerializeField, Range(0f, 1f)] private float launchVolume = 1f;
 
     private Rigidbody2D _rb;
     private Collider2D _col;
@@ -38,7 +38,12 @@ public class HamburgerProjectile : MonoBehaviour
     public void Launch(Vector2 dirNormalized, float speed, MonoBehaviour owner)
     {
         _owner = owner ? owner.transform : null;
-        PlaySound2D(launchSound);
+        
+        if (_owner != null)
+        {
+            PlaySoundFromPlayer(_owner.gameObject);
+        }
+
         if (_owner)
         {
             foreach (var c in _owner.GetComponentsInChildren<Collider2D>())
@@ -54,30 +59,27 @@ public class HamburgerProjectile : MonoBehaviour
                 s.x = Mathf.Abs(s.x) * (_rb.linearVelocity.x >= 0f ? 1f : -1f);
             transform.localScale = s;
         }
-        
     }
-
-    // פונקציית קסם שמייצרת אובייקט זמני לסאונד ומשמידה אותו בסוף
-    private void PlaySound2D(AudioClip clip)
+    
+    private void PlaySoundFromPlayer(GameObject playerObj)
     {
-        if (clip == null) return;
+        if (launchSound == null) return;
 
-        // יצירת אובייקט ריק וחדש
-        GameObject audioObject = new GameObject("TempShootSound");
-        
-        // הוספת רכיב אודיו לאובייקט
-        AudioSource source = audioObject.AddComponent<AudioSource>();
-        
-        // הגדרות הסאונד
-        source.clip = clip;
-        source.spatialBlend = 0f; // חשוב מאוד - מוודא שהסאונד הוא 2D ושומעים אותו תמיד
-        source.volume = 1f; // אפשר לשנות כאן את הווליום אם צריך
-        
-        // ניגון הסאונד
-        source.Play();
-        
-        // השמדת האובייקט הזמני בדיוק כשאורך הסאונד מסתיים
-        Destroy(audioObject, clip.length);
+        AudioSource source = playerObj.GetComponent<AudioSource>();
+
+        if (source != null)
+        {
+            source.PlayOneShot(launchSound, launchVolume);
+        }
+        else
+        {
+            GameObject mainPlayer = GameObject.FindGameObjectWithTag("Player");
+            if (mainPlayer != null)
+            {
+                AudioSource mainSource = mainPlayer.GetComponent<AudioSource>();
+                if (mainSource != null) mainSource.PlayOneShot(launchSound, launchVolume);
+            }
+        }
     }
 
     private void Update()
@@ -94,30 +96,22 @@ public class HamburgerProjectile : MonoBehaviour
             ApplyEffect(collision.collider.gameObject);
         }
         
-        if (((1 << collision.collider.gameObject.layer) & hitMask) != 0)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);
     }
 
     public void ApplyEffect(GameObject playerObj)
     {
-        float totalGameMin = EnemyDelayGameMin + EnemyDurationGameMin;
-        float totalRealSec = GameTime.GameMinutesToRealSeconds(totalGameMin);
-
         var pm = playerObj.GetComponent<PlayerManager>();
-        pm?.SuppressSugarArrowRealSeconds(0.3f);
+        if (pm == null) return;
+
+        pm.SuppressSugarArrowRealSeconds(0.3f);
         
         pm.ApplyEnemySugarEffect(
             amountSigned: EnemyAmount,
             durationGameMin: EnemyDurationGameMin,
             floatingColor: simpleFloatingColor,
             entryGameMin: EnemyDelayGameMin,
-            floatingDisplayValue: EnemyAmount/4
+            floatingDisplayValue: EnemyAmount / 4
         );
     }
 }

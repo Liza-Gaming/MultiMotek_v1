@@ -28,6 +28,10 @@ public class SugarFailManager : MonoBehaviour
     [SerializeField] private float highSugarThreshold = 500f;
     [SerializeField] private float requiredGameMinutesAbove = 1440f;
     
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip failSound;
+    [SerializeField, Range(0f, 1f)] private float failSoundVolume = 1f;
+    
     private float accumulatedGameMinutesLow = 0f;
     private float accumulatedGameMinutesHigh = 0f;
     
@@ -88,11 +92,16 @@ public class SugarFailManager : MonoBehaviour
         }
     }
     
-    // פונקציה שמקבלת פרמטר האם הפסילה היא על נמוך או גבוה
     private void TriggerFail(bool isLowSugar)
     {
         faintTriggered = true;
         
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.StopMusic();
+        }
+        // ----------------------------------------------
+
         if (blackPanel == null) return;
 
         if (fadeRoutine != null)
@@ -119,7 +128,7 @@ public class SugarFailManager : MonoBehaviour
         
         c.a = 1f;
         blackPanel.color = c;
-        
+        PlayFailSound();
         Timer.Instance.PauseClock(true);
         SugarMeter.Instance.SetSimulationPaused(true);
 
@@ -141,4 +150,23 @@ public class SugarFailManager : MonoBehaviour
         // 6. הופעת הכפתור בסוף התהליך
         if (activeButton != null) activeButton.SetActive(true);
     }
+    
+    private void PlayFailSound()
+    {
+        if (failSound == null) return;
+
+        // מחפשים את השחקן לפי התג שלו
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            AudioSource playerSource = player.GetComponent<AudioSource>();
+            if (playerSource != null)
+            {
+                // משתמשים ב-PlayOneShot כדי לא לקטוע סאונדים אחרים אם היו
+                playerSource.PlayOneShot(failSound, failSoundVolume);
+            }
+        }
+    }
+    
+    
 }

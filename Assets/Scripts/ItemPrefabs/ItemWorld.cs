@@ -62,29 +62,26 @@ public class ItemWorld : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         if (item == null) return;
-
-        PlaySound2D();
         
+        PlaySound2D(other.gameObject);
+    
         var inventory = other.GetComponent<Inventory>();
         if (inventory != null) inventory.AddItem(item);
-        
+    
         DestroySelf();
     }
 
 
-    private void PlaySound2D()
+    private void PlaySound2D(GameObject player)
     {
         if (pickupSound == null) return;
         
-        GameObject audioObject = new GameObject("TempPickupSound");
-        AudioSource source = audioObject.AddComponent<AudioSource>();
-        
-        source.clip = pickupSound;
-        source.spatialBlend = 0f;
-        source.volume = pickupVolume;
-        
-        source.Play();
-        Destroy(audioObject, pickupSound.length);
+        AudioSource playerSource = player.GetComponent<AudioSource>();
+    
+        if (playerSource != null)
+        {
+            playerSource.PlayOneShot(pickupSound, pickupVolume);
+        }
     }
 
     public Item GetItem() => item;

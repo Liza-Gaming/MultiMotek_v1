@@ -19,14 +19,11 @@ public class TutorialSlideshow : MonoBehaviour
     [SerializeField] private bool showOnce = true;
     [SerializeField] private string playerPrefsKey = "Level1_TutorialShown";
 
-    // --- NEW ---
     [Header("Timer policy")]
-    [Tooltip("לעצור את הטיימר בזמן שההוראות פתוחות")]
     [SerializeField] private bool pauseTimerWhileOpen = true;
     private bool pausedTimerByMe = false;
 
-    // --- Character bubble (כמו שהיה) ---
-    [Header("Guide Character (alternates every slide)")]
+    [Header("Guide Character")]
     [SerializeField] private Image characterImage;
     [SerializeField] private Sprite girlSprite;
     [SerializeField] private Sprite boySprite;
@@ -39,10 +36,13 @@ public class TutorialSlideshow : MonoBehaviour
     
     private PlayerMover playerMover;
     
-    [Header("Audio per slide")]
-    [SerializeField] private AudioSource narrationSource;
-    
+    [Header("Audio (SFX Source)")]
+    [Tooltip("הווליום של הקריינות")]
+    [SerializeField, Range(0f, 1f)] private float narrationVolume = 1f;
     [SerializeField] private List<AudioClip> slideClips = new List<AudioClip>();
+
+    // משתנה שיחזיק את ה-AudioSource של השחקן
+    private AudioSource playerSFXSource;
 
     private void Awake()
     {
@@ -53,6 +53,13 @@ public class TutorialSlideshow : MonoBehaviour
 
     private void Start()
     {
+        // מוצאים את השחקן ואת ה-AudioSource שלו (ההורה)
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerSFXSource = player.GetComponent<AudioSource>();
+        }
+
         if (playerMover == null)
             playerMover = FindObjectOfType<PlayerMover>();
 
@@ -77,6 +84,9 @@ public class TutorialSlideshow : MonoBehaviour
         index = 0;
         if (rootPanel) rootPanel.SetActive(true);
         
+        // הנמכת מוזיקה (Ducking)
+        if (MusicManager.Instance != null) MusicManager.Instance.SetTutorialMode(true);
+        
         PauseGame(true);
 
         ApplySlide();
@@ -85,18 +95,13 @@ public class TutorialSlideshow : MonoBehaviour
         UpdateButtons();
     }
 
-
-    private void OnDisable()
-    {
-        TryUnpauseTimer();
-    }
+    // ... (שאר הפונקציות OnPrev, OnNext, PauseGame נשארות אותו דבר)
 
     private void OnPrev()
     {
         if (index > 0)
         {
             index--;
-            Debug.Log("Index: "+index);
             ApplySlide();
             ApplyCharacter();
             PlaySlideAudio();
@@ -113,7 +118,6 @@ public class TutorialSlideshow : MonoBehaviour
             ApplyCharacter();
             PlaySlideAudio();
             UpdateButtons();
-            Debug.Log("Index: "+index);
         }
         else
         {
@@ -128,22 +132,58 @@ public class TutorialSlideshow : MonoBehaviour
         }
     }
 
+    private void ClosePanel()
+    {
+        if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
+        if (rootPanel) rootPanel.SetActive(false);
+        
+        // עצירת הסאונד בשחקן
+        if (playerSFXSource != null) playerSFXSource.Stop();
+
+        if (playerMover)
+            playerMover.SetInputLocked(false);
+        
+        if (MusicManager.Instance != null) MusicManager.Instance.SetTutorialMode(false);
+        
+        PauseGame(false);
+    }
+
+    private void PlaySlideAudio()
+    {
+        // אם אין שחקן או אין קליפים, מפסיקים הכל
+        if (playerSFXSource == null || slideClips == null || index >= slideClips.Count)
+        {
+            if (playerSFXSource != null) playerSFXSource.Stop();
+            return;
+        }
+
+        AudioClip clip = slideClips[index];
+        
+        if (clip == null)
+        {
+            playerSFXSource.Stop();
+            return;
+        }
+
+        // ניגון דרך השחקן (כך שזה יושפע מה-Mute של ה-SFX)
+        playerSFXSource.Stop();
+        playerSFXSource.clip = clip;
+        playerSFXSource.volume = narrationVolume;
+        playerSFXSource.Play();
+    }
+
+    // ... (המשך הסקריפט המקורי שלך - ApplySlide, Update וכו')
+    
     private void PauseGame(bool pause)
     {
-        if (Timer.Instance != null)
-            Timer.Instance.PauseClock(pause);
-        
-        if (SugarMeter.Instance != null)
-            SugarMeter.Instance.SetSimulationPaused(pause);
+        if (Timer.Instance != null) Timer.Instance.PauseClock(pause);
+        if (SugarMeter.Instance != null) SugarMeter.Instance.SetSimulationPaused(pause);
     }
-    
 
     private void ApplySlide()
     {
         if (slideImage && index >= 0 && index < slides.Count)
-        {
             slideImage.sprite = slides[index];
-        }
     }
 
     private void ApplyCharacter()
@@ -152,47 +192,31 @@ public class TutorialSlideshow : MonoBehaviour
         if (!alternateByIndex)
         {
             characterImage.sprite = startWithGirl ? girlSprite : boySprite;
-            characterImage.enabled = characterImage.sprite != null;
             return;
         }
-
         bool showGirl = (index % 2 == 0) == startWithGirl;
         characterImage.sprite = showGirl ? girlSprite : boySprite;
-        characterImage.enabled = characterImage.sprite != null;
     }
 
     private void UpdateButtons()
     {
         if (prevButton) prevButton.interactable = index > 0;
-        if (nextButton) nextButton.interactable = true;
-    }
-
-    private void ClosePanel()
-    {
-        if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
-        if (rootPanel) rootPanel.SetActive(false);
-        narrationSource.Stop();
-
-        if (playerMover)
-            playerMover.SetInputLocked(false);
-        
-        PauseGame(false);
     }
 
     private void Update()
     {
         if (!rootPanel || !rootPanel.activeSelf) return;
-
         if (Input.GetKeyDown(KeyCode.RightArrow)) OnNext();
         if (Input.GetKeyDown(KeyCode.LeftArrow))  OnPrev();
         if (Input.GetKeyDown(KeyCode.Escape))     ClosePanel();
     }
-    
+
+    private void OnDisable() => TryUnpauseTimer();
+
     private void TryPauseTimer()
     {
         if (!pauseTimerWhileOpen) return;
         if (pauseOnlyInFirstScene && SceneManager.GetActiveScene().buildIndex != firstSceneBuildIndex) return;
-
         if (Timer.Instance != null && !pausedTimerByMe)
         {
             Timer.Instance.PauseClock(true);
@@ -202,44 +226,10 @@ public class TutorialSlideshow : MonoBehaviour
 
     private void TryUnpauseTimer()
     {
-        if (!pauseTimerWhileOpen) return;
         if (pausedTimerByMe && Timer.Instance != null)
         {
             Timer.Instance.PauseClock(false);
             pausedTimerByMe = false;
         }
     }
-    
-    private void PlaySlideAudio()
-    {
-        if (narrationSource == null)
-            return;
-        
-        if (slideClips == null || slideClips.Count == 0)
-        {
-            narrationSource.Stop();
-            return;
-        }
-        
-        if (index < 0 || index >= slideClips.Count)
-        {
-            narrationSource.Stop();
-            return;
-        }
-
-        AudioClip clip = slideClips[index];
-        
-        if (clip == null)
-        {
-            narrationSource.Stop();
-            return;
-        }
-
-        narrationSource.Stop();
-        narrationSource.clip = clip;
-        narrationSource.Play();
-    }
-
-    
-    
 }

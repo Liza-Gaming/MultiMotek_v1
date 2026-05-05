@@ -63,7 +63,7 @@ public class Inventory:MonoBehaviour
         }
         if (ItemAssets.Instance != null)
         {
-            AudioSource audio = ItemAssets.Instance.GetComponent<AudioSource>();
+            AudioSource audio = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
             if (audio != null)
             {
                 AudioClip clipToPlay = ItemAssets.Instance.useItemSound;

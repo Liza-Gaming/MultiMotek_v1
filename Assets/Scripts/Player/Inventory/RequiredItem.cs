@@ -3,11 +3,10 @@ using UnityEngine.UI;
 
 public class RequiredItem : MonoBehaviour
 {
-
     [SerializeField] Image[] itemImage;
-    
     [SerializeField] private AudioClip pickupSound;
-    
+    [SerializeField, Range(0f, 1f)] private float volume = 1f;
+
     private void Reset()
     {
         var col = GetComponent<Collider2D>();
@@ -16,16 +15,17 @@ public class RequiredItem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-
         if (other.CompareTag("Player"))
         {
-            PlayerManager collector = other.GetComponent<PlayerManager>();
+            // מציאת ה-AudioSource שעל השחקן (ההורה)
+            AudioSource playerAudio = other.GetComponent<AudioSource>();
             
-            if (pickupSound != null)
+            if (pickupSound != null && playerAudio != null)
             {
-                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+                playerAudio.PlayOneShot(pickupSound, volume);
             }
             
+            PlayerManager collector = other.GetComponent<PlayerManager>();
             if (collector != null)
             {
                 collector.hasRequiredItem = true;
@@ -34,10 +34,6 @@ public class RequiredItem : MonoBehaviour
                     itemImage[i].color = Color.white;
                 }
                 Destroy(gameObject);
-            }
-            else
-            {
-                Debug.LogWarning("Player touched RequiredItem but has no PlayerItemCollector script!");
             }
         }
     }

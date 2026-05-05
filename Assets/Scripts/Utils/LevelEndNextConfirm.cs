@@ -6,9 +6,9 @@ using System.Collections;
 public class LevelEndNextConfirm : MonoBehaviour
 {
     [Header("Stats End UI")]
-    [SerializeField] private Button nextLevelButton;          // הכפתור שעל פופאפ הסטטיסטיקות
-    [SerializeField] private GameObject confirmPanel;         // פאנל אימות יחיד
-    [SerializeField] private Button confirmContinueButton;    // "המשך" בתוך הפאנל
+    [SerializeField] private Button nextLevelButton;
+    [SerializeField] private GameObject confirmPanel;
+    [SerializeField] private Button confirmContinueButton;
     [SerializeField] private GameObject statasPanel;
     
     [Header("Fade")]
