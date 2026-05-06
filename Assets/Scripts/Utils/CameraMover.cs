@@ -58,10 +58,10 @@ public class CameraMover : MonoBehaviour
                 break;
             case "Level 3":
                 minX = 0f;
-                maxX = 200f;
+                maxX = 201f;
                 break;
             case "Level 4":
-                minX = 0f;
+                minX = -3f;
                 maxX = 190f;
                 break;
             case "Level 5":

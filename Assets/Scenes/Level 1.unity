@@ -2724,7 +2724,7 @@ MonoBehaviour:
   targetItem: {fileID: 1418740190}
   arrowVisuals: {fileID: 875700689}
   exitDoorTag: ExitDoorLv7
-  exitArrowVisuals: {fileID: 0}
+  exitArrowVisuals: {fileID: 1760687452}
   exitLevelName: Level 7
   delayBeforeShowing: 60
   rotationOffset: 0
@@ -9451,7 +9451,7 @@ MonoBehaviour:
   - {fileID: -2286208777255834935, guid: 80721abf2f6a1704a8b181887180415e, type: 3}
   - {fileID: 8088063484156810502, guid: e1277abe071958a4bb8f004dc7668401, type: 3}
   - {fileID: 847911160585863637, guid: e44498c009e3067428dfc02706d95dc0, type: 3}
-  - {fileID: -1070998960832855491, guid: 7a8b8907b75d1ff4a926905b9957bf0a, type: 3}
+  - {fileID: 21300000, guid: 7a8b8907b75d1ff4a926905b9957bf0a, type: 3}
   closeOnLastNext: 0
 --- !u!1 &485086501
 GameObject:
@@ -9478,7 +9478,7 @@ Transform:
   m_GameObject: {fileID: 485086501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.39, y: -1.27, z: 0}
+  m_LocalPosition: {x: -4.37, y: -1.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

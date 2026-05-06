@@ -84597,7 +84597,7 @@ MonoBehaviour:
   exitDoorTag: ExitDoorLv7
   exitArrowVisuals: {fileID: 10113052}
   exitLevelName: Level 7
-  delayBeforeShowing: 60
+  delayBeforeShowing: 75
   rotationOffset: 0
 --- !u!1001 &593575696
 PrefabInstance:
@@ -88833,7 +88833,7 @@ MonoBehaviour:
   - {fileID: -2286208777255834935, guid: 80721abf2f6a1704a8b181887180415e, type: 3}
   - {fileID: 8088063484156810502, guid: e1277abe071958a4bb8f004dc7668401, type: 3}
   - {fileID: 847911160585863637, guid: e44498c009e3067428dfc02706d95dc0, type: 3}
-  - {fileID: -1070998960832855491, guid: 7a8b8907b75d1ff4a926905b9957bf0a, type: 3}
+  - {fileID: 21300000, guid: 7a8b8907b75d1ff4a926905b9957bf0a, type: 3}
   closeOnLastNext: 0
 --- !u!114 &772575609
 MonoBehaviour:
@@ -95983,7 +95983,7 @@ Transform:
   m_GameObject: {fileID: 1132682724}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.01, y: -1.3, z: -0.9169444}
+  m_LocalPosition: {x: -12.93, y: -1.36, z: -0.9169444}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
