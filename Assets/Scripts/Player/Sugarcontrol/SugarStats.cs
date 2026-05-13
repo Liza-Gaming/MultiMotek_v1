@@ -4,6 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class SugarStats : MonoBehaviour
 {
+    [Header("Global Settings (Cross-Scene)")]
+    public int menuSceneBuildIndex = 0;
+    public int maxSceneToAccumulate = 8;
+
     [Header("Refs")]
     public SugarMeter sugarMeter;
 
@@ -14,7 +18,7 @@ public class SugarStats : MonoBehaviour
     [Header("Summary Rating (Hearts)")]
     public int summaryHeartsMax = 5;
 
-    [Header("Stats (read-only)")]
+    [Header("Local Stats (read-only)")]
     [SerializeField] private float totalTime = 0f;
     [SerializeField] private float timeInRange = 0f;
     [SerializeField] private float timeAboveRange = 0f;
@@ -24,15 +28,30 @@ public class SugarStats : MonoBehaviour
     [SerializeField] private GameObject blurVolumeObject;
 
     private float uiTimer = 0f;
+
+    // --- Global Stats (Static) ---
+    // אלו המשתנים שישמרו את המידע לאורך כל השלבים
+    private static float globalTotalTime = 0f;
+    private static float globalTimeInRange = 0f;
+    private static float globalTimeAboveRange = 0f;
+    private static float globalTimeBelowRange = 0f;
     
     void OnEnable()  => SceneManager.sceneLoaded += OnSceneLoaded;
     void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
     
     void OnSceneLoaded(Scene s, LoadSceneMode m)
     {
-        ResetStats();
+        // איפוס של נתוני השלב הנוכחי בלבד
+        ResetLocalStats(); 
+        
         if (sugarMeter == null && SugarMeter.Instance != null)
             sugarMeter = SugarMeter.Instance;
+
+        // אם הגענו לתפריט הראשי (נפסלנו או התחלנו משחק חדש), נאפס את הנתונים המצטברים
+        if (s.buildIndex == menuSceneBuildIndex)
+        {
+            ResetGlobalStats();
+        }
     }
 
     void Start()
@@ -40,7 +59,7 @@ public class SugarStats : MonoBehaviour
         if (sugarMeter == null && SugarMeter.Instance != null)
             sugarMeter = SugarMeter.Instance;
 
-        ResetStats();
+        ResetLocalStats();
     }
 
     void Update()
@@ -48,8 +67,9 @@ public class SugarStats : MonoBehaviour
         if (sugarMeter == null) return;
 
         float dt = Time.deltaTime;
+        
+        // --- עדכון סטטיסטיקה של השלב הנוכחי (Local) ---
         totalTime += dt;
-
         float s = sugarMeter.GetSugarLevel();
         float min = sugarMeter.minSugar;
         float max = sugarMeter.maxSugar;
@@ -58,16 +78,27 @@ public class SugarStats : MonoBehaviour
         else if (s > max)  timeAboveRange += dt;
         else               timeInRange   += dt;
 
+        // --- עדכון סטטיסטיקה מצטברת (Global) ---
+        // רק אם אנחנו בשלב שקטן או שווה לשלב המקסימלי (למשל שלב 7)
+        int currentBuildIndex = SceneManager.GetActiveScene().buildIndex;
+        if (currentBuildIndex <= maxSceneToAccumulate && currentBuildIndex != menuSceneBuildIndex)
+        {
+            globalTotalTime += dt;
+            if (s < min)       globalTimeBelowRange += dt;
+            else if (s > max)  globalTimeAboveRange += dt;
+            else               globalTimeInRange   += dt;
+        }
+
         uiTimer += dt;
         if (statsText != null && uiTimer >= uiUpdateInterval)
         {
             uiTimer = 0f;
-            GetPercents(out float inPct, out float abovePct, out float belowPct);
+            GetLocalPercents(out float inPct, out float abovePct, out float belowPct);
             statsText.text = $"In Range: {inPct:0}% | Above: {abovePct:0}% | Below: {belowPct:0}%";
         }
     }
     
-    public void ResetStats()
+    public void ResetLocalStats()
     {
         totalTime = 0f;
         timeInRange = 0f;
@@ -75,7 +106,15 @@ public class SugarStats : MonoBehaviour
         timeBelowRange = 0f;
     }
 
-    public void GetPercents(out float inRangePct, out float abovePct, out float belowPct)
+    public static void ResetGlobalStats()
+    {
+        globalTotalTime = 0f;
+        globalTimeInRange = 0f;
+        globalTimeAboveRange = 0f;
+        globalTimeBelowRange = 0f;
+    }
+
+    public void GetLocalPercents(out float inRangePct, out float abovePct, out float belowPct)
     {
         if (totalTime <= 0f)
         {
@@ -87,19 +126,45 @@ public class SugarStats : MonoBehaviour
         belowPct   = (timeBelowRange / totalTime) * 100f;
     }
 
-    public int GetSummaryHearts()
+    // פונקציה חדשה ששולפת את הנתונים המצטברים מכל השלבים
+    public static void GetGlobalPercents(out float inRangePct, out float abovePct, out float belowPct)
     {
-        GetPercents(out float inPct, out _, out _);
+        if (globalTotalTime <= 0f)
+        {
+            inRangePct = abovePct = belowPct = 0f;
+            return;
+        }
+        inRangePct = (globalTimeInRange   / globalTotalTime) * 100f;
+        abovePct   = (globalTimeAboveRange / globalTotalTime) * 100f;
+        belowPct   = (globalTimeBelowRange / globalTotalTime) * 100f;
+    }
 
+    public int GetLocalSummaryHearts()
+    {
+        GetLocalPercents(out float inPct, out _, out _);
         if (summaryHeartsMax <= 0) return 0;
-
         int hearts = Mathf.RoundToInt((inPct / 100f) * summaryHeartsMax);
         return Mathf.Clamp(hearts, 0, summaryHeartsMax);
     }
 
-    
+    // פונקציה חדשה לחישוב הלבבות (הדירוג) על סמך כל השלבים
+    public int GetGlobalSummaryHearts()
+    {
+        GetGlobalPercents(out float inPct, out _, out _);
+        if (summaryHeartsMax <= 0) return 0;
+        int hearts = Mathf.RoundToInt((inPct / 100f) * summaryHeartsMax);
+        return Mathf.Clamp(hearts, 0, summaryHeartsMax);
+    }
+
+    // Local Properties
     public float TotalTime   => totalTime;
     public float TimeInRange => timeInRange;
     public float TimeAbove   => timeAboveRange;
     public float TimeBelow   => timeBelowRange;
+
+    // Global Properties
+    public static float GlobalTotalTime   => globalTotalTime;
+    public static float GlobalTimeInRange => globalTimeInRange;
+    public static float GlobalTimeAbove   => globalTimeAboveRange;
+    public static float GlobalTimeBelow   => globalTimeBelowRange;
 }

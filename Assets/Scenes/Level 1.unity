@@ -578,9 +578,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u05D4\u05D3\u05D9\u05E8\u05D5\u05DE \u05EA\u05DB\u05E9\u05D5\u05DE\u05DE
-    \u05EA\u05D9\u05DE\u05D5\u05D9\u05DE\u05D5\u05D9 \u05D4\u05E2\u05D5\u05E0\u05EA
-    \u05DD\u05D2\n\u05E8\u05DB\u05D5\u05E1\u05D4 \u05DA\u05E8\u05E2 \u05EA\u05D0 "
+  m_Text: "\u05E8\u05DB\u05D5\u05E1\u05D4 \u05EA\u05DE\u05E8 \u05EA\u05D0 \u05D3\u05D9\u05E8\u05D5\u05D4\u05DC
+    \u05EA\u05E8\u05D6\u05D5\u05E2 \u05EA\u05D9\u05DE\u05D5\u05D9\u05DE\u05D5\u05D9
+    \u05D4\u05E2\u05D5\u05E0\u05EA \u05DD\u05D2"
 --- !u!222 &25845396
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1207,6 +1207,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67d207b537045b19e5e75803613787b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  menuSceneBuildIndex: 0
+  maxSceneToAccumulate: 8
   sugarMeter: {fileID: 1671181921}
   statsText: {fileID: 1254872275}
   uiUpdateInterval: 0.3
@@ -1878,6 +1880,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats: {fileID: 0}
   meter: {fileID: 0}
+  isFinalLevelSummary: 0
+  fadePanelName: VictoryEnd
+  exitFadeDuration: 2
   inRangeText: {fileID: 580218231}
   belowText: {fileID: 1003501450}
   aboveText: {fileID: 1961740723}

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -47,7 +48,7 @@ public class DoorLevelEnd : MonoBehaviour
         
         PlayerManager collector = other.GetComponent<PlayerManager>();
         
-        if (collector == null || !collector.hasRequiredItem)
+        if ((collector == null || !collector.hasRequiredItem) && nextSceneBuildIndex != -1)
         {
             
             if (lockedMessageUI != null)

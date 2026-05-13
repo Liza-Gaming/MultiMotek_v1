@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8526275984772169581, guid: 080bfc6c6f1587f4b92228f861488b93, type: 3}
+  m_Sprite: {fileID: 1867698201231395750, guid: 3521f0c479a106145ad921445f14cdc6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -308,7 +308,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 627.2777, y: -283.07996}
+  m_AnchoredPosition: {x: -652, y: -283.07996}
   m_SizeDelta: {x: 96.34405, y: 65.0796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &117243949
@@ -980,7 +980,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1258, y: -648}
+  m_AnchoredPosition: {x: -21.277588, y: -648}
   m_SizeDelta: {x: 132.6881, y: 143.5805}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &347271459
@@ -2271,10 +2271,10 @@ MonoBehaviour:
     canvasGroup: {fileID: 0}
     showStoryGalleryFirst: 1
     storyImages:
-    - {fileID: -855298285791758126, guid: ad792befc45696743b275f1e18753988, type: 3}
-    - {fileID: 6937817954938267909, guid: e7cc299a8d7b3c049b88e4c8c3dbb9a8, type: 3}
-    - {fileID: -6470460504253458178, guid: 031206f6b8442be4f8968dfa30a4c131, type: 3}
-    - {fileID: -8892613527292705100, guid: e196a65b88b079e43a51ab0309bb6df7, type: 3}
+    - {fileID: 29050459051086348, guid: b24e5b5baea97df4d99e5dd36ab3874d, type: 3}
+    - {fileID: 4994427636713703888, guid: 06a0dd23374c29342833d2d68c6270c8, type: 3}
+    - {fileID: -1636706895493316514, guid: a47466f565992674db9770e72478d9b8, type: 3}
+    - {fileID: 4790116362472348639, guid: 2f3cbb5bcb995a3489e865f083f0976a, type: 3}
   - panel: {fileID: 1360137944}
     continueButton: {fileID: 939393212}
     canvasGroup: {fileID: 0}
@@ -3522,7 +3522,7 @@ AudioSource:
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
-  m_Pitch: 1.05
+  m_Pitch: 1.08
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -7252,7 +7252,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1447393773974828290, guid: a84f5c7f6dec45444948c7bb7c906e5e, type: 3}
+  m_Sprite: {fileID: -5060541550222259192, guid: 416dd0b10f69d394b8ebdb1b13193bbc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
