@@ -1,24 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SugarFailManager : MonoBehaviour
 {
-    [Header("UI - General")]
-    [SerializeField] private Image blackPanel;
+    public static SugarFailManager Instance { get; private set; }
+
+    [Header("General Settings")]
     [SerializeField] private float fadeDuration = 2f;
-
-    [Header("UI - LOSELOW Setup")]
-    [SerializeField] private GameObject loseLowPanel; // האובייקט שמכיל הכל
-    [SerializeField] private TypewriterEffect lowText1; // טקסט ראשון
-    [SerializeField] private TypewriterEffect lowText2; // טקסט שני
-    [SerializeField] private GameObject lowButton;      // כפתור חזרה/ריסט
-
-    [Header("UI - LOSEHIGH Setup")]
-    [SerializeField] private GameObject loseHighPanel;
-    [SerializeField] private TypewriterEffect highText1;
-    [SerializeField] private TypewriterEffect highText2;
-    [SerializeField] private GameObject highButton;
 
     [Header("Low Sugar Settings")]
     [SerializeField] private float lowSugarThreshold = 60f;
@@ -38,26 +27,48 @@ public class SugarFailManager : MonoBehaviour
     private bool faintTriggered = false;
     private Coroutine fadeRoutine;
 
+    // הרפרנס ל-UI של הסצנה הנוכחית
+    private FailUIProvider currentUI;
+
     private void Awake()
     {
-        if (blackPanel != null)
+        if (Instance != null && Instance != this)
         {
-            var c = blackPanel.color;
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void SetupUI(FailUIProvider provider)
+    {
+        currentUI = provider;
+        
+        faintTriggered = false;
+        accumulatedGameMinutesLow = 0f;
+        accumulatedGameMinutesHigh = 0f;
+
+        if (currentUI.blackPanel != null)
+        {
+            var c = currentUI.blackPanel.color;
             c.a = 0f;
-            blackPanel.color = c;
-            blackPanel.gameObject.SetActive(false);
+            currentUI.blackPanel.color = c;
+            currentUI.blackPanel.gameObject.SetActive(false);
         }
 
-        // כיבוי הפאנלים והכפתורים בהתחלה
-        if (loseLowPanel != null) loseLowPanel.SetActive(false);
-        if (loseHighPanel != null) loseHighPanel.SetActive(false);
-        if (lowButton != null) lowButton.SetActive(false);
-        if (highButton != null) highButton.SetActive(false);
+        if (currentUI.loseLowPanel != null) currentUI.loseLowPanel.SetActive(false);
+        if (currentUI.loseHighPanel != null) currentUI.loseHighPanel.SetActive(false);
+        
+        // כיבוי הכפתור המשותף בהתחלה
+        if (currentUI.returnToMenuButton != null) currentUI.returnToMenuButton.gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        if (faintTriggered) return;
+        // אם כבר נפסלנו או שעדיין אין UI מחובר, לא ממשיכים
+        if (faintTriggered || currentUI == null) return;
         if (SugarMeter.Instance == null || Timer.Instance == null) return;
 
         float sugar = SugarMeter.Instance.GetSugarLevel();
@@ -69,7 +80,7 @@ public class SugarFailManager : MonoBehaviour
             accumulatedGameMinutesLow += gameMinutesThisFrame;
             if (accumulatedGameMinutesLow >= requiredGameMinutesBelow)
             {
-                TriggerFail(isLowSugar: true); // מודיע שמדובר בסוכר נמוך
+                TriggerFail(isLowSugar: true);
             }
         }
         else
@@ -83,7 +94,7 @@ public class SugarFailManager : MonoBehaviour
             accumulatedGameMinutesHigh += gameMinutesThisFrame;
             if (accumulatedGameMinutesHigh >= requiredGameMinutesAbove)
             {
-                TriggerFail(isLowSugar: false); // מודיע שמדובר בסוכר גבוה
+                TriggerFail(isLowSugar: false);
             }
         }
         else
@@ -100,9 +111,8 @@ public class SugarFailManager : MonoBehaviour
         {
             MusicManager.Instance.StopMusic();
         }
-        // ----------------------------------------------
 
-        if (blackPanel == null) return;
+        if (currentUI.blackPanel == null) return;
 
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
@@ -112,9 +122,8 @@ public class SugarFailManager : MonoBehaviour
 
     private IEnumerator FailSequenceRoutine(bool isLowSugar)
     {
-        // 1. החשכת המסך
-        blackPanel.gameObject.SetActive(true);
-        var c = blackPanel.color;
+        currentUI.blackPanel.gameObject.SetActive(true);
+        var c = currentUI.blackPanel.color;
         float t = 0f;
 
         while (t < fadeDuration)
@@ -122,51 +131,53 @@ public class SugarFailManager : MonoBehaviour
             t += Time.deltaTime;
             float normalized = Mathf.Clamp01(t / fadeDuration);
             c.a = Mathf.Lerp(0f, 1f, normalized);
-            blackPanel.color = c;
+            currentUI.blackPanel.color = c;
             yield return null;
         }
         
         c.a = 1f;
-        blackPanel.color = c;
+        currentUI.blackPanel.color = c;
         PlayFailSound();
         Timer.Instance.PauseClock(true);
         SugarMeter.Instance.SetSimulationPaused(true);
 
-        // 2. בחירת האובייקטים הרלוונטיים לפי סוג הפסילה
-        GameObject activePanel = isLowSugar ? loseLowPanel : loseHighPanel;
-        TypewriterEffect text1 = isLowSugar ? lowText1 : highText1;
-        TypewriterEffect text2 = isLowSugar ? lowText2 : highText2;
-        GameObject activeButton = isLowSugar ? lowButton : highButton;
+        GameObject activePanel = isLowSugar ? currentUI.loseLowPanel : currentUI.loseHighPanel;
+        TypewriterEffect text1 = isLowSugar ? currentUI.lowText1 : currentUI.highText1;
+        TypewriterEffect text2 = isLowSugar ? currentUI.lowText2 : currentUI.highText2;
 
-        // 3. הדלקת הפאנל המתאים (הטקסטים יהיו ריקים כי דאגנו לזה ב-Awake שלהם)
         if (activePanel != null) activePanel.SetActive(true);
-
-        // 4. הפעלת טקסט ראשון והמתנה עד שיסיים לכתוב (yield return StartCoroutine)
         if (text1 != null) yield return StartCoroutine(text1.PlayTypewriter());
-
-        // 5. הפעלת טקסט שני והמתנה עד שיסיים
         if (text2 != null) yield return StartCoroutine(text2.PlayTypewriter());
-
-        // 6. הופעת הכפתור בסוף התהליך
-        if (activeButton != null) activeButton.SetActive(true);
+        
+        // הופעת הכפתור המשותף בסוף התהליך
+        if (currentUI.returnToMenuButton != null) currentUI.returnToMenuButton.gameObject.SetActive(true);
+    }
+    
+    public void ReturnToMenu()
+    {
+        // שחרור הפוז לפני מעבר הסצנה! קריטי, אחרת התפריט יכול לקפוא
+        if (Timer.Instance != null) Timer.Instance.PauseClock(false);
+        if (SugarMeter.Instance != null) SugarMeter.Instance.SetSimulationPaused(false);
+        Time.timeScale = 1f; 
+        
+        faintTriggered = false; // איפוס לקראת המשחק הבא
+        
+        // תחליפי את "MainMenu" בשם המדויק של סצנת התפריט שלך
+        SceneManager.LoadScene("Intro"); 
     }
     
     private void PlayFailSound()
     {
         if (failSound == null) return;
 
-        // מחפשים את השחקן לפי התג שלו
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             AudioSource playerSource = player.GetComponent<AudioSource>();
             if (playerSource != null)
             {
-                // משתמשים ב-PlayOneShot כדי לא לקטוע סאונדים אחרים אם היו
                 playerSource.PlayOneShot(failSound, failSoundVolume);
             }
         }
     }
-    
-    
 }

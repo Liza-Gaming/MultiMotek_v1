@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviour
     
     
     [Header("Audio")]
-    [SerializeField] private AudioClip collision;
+    [SerializeField] private AudioClip collisionAudio;
     private AudioSource audioSource;
     
     
@@ -175,7 +175,7 @@ public class PlayerManager : MonoBehaviour
         
         effect?.ApplyEffect(this.gameObject);
         
-        audioSource.PlayOneShot(this.collision);
+        audioSource.PlayOneShot(this.collisionAudio);
         
         sugarArrow?.ShowUp(3f);
 

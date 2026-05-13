@@ -86,7 +86,7 @@ public class InfoSlideshowPanel : MonoBehaviour
         
         rootPanel.SetActive(true);
         pauseManager.SoftPauseFor("InfoBook");
-        if (playerMover) playerMover.SetInputLocked(true);
+       //if (playerMover) playerMover.SetInputLocked(true);
 
         ApplySlide();
         UpdateButtons();
@@ -98,7 +98,7 @@ public class InfoSlideshowPanel : MonoBehaviour
 
         rootPanel.SetActive(false);
         pauseManager.SoftResumeFor("InfoBook");
-        if (playerMover) playerMover.SetInputLocked(false);
+        //if (playerMover) playerMover.SetInputLocked(false);
     }
     
 
