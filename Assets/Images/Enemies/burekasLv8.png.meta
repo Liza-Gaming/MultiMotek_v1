@@ -260,7 +260,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      burekasLv8_0: -846996662489488481
+      burekasLv8_1: 3544979026498094318
+      burekasLv8_2: 8950342116240795877
+      burekasLv8_3: -862742519142470556
+      burekasLv8_4: -2461278002831759379
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
