@@ -57,6 +57,11 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private GameObject floatingTextPrefab;
     [SerializeField] private Vector3 floatingTextOffset = new Vector3(0, 1.5f, 0);
     [SerializeField] private Canvas floatingTextCanvas;
+    
+    [Header("Inventory Accumulation")]
+    private bool _isInventoryOpen = false;
+    private float _accumulatedFloatingValue = 0f;
+    private bool _hasAccumulatedDisplay = false;
 
     private void Awake()
     {
@@ -235,51 +240,92 @@ public class PlayerManager : MonoBehaviour
         }
     }
     
-private void ApplyItemSugarEffect(
-    float amountSigned,
-    float durationGameMin,
-    float entryGameMin,
-    bool showFloatingText,
-    float floatingDisplayValue,
-    Color floatingColor,
-    Color fxColor,
-    Sprite itemSprite = null,
-    bool canShowPump = true)
-{
-    bool isFoodRise = amountSigned > 0f;
-    int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
-    
-    if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f && canShowPump)
+    public void SetInventoryOpenState(bool isOpen)
     {
-        CarbReportManager.Instance.RequestReport(
-            expectedCarbsForQuiz,
-            expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
-            foodDurationGameMin: durationGameMin,
-            itemSprite: itemSprite,
-            onCorrect: (reportedCarbs) =>
+        _isInventoryOpen = isOpen;
+        
+        if (isOpen)
+        {
+            _accumulatedFloatingValue = 0f;
+            _hasAccumulatedDisplay = false;
+        }
+        else
+        {
+            if (_hasAccumulatedDisplay)
             {
-                if (sugarMeter != null)
-                    sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
-
-                if (showFloatingText)
-                    ShowFloatingSugarText(floatingDisplayValue, floatingColor);
-
-                playerFeedback?.PlayUseItemFX(fxColor);
+                Color finalColor = _accumulatedFloatingValue < 0 ? Color.red : Color.yellow;
+                
+                ShowFloatingSugarText(_accumulatedFloatingValue, finalColor);
+                _accumulatedFloatingValue = 0f;
+                _hasAccumulatedDisplay = false;
             }
-        );
-
-        return; 
+        }
     }
+    
+private void ApplyItemSugarEffect(
+        float amountSigned,
+        float durationGameMin,
+        float entryGameMin,
+        bool showFloatingText,
+        float floatingDisplayValue,
+        Color floatingColor,
+        Color fxColor,
+        Sprite itemSprite = null,
+        bool canShowPump = true)
+    {
+        bool isFoodRise = amountSigned > 0f;
+        int expectedCarbsForQuiz = isFoodRise ? Mathf.RoundToInt(floatingDisplayValue) : 0;
+        
+        if (isFoodRise && CarbReportManager.Instance != null && entryGameMin > 0f && canShowPump)
+        {
+            CarbReportManager.Instance.RequestReport(
+                expectedCarbsForQuiz,
+                expectedFoodRiseMgdl: Mathf.Max(0f, amountSigned),
+                foodDurationGameMin: durationGameMin,
+                itemSprite: itemSprite,
+                onCorrect: (reportedCarbs) =>
+                {
+                    if (sugarMeter != null)
+                        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
 
-    // אם הגענו לכאן, זה או ירידת סוכר, או אויב (ששלח false), או פריט שלא דורש משאבה
-    if (sugarMeter != null)
-        sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+                    if (showFloatingText)
+                    {
+                        if (_isInventoryOpen)
+                        {
+                            _accumulatedFloatingValue += floatingDisplayValue;
+                            _hasAccumulatedDisplay = true;
+                        }
+                        else
+                        {
+                            ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+                        }
+                    }
 
-    if (showFloatingText)
-        ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+                    playerFeedback?.PlayUseItemFX(fxColor);
+                }
+            );
 
-    playerFeedback?.PlayUseItemFX(fxColor);
-}
+            return; 
+        }
+
+        if (sugarMeter != null)
+            sugarMeter.ScheduleEffectGame(amountSigned, durationGameMin, entryGameMin);
+
+        if (showFloatingText)
+        {
+            if (_isInventoryOpen)
+            {
+                _accumulatedFloatingValue += floatingDisplayValue;
+                _hasAccumulatedDisplay = true;
+            }
+            else
+            {
+                ShowFloatingSugarText(floatingDisplayValue, floatingColor);
+            }
+        }
+
+        playerFeedback?.PlayUseItemFX(fxColor);
+    }
 
 public void ApplyEnemySugarEffect(
     float amountSigned,

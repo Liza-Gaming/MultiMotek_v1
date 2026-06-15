@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class RequiredItem : MonoBehaviour
 {
     [SerializeField] Image[] itemImage;
+    [SerializeField] GameObject[] bg;
     [SerializeField] private AudioClip pickupSound;
     [SerializeField, Range(0f, 1f)] private float volume = 1f;
 
@@ -32,6 +33,10 @@ public class RequiredItem : MonoBehaviour
                 for (int i = 0; i < itemImage.Length; i++)
                 {
                     itemImage[i].color = Color.white;
+                }
+                for (int i = 0; i < bg.Length; i++)
+                {
+                    bg[i].SetActive(false);
                 }
                 Destroy(gameObject);
             }

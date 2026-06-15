@@ -14,11 +14,13 @@ public class InventoryUIController : MonoBehaviour
     [SerializeField] private string blurObjectName = "PauseBlur";
     
     private Pause pauseManager;
-    private bool isInventoryOpen = false; // משתנה למעקב אחרי מצב האינבנטורי
+    private PlayerManager playerManager; // הוספנו רפרנס לשחקנית
+    private bool isInventoryOpen = false;
 
     void Awake()
     {
         pauseManager = FindFirstObjectByType<Pause>(); 
+        playerManager = FindFirstObjectByType<PlayerManager>(); // מציאת השחקנית
         background.SetActive(false);
         itemSlotContainer.SetActive(false);
         openInventoryButton.SetActive(true);
@@ -27,7 +29,6 @@ public class InventoryUIController : MonoBehaviour
 
     void Update()
     {
-        // בדיקה אם מקש E נלחץ
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (isInventoryOpen)
@@ -65,10 +66,17 @@ public class InventoryUIController : MonoBehaviour
     public void OpenInventory()
     {
         if (pauseManager == null) pauseManager = FindFirstObjectByType<Pause>();
+        if (playerManager == null) playerManager = FindFirstObjectByType<PlayerManager>();
 
         if (pauseManager != null)
         {
             pauseManager.SoftPauseFor("Inventory");
+        }
+
+        // עדכון השחקנית שהתיק נפתח (מתחיל לאסוף נתונים)
+        if (playerManager != null)
+        {
+            playerManager.SetInventoryOpenState(true);
         }
 
         EnsureBlurVolumeExists();
@@ -81,7 +89,7 @@ public class InventoryUIController : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         
-        isInventoryOpen = true; // עדכון מצב
+        isInventoryOpen = true; 
     }
 
     public void CloseInventory()
@@ -100,6 +108,12 @@ public class InventoryUIController : MonoBehaviour
             pauseManager.SoftResumeFor("Inventory");
         }
 
-        isInventoryOpen = false; // עדכון מצב
+        // עדכון השחקנית שהתיק נסגר (יקפיץ את הסיכום של הפחמימות/אינסולין)
+        if (playerManager != null)
+        {
+            playerManager.SetInventoryOpenState(false);
+        }
+
+        isInventoryOpen = false; 
     }
 }

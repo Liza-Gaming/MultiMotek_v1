@@ -21,13 +21,11 @@ public class PlayerFeedback : MonoBehaviour
     private Coroutine flashCo, punchCo, eyesCo;
     private Vector3 baseScale;
     private Color[] originalColors;
-    
 
     void Reset()
     {
         sprites = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
     }
-    
 
     void Awake()
     {
@@ -75,7 +73,8 @@ public class PlayerFeedback : MonoBehaviour
         float t = 0f;
         while (t < flashDuration)
         {
-            t += Time.deltaTime;
+            // שינוי כאן! Unscaled time
+            t += Time.unscaledDeltaTime; 
             float a = flashCurve.Evaluate(Mathf.Clamp01(t / flashDuration));
             for (int i = 0; i < sprites.Length; i++)
                 if (sprites[i]) sprites[i].color = Color.Lerp(originalColors[i], flashColor, a);
@@ -95,13 +94,12 @@ public class PlayerFeedback : MonoBehaviour
 
         while (t < punchDuration)
         {
-            t += Time.deltaTime;
+            // שינוי כאן! Unscaled time
+            t += Time.unscaledDeltaTime; 
             float a = punchCurve.Evaluate(Mathf.Clamp01(t / punchDuration));
             float s = Mathf.Lerp(1f, punchScale, a);
             
-            transform.localScale = new Vector3(signX * baseAbs.x * s,
-                baseAbs.y * s,
-                baseAbs.z);
+            transform.localScale = new Vector3(signX * baseAbs.x * s, baseAbs.y * s, baseAbs.z);
             yield return null;
         }
 
@@ -109,11 +107,10 @@ public class PlayerFeedback : MonoBehaviour
         punchCo = null;
     }
 
-    
     private IEnumerator EyesClosedRoutine(float duration)
     {
         eyesClosedRenderer.enabled = true;
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSecondsRealtime(duration); 
         if (eyesClosedRenderer) eyesClosedRenderer.enabled = false;
         eyesCo = null;
     }
