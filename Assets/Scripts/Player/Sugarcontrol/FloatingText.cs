@@ -32,9 +32,14 @@ public class FloatingText : MonoBehaviour
         _baseLocalScale = transform.localScale;
         _parent = transform.parent;
     }
-
-    public void Initialize(float value, Vector3 worldPosition, Color color)
+    
+    public void Initialize(float value, Vector3 worldPosition, Color color, float customDuration = -1f)
     {
+
+        if (customDuration > 0f)
+        {
+            duration = customDuration;
+        }
 
         int rounded = Mathf.RoundToInt(value);
         

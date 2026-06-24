@@ -60,8 +60,10 @@ public class PlayerManager : MonoBehaviour
     
     [Header("Inventory Accumulation")]
     private bool _isInventoryOpen = false;
-    private float _accumulatedFloatingValue = 0f;
-    private bool _hasAccumulatedDisplay = false;
+    private float _accumulatedPositiveValue = 0f;
+    private float _accumulatedNegativeValue = 0f;
+    private bool _hasAccumulatedPositive = false;
+    private bool _hasAccumulatedNegative = false;
 
     private void Awake()
     {
@@ -208,7 +210,9 @@ public class PlayerManager : MonoBehaviour
         sugarArrow?.SuppressForSeconds(realSeconds);
     }
     
-    public void ShowFloatingSugarText(float sugarValue, Color color)
+
+
+    public void ShowFloatingSugarText(float sugarValue, Color color, Vector3 extraOffset = default, float customDuration = -1f)
     {
         if (floatingTextPrefab == null)
         {
@@ -222,16 +226,16 @@ public class PlayerManager : MonoBehaviour
             return;
         }
         
-        Vector3 worldPos = transform.position + floatingTextOffset;
+        Vector3 worldPos = transform.position + floatingTextOffset + extraOffset;
         
         GameObject textInstance = Instantiate(floatingTextPrefab, floatingTextCanvas.transform);
-        
         textInstance.transform.position = worldPos;
 
         FloatingText ft = textInstance.GetComponent<FloatingText>();
         if (ft != null)
         {
-            ft.Initialize(sugarValue, worldPos, color);
+
+            ft.Initialize(sugarValue, worldPos, color, customDuration);
         }
         else
         {
@@ -246,19 +250,35 @@ public class PlayerManager : MonoBehaviour
         
         if (isOpen)
         {
-            _accumulatedFloatingValue = 0f;
-            _hasAccumulatedDisplay = false;
+            _accumulatedPositiveValue = 0f;
+            _accumulatedNegativeValue = 0f;
+            _hasAccumulatedPositive = false;
+            _hasAccumulatedNegative = false;
         }
         else
         {
-            if (_hasAccumulatedDisplay)
+            if (_hasAccumulatedPositive && _hasAccumulatedNegative)
             {
-                Color finalColor = _accumulatedFloatingValue < 0 ? Color.red : Color.yellow;
+                float longerDuration = 2.0f; 
                 
-                ShowFloatingSugarText(_accumulatedFloatingValue, finalColor);
-                _accumulatedFloatingValue = 0f;
-                _hasAccumulatedDisplay = false;
+                ShowFloatingSugarText(_accumulatedPositiveValue, Color.yellow, new Vector3(-1.8f, 0f, 0f), longerDuration);
+                ShowFloatingSugarText(_accumulatedNegativeValue, Color.red, new Vector3(1.8f, 0f, 0f), longerDuration);
             }
+            else if (_hasAccumulatedPositive)
+            {
+
+                ShowFloatingSugarText(_accumulatedPositiveValue, Color.yellow, Vector3.zero);
+            }
+            else if (_hasAccumulatedNegative)
+            {
+
+                ShowFloatingSugarText(_accumulatedNegativeValue, Color.red, Vector3.zero);
+            }
+            
+            _accumulatedPositiveValue = 0f;
+            _accumulatedNegativeValue = 0f;
+            _hasAccumulatedPositive = false;
+            _hasAccumulatedNegative = false;
         }
     }
     
@@ -292,8 +312,13 @@ private void ApplyItemSugarEffect(
                     {
                         if (_isInventoryOpen)
                         {
-                            _accumulatedFloatingValue += floatingDisplayValue;
-                            _hasAccumulatedDisplay = true;
+                            if (floatingDisplayValue > 0) {
+                                _accumulatedPositiveValue += floatingDisplayValue;
+                                _hasAccumulatedPositive = true;
+                            } else if (floatingDisplayValue < 0) {
+                                _accumulatedNegativeValue += floatingDisplayValue;
+                                _hasAccumulatedNegative = true;
+                            }
                         }
                         else
                         {
@@ -315,8 +340,13 @@ private void ApplyItemSugarEffect(
         {
             if (_isInventoryOpen)
             {
-                _accumulatedFloatingValue += floatingDisplayValue;
-                _hasAccumulatedDisplay = true;
+                if (floatingDisplayValue > 0) {
+                    _accumulatedPositiveValue += floatingDisplayValue;
+                    _hasAccumulatedPositive = true;
+                } else if (floatingDisplayValue < 0) {
+                    _accumulatedNegativeValue += floatingDisplayValue;
+                    _hasAccumulatedNegative = true;
+                }
             }
             else
             {
