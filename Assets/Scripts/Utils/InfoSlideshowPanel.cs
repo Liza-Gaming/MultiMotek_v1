@@ -6,20 +6,17 @@ using UnityEngine.UI;
 public class InfoSlideshowPanel : MonoBehaviour
 {
     [Header("Wiring")]
-    [Tooltip("האובייקט הראשי של פאנל הספר שיוסתר ויוצג")]
     [SerializeField] private GameObject rootPanel; 
-    [Tooltip("רכיב ה-Image שיחליף תמונה (כל עמוד בספר)")]
+
     [SerializeField] private Image slideImage;  
     [SerializeField] private Button prevButton;
     [SerializeField] private Button nextButton;
     
         
     [Header("Slides")]
-    [Tooltip("רשימת כל העמודים (Sprites) שיוצגו בספר")]
     [SerializeField] private List<Sprite> slides = new List<Sprite>(); 
 
     [Header("Behavior")]
-    [Tooltip("האם לחיצה על 'הבא' בעמוד האחרון תסגור את הפאנל?")]
     [SerializeField] private bool closeOnLastNext = false; 
     
     private int index = 0;
@@ -34,12 +31,8 @@ public class InfoSlideshowPanel : MonoBehaviour
         if (!rootPanel) rootPanel = gameObject;
         
         pauseManager = FindObjectOfType<Pause>();
-        playerMover = FindObjectOfType<PlayerMover>(); // מצאנו מהסקריפט הקודם
-
-        if (pauseManager == null)
-        {
-            Debug.LogError("InfoSlideshowPanel: לא נמצא סקריפט Pause בסצנה!");
-        }
+        playerMover = FindObjectOfType<PlayerMover>();
+        
     }
 
     private void Start()
@@ -48,7 +41,6 @@ public class InfoSlideshowPanel : MonoBehaviour
         
         if (slides == null || slides.Count == 0 || slideImage == null)
         {
-            Debug.LogWarning("[InfoSlideshowPanel] לא הוגדרו תמונות (slides) או רכיב slideImage");
             enabled = false;
         }
     }

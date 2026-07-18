@@ -6,22 +6,19 @@ using UnityEngine.UI;
 public class SpeechBubble : MonoBehaviour
 {
     [Header("UI Elements")]
-    [Tooltip("הקנבס גרופ שיושב על הבועה כדי לשלוט בשקיפות שלה")]
     [SerializeField] private CanvasGroup bubbleCanvasGroup;
     
-    [Tooltip("טקסט הבועה. אם את משתמשת ב-TextMeshPro, שרשמי TMP_Text במקום")]
     [SerializeField] private Text bubbleText; 
 
     [Header("Bubble Settings")]
     [TextArea(2, 4)]
-    [SerializeField] private string sentenceToShow; // כאן תכתבי את המשפט לכל בועה בנפרד באינספקטור
+    [SerializeField] private string sentenceToShow;
     [SerializeField] private float fadeDuration = 1.5f;
 
     private bool isTriggered = false;
 
     private void Start()
     {
-        // מוודאים שהבועה שקופה לחלוטין בתחילת המשחק
         if (bubbleCanvasGroup != null)
         {
             bubbleCanvasGroup.alpha = 0f;
@@ -30,13 +27,10 @@ public class SpeechBubble : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // בודקים אם השחקן נכנס לטריגר ושהבועה עדיין לא הופעלה
         if (!isTriggered && other.CompareTag("Player"))
         {
-            Debug.Log("השחקן זוהה! מתחיל להציג את הבועה.");
             isTriggered = true;
             
-            // מעדכנים את הטקסט למשפט שמוגדר לאובייקט הזה
             if (bubbleText != null)
             {
                 bubbleText.text = sentenceToShow;
@@ -57,6 +51,6 @@ public class SpeechBubble : MonoBehaviour
             yield return null;
         }
 
-        bubbleCanvasGroup.alpha = 1f; // מוודאים שקיבלנו אטימות מלאה בסוף
+        bubbleCanvasGroup.alpha = 1f;
     }
 }

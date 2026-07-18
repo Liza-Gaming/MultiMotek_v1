@@ -392,7 +392,7 @@ public void ApplyEnemySugarEffect(
                     floatingDisplayValue: -30f,
                     floatingColor: Color.red,
                     fxColor: insulinFlashColor,
-                    itemSprite: item.GetSprite() // <--- העברת התמונה
+                    itemSprite: item.GetSprite()
                 );
 
                 inventory.RemoveItem(new Item { itemType = Item.ItemType.Insulin, amount = 1 });
@@ -793,8 +793,7 @@ public void ApplyEnemySugarEffect(
             return;
         
         _waterPressTimesReal.Clear();
-
-        // קריאה בלי תמונה
+        
         ApplyItemSugarEffect(
             amountSigned: -WATER_SUGAR_DROP,
             durationGameMin: WATER_EFFECT_GAME_MIN,

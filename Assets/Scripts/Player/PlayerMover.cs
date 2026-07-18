@@ -105,7 +105,6 @@ public class PlayerMover : MonoBehaviour
         if (!animator) animator = GetComponent<Animator>();
         originalGravityScale = rb.gravityScale;
         
-        // משיכת הרכיב שהוספנו דרך יוניטי
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -191,8 +190,7 @@ public class PlayerMover : MonoBehaviour
     void Update()
     {
         if (inputLocked) return;
-
-        // קלט פעם אחת בפריים
+        
         Vector2 inputVec = moveAction.action.ReadValue<Vector2>();
         moveInputX = inputVec.x;
         moveInputY = inputVec.y;
@@ -205,47 +203,45 @@ public class PlayerMover : MonoBehaviour
             currentPlatform = null;
 
         if (animator) animator.SetBool(P_IsGrounded, onLadder ? false : isGrounded);
-
-        // ==== נחיתה ====
+        
         if (isGrounded && !wasGroundedLastFrame)
         {
             if (landingEffectPrefab)
                 Instantiate(landingEffectPrefab, landingEffectPoint.position, Quaternion.identity);
 
             if (animator) animator.SetTrigger(T_Land);
-
-            // הפעלת סאונד הנחיתה
+            
             if (audioSource != null && landSound != null)
             {
                 audioSource.PlayOneShot(landSound);
             }
         }
         
-        // ==== קפיצה רגילה ====
+
         if (jumpAction.action.triggered && CanJumpNow())
         {
             jumpQueued = true;
             if (animator) animator.SetTrigger(T_Jump);
 
-            // הפעלת סאונד הקפיצה
+
             if (audioSource != null && jumpSound != null)
             {
                 audioSource.PlayOneShot(jumpSound);
             }
         }
 
-        // סולמות – לפי moveInputY
+
         if (!onLadder && currentLadder != null && Mathf.Abs(moveInputY) > 0.1f)
             EnterLadder();
 
-        // ==== קפיצה מסולם ====
+
         if (onLadder && jumpAction.action.triggered)
         {
             ExitLadder();
-            // גם את זה עדיף לתור, אבל נשאיר פשוט:
+
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, ladderDetachJumpBoost);
 
-            // הפעלת סאונד הקפיצה גם כשקופצים מסולם
+
             if (audioSource != null && jumpSound != null)
             {
                 audioSource.PlayOneShot(jumpSound);
@@ -317,8 +313,7 @@ public class PlayerMover : MonoBehaviour
         Vector2 v = rb.linearVelocity;
 
         float targetX = moveInputX * _speed * speedFactor;
-
-        // פלטפורמה נעה
+        
         float platformX = 0f;
         float platformY = 0f;
         if (isGrounded && currentPlatform != null)
@@ -331,8 +326,7 @@ public class PlayerMover : MonoBehaviour
 
         float accel = Mathf.Abs(targetX) > 0.01f ? acceleration : deceleration;
         v.x = Mathf.MoveTowards(v.x, desiredX, accel * Time.fixedDeltaTime);
-
-        // קפיצה מתבצעת כאן, פיזיקלית ובזמן נכון
+        
         if (jumpQueued)
         {
             jumpQueued = false;
@@ -343,8 +337,7 @@ public class PlayerMover : MonoBehaviour
             v.y = platformY;
 
         rb.linearVelocity = v;
-
-        // Flip לפי קלט
+        
         if (moveInputX > 0.01f)
             transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
         else if (moveInputX < -0.01f)

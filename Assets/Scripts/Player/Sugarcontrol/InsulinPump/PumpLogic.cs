@@ -10,17 +10,15 @@ namespace Player.Sugarcontrol.InsulinPump
         public static PumpLogic Instance { get; private set; }
 
         [Header("Temp Target 140 (Activity Mode)")]
-        [Tooltip("מאיזה שלב הפיצ'ר פעיל")]
         [SerializeField] private int enableTempTargetBuildIndex = 6;
         [SerializeField] private float tempTargetValue = 140f;
-        [Tooltip("לפי איזה קצב זמן לחשב את העלייה ל-140 (בדקות משחק)")]
         [SerializeField] private float tempRiseDurationGameMin = 60f;
 
         [SerializeField] private GameObject slider;
 
         private float _baseTargetSugar; 
         private bool _isTempTargetActive;
-        private double _nextTempTargetCheckGM; // טיימר לבדיקות העלייה
+        private double _nextTempTargetCheckGM;
         
         [Header("Enable (match your report scene gate)")]
         [SerializeField] private int enableFromBuildIndex = 5;
@@ -71,17 +69,14 @@ namespace Player.Sugarcontrol.InsulinPump
         [Header("Correction threshold (plateau)")]
         [SerializeField] private float plateauCorrectionMinSugar = 145f;
 
-
-        // --- internal time in game minutes ---
+        
         private double _absGameMinutes;
-
-        // --- meal window state ---
+        
         private bool _active;
         private double _activeUntilGM;
         private double _nextMealTickGM;
         private float _remainingMealBudgetUnits;
-
-        // --- always-on state ---
+        
         private double _nextNoMealTickGM;
 
         private struct NoMealDose
@@ -90,14 +85,12 @@ namespace Player.Sugarcontrol.InsulinPump
             public double timeGM;
         }
         private readonly List<NoMealDose> _noMealDoses = new List<NoMealDose>();
-
-        // --- Trend sample state ---
+        
         private float _lastGlucose;
         private double _lastSampleGM;
         private bool _hasLastSample;
         private int _plateauTicks;
-
-        // --- IOB tracking ---
+        
         private struct Dose
         {
             public float units;
@@ -144,14 +137,11 @@ namespace Player.Sugarcontrol.InsulinPump
                     float currentSugar = SugarMeter.Instance.GetSugarLevel();
                     if (currentSugar < tempTargetValue)
                     {
-                        // חישוב הקצב: כמה סוכר חסר חלקי 60 דקות
                         float diff = tempTargetValue - currentSugar;
                         float ratePerMinute = diff / tempRiseDurationGameMin;
                         
-                        // מחשבים את המנה שצריך להוסיף רק עבור חלון הבדיקה הנוכחי (למשל 5 דקות)
                         float chunkAmount = ratePerMinute * checkEveryGameMin;
                         
-                        // מוסיפים את הסוכר בהדרגה לאורך 5 דקות המשחק הקרובות
                         SugarMeter.Instance.AddSugarGame(chunkAmount, checkEveryGameMin, 0f);
                     }
                 }
@@ -188,13 +178,7 @@ namespace Player.Sugarcontrol.InsulinPump
             _nextMealTickGM = nowMealGM + Math.Max(0.5f, checkEveryGameMin);
             ControlStepMeal(nowMealGM, prevMealGM);
         }
-
-        /// <summary>
-        /// Call ONLY when player confirms meal report.
-        /// foodDelayGameMin: הדיליי שנבחר בכפתורים (0/15/30/45) עבור תחילת ההזרקה.
-        /// expectedFoodRiseMgdl: כמה mg/dL האוכל צפוי להעלות סה"כ.
-        /// foodDurationGameMin: משך העלייה (כמה זמן האוכל "עולה").
-        /// </summary>
+        
         public void OnMealReportedPID(
             int carbsGrams,
             float expectedFoodRiseMgdl,
@@ -224,8 +208,7 @@ namespace Player.Sugarcontrol.InsulinPump
             float glucoseNow = SugarMeter.Instance.GetSugarLevel();
             float mgdlToFix = Mathf.Max(0f, expectedFoodRiseMgdl) + Mathf.Max(0f, glucoseNow - targetSugar);
             float unitsTotal = (mgdlPerUnitTotal <= 0.0001f) ? 0f : (mgdlToFix / mgdlPerUnitTotal);
-
-            // Prebolus: 80% (same behavior you had), delayed by chosen delay
+            
             float preBolus = Mathf.Min(unitsTotal * 0.8f, _remainingMealBudgetUnits);
             preBolus = RoundToStep(preBolus, bolusStepUnits);
 
@@ -235,8 +218,7 @@ namespace Player.Sugarcontrol.InsulinPump
                 _remainingMealBudgetUnits -= preBolus;
             }
         }
-
-        // ===== MEAL (no PID) =====
+        
         private void ControlStepMeal(double nowGM, double prevTickGM)
         {
             float glucose = SugarMeter.Instance.GetSugarLevel();
@@ -272,7 +254,6 @@ namespace Player.Sugarcontrol.InsulinPump
 
             if (isRising)
             {
-                // עדיין עולה => לא מוסיפים תיקון נוסף
                 _plateauTicks = 0;
                 RememberSample(glucose, nowGM);
                 return;
@@ -320,8 +301,7 @@ namespace Player.Sugarcontrol.InsulinPump
 
             RememberSample(glucose, nowGM);
         }
-
-        // ===== ALWAYS-ON (NO MEAL) (no PID) =====
+        
         private void ControlStepNoMeal(double nowGM, double prevTickGM)
         {
             float glucose = SugarMeter.Instance.GetSugarLevel();
@@ -374,8 +354,7 @@ namespace Player.Sugarcontrol.InsulinPump
 
             float units = Mathf.Min(unitsNeeded, maxUnitsPerCheckNoMeal);
             units = Mathf.Min(units, RemainingUnitsThisHourNoMeal(nowGM));
-
-            // no-meal: conservative IOB (include future)
+            
             float iob = ComputeIOBUnits(includeFutureNotStarted: true);
             units = Mathf.Max(0f, units - iob);
 
@@ -494,9 +473,6 @@ namespace Player.Sugarcontrol.InsulinPump
             return Mathf.Max(0f, maxUnitsPerHourNoMeal - used);
         }
         
-        /// <summary>
-        /// מופעל על ידי כפתור ה-Toggle ב-UI (לשים לב שה-V מסומן ב-Inspector!)
-        /// </summary>
         public void ToggleTempTarget140(bool activate)
         {
             if (SceneManager.GetActiveScene().buildIndex < enableTempTargetBuildIndex) return;
@@ -506,15 +482,11 @@ namespace Player.Sugarcontrol.InsulinPump
             
             if (_isTempTargetActive)
             {
-                // משנים את יעד התיקון של המשאבה ל-140 (היא תפסיק לתת אינסולין מתחת לזה)
                 targetSugar = tempTargetValue;
-                
-                // מאפסים את הטיימר כדי שהבדיקה הראשונה ב-Update תקרה מיד
                 _nextTempTargetCheckGM = _absGameMinutes;
             }
             else
             {
-                // מכבים את המצב וחוזרים ליעד הרגיל (105)
                 targetSugar = _baseTargetSugar;
             }
         }

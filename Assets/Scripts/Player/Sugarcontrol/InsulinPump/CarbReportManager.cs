@@ -38,11 +38,10 @@ namespace Player.Sugarcontrol.InsulinPump
         [SerializeField] private Button min15Button;
         [SerializeField] private Button min30Button;
         [SerializeField] private Button min45Button;
-
-        // NEW: Skip insulin
+        
         [Header("Skip insulin")]
-        [SerializeField] private Button skipInsulinButton;         // כפתור "דלג על הזרקה"
-        [SerializeField] private Text skipInsulinButtonText;       // אופציונלי: טקסט שעל הכפתור
+        [SerializeField] private Button skipInsulinButton;
+        [SerializeField] private Text skipInsulinButtonText;
         [Header("Text")]
         [SerializeField] private string titleString = "תומימחפ חוויד";
 
@@ -58,7 +57,7 @@ namespace Player.Sugarcontrol.InsulinPump
         private float _expectedFoodRiseMgdl;
         private float _foodDurationGameMin;
 
-        // NEW: should we skip pump injection entirely for this meal?
+        // should we skip pump injection entirely for this meal?
         private bool _skipInsulinThisMeal = false;
         
         public AudioClip useInsulinSound;
@@ -93,8 +92,6 @@ namespace Player.Sugarcontrol.InsulinPump
             if (min15Button) min15Button.onClick.AddListener(() => SetInsulinDelay(15f));
             if (min30Button) min30Button.onClick.AddListener(() => SetInsulinDelay(30f));
             if (min45Button) min45Button.onClick.AddListener(() => SetInsulinDelay(45f));
-
-            // NEW
             if (skipInsulinButton) skipInsulinButton.onClick.AddListener(ToggleSkipInsulin);
         }
 
@@ -108,13 +105,13 @@ namespace Player.Sugarcontrol.InsulinPump
             }
         }
 
-        // NEW: toggle skip
+        // toggle skip
         private void ToggleSkipInsulin()
         {
             SetSkipInsulin(!_skipInsulinThisMeal);
         }
 
-        // NEW: set skip + update label
+        // set skip + update label
         private void SetSkipInsulin(bool skip)
         {
             _skipInsulinThisMeal = skip;

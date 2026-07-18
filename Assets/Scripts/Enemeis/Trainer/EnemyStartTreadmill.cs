@@ -70,12 +70,9 @@ public class EnemyStartTreadmill : MonoBehaviour
         }
         
         TreadmillEnded?.Invoke();
-
-        // ---- START COOLDOWN EVENT ----
+        
         inCooldown = true;
         CooldownStartedRealSeconds?.Invoke(cooldownRealSeconds);
-        
-        // yield return new WaitForSecondsRealtime(cooldownRealSeconds);
         
         yield return new WaitForSeconds(cooldownRealSeconds);
 

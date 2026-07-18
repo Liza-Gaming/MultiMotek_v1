@@ -9,18 +9,16 @@ public class InventoryUIController : MonoBehaviour
     
     [Header("Visual Effects")]
     [SerializeField] private GameObject blurVolumeObject;
-    
-    [Tooltip("הכניסי כאן את השם המדויק של אובייקט הבלור כפי שהוא מופיע בהיררכיה")]
     [SerializeField] private string blurObjectName = "PauseBlur";
     
     private Pause pauseManager;
-    private PlayerManager playerManager; // הוספנו רפרנס לשחקנית
+    private PlayerManager playerManager;
     private bool isInventoryOpen = false;
 
     void Awake()
     {
         pauseManager = FindFirstObjectByType<Pause>(); 
-        playerManager = FindFirstObjectByType<PlayerManager>(); // מציאת השחקנית
+        playerManager = FindFirstObjectByType<PlayerManager>();
         background.SetActive(false);
         itemSlotContainer.SetActive(false);
         openInventoryButton.SetActive(true);
@@ -108,7 +106,6 @@ public class InventoryUIController : MonoBehaviour
             pauseManager.SoftResumeFor("Inventory");
         }
 
-        // עדכון השחקנית שהתיק נסגר (יקפיץ את הסיכום של הפחמימות/אינסולין)
         if (playerManager != null)
         {
             playerManager.SetInventoryOpenState(false);

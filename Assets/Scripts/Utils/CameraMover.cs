@@ -44,8 +44,7 @@ public class CameraMover : MonoBehaviour
             maxX = marker.maxX;
             return;
         }
-
-        // אופציה ב: לפי שם/אינדקס סצנה (מה שבא לך)
+        
         switch (s.name)
         {
             case "Level 1":
@@ -81,9 +80,9 @@ public class CameraMover : MonoBehaviour
 
     private void Update()
     {
-        if (!player) {            // ב-Unity Destroyed אכן מתנהג כמו null
-            TryResolvePlayer();   // נסי להתחבר שוב
-            return;               // אל תתזוז כשאין שחקן
+        if (!player) {
+            TryResolvePlayer();
+            return;
         }
 
         float targetX = player.position.x + lookAhead;

@@ -43,20 +43,15 @@ public class DailyPopupController : MonoBehaviour
         var scene = SceneManager.GetActiveScene();
         return scene.buildIndex == firstSceneBuildIndex;
     }
-
-    /// <summary>
-    /// קריאה ידנית מההדרכה: פתח את הפופאפ רק אם אנחנו בסצנה הראשונה.
-    /// עובדת גם אם הקומפוננט מושבת, כל עוד האובייקט בסצנה.
-    /// </summary>
+    
     public void ShowIfFirstScene_FromTutorial()
     {
         if (!IsFirstScene()) return;
-
-        // לוודא שהאובייקט והפאנל דולקים
+        
         if (!gameObject.activeSelf) gameObject.SetActive(true);
         if (popupPanel != null && !popupPanel.activeSelf) popupPanel.SetActive(true);
 
-        ShowPopup(); // זו הפונקציה הקיימת שלך שמבצעת את כל ההקפאות/אנימציה וכו'
+        ShowPopup();
     }
 
 

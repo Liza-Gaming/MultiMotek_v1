@@ -40,8 +40,7 @@ public class TutorialSlideshow : MonoBehaviour
     [Tooltip("הווליום של הקריינות")]
     [SerializeField, Range(0f, 1f)] private float narrationVolume = 1f;
     [SerializeField] private List<AudioClip> slideClips = new List<AudioClip>();
-
-    // משתנה שיחזיק את ה-AudioSource של השחקן
+    
     private AudioSource playerSFXSource;
 
     private void Awake()
@@ -53,7 +52,6 @@ public class TutorialSlideshow : MonoBehaviour
 
     private void Start()
     {
-        // מוצאים את השחקן ואת ה-AudioSource שלו (ההורה)
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -84,7 +82,6 @@ public class TutorialSlideshow : MonoBehaviour
         index = 0;
         if (rootPanel) rootPanel.SetActive(true);
         
-        // הנמכת מוזיקה (Ducking)
         if (MusicManager.Instance != null) MusicManager.Instance.SetTutorialMode(true);
         
         PauseGame(true);
@@ -94,8 +91,7 @@ public class TutorialSlideshow : MonoBehaviour
         PlaySlideAudio();
         UpdateButtons();
     }
-
-    // ... (שאר הפונקציות OnPrev, OnNext, PauseGame נשארות אותו דבר)
+    
 
     private void OnPrev()
     {
@@ -137,7 +133,6 @@ public class TutorialSlideshow : MonoBehaviour
         if (showOnce) PlayerPrefs.SetInt(playerPrefsKey, 1);
         if (rootPanel) rootPanel.SetActive(false);
         
-        // עצירת הסאונד בשחקן
         if (playerSFXSource != null) playerSFXSource.Stop();
 
         if (playerMover)
@@ -150,7 +145,6 @@ public class TutorialSlideshow : MonoBehaviour
 
     private void PlaySlideAudio()
     {
-        // אם אין שחקן או אין קליפים, מפסיקים הכל
         if (playerSFXSource == null || slideClips == null || index >= slideClips.Count)
         {
             if (playerSFXSource != null) playerSFXSource.Stop();
@@ -164,15 +158,12 @@ public class TutorialSlideshow : MonoBehaviour
             playerSFXSource.Stop();
             return;
         }
-
-        // ניגון דרך השחקן (כך שזה יושפע מה-Mute של ה-SFX)
+        
         playerSFXSource.Stop();
         playerSFXSource.clip = clip;
         playerSFXSource.volume = narrationVolume;
         playerSFXSource.Play();
     }
-
-    // ... (המשך הסקריפט המקורי שלך - ApplySlide, Update וכו')
     
     private void PauseGame(bool pause)
     {

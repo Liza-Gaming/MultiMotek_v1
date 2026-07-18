@@ -5,10 +5,10 @@ using System.Collections;
 [DefaultExecutionOrder(100000)]
 public class Level8HideElements : MonoBehaviour
 {
-    [Header("הגדרות טיימר")]
+
     [SerializeField] private GameObject timerUiRootOverride;
 
-    // הסרנו את מערך הגרירה! הכל עכשיו אוטומטי וחסין למעברי סצנות.
+
 
     void Start()
     {
@@ -17,7 +17,7 @@ public class Level8HideElements : MonoBehaviour
 
     IEnumerator ForceHideRoutine()
     {
-        // לופ קצר כדי לוודא שהבסנו את ה-Start של אובייקטים אחרים
+
         for (int i = 0; i < 5; i++)
         {
             ApplyUIState(false);
@@ -29,7 +29,7 @@ public class Level8HideElements : MonoBehaviour
 
     void ApplyUIState(bool show)
     {
-        // 1. טיפול בטיימר
+
 #if UNITY_2023_1_OR_NEWER
         var binders = Object.FindObjectsByType<TimerUIBinder>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 #else
@@ -43,14 +43,14 @@ public class Level8HideElements : MonoBehaviour
             b.enabled = show;
         }
 
-        // 2. טיפול אוטומטי במד הסוכר - מוצא אותו לבד!
+
         var sm = SugarMeter.Instance ?? FindFirstObjectByType<SugarMeter>();
         if (sm != null)
         {
             ToggleElement(sm.gameObject, show);
         }
 
-        // 3. טיפול בכל אובייקט אחר שעליו שמנו את הסקריפט UIHideTarget
+
 #if UNITY_2023_1_OR_NEWER
         var extraTargets = Object.FindObjectsByType<UIHideTarget>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 #else
@@ -61,8 +61,7 @@ public class Level8HideElements : MonoBehaviour
             if (target != null) ToggleElement(target.gameObject, show);
         }
     }
-
-    // פונקציית עזר להסתרה/הצגה בצורה בטוחה
+    
     void ToggleElement(GameObject obj, bool show)
     {
         var cg = obj.GetComponent<CanvasGroup>();
@@ -80,7 +79,6 @@ public class Level8HideElements : MonoBehaviour
 
     void OnDestroy()
     {
-        // מחזירים הכל למצב תקין ביציאה מהשלב
         ApplyUIState(true);
     }
 }

@@ -6,7 +6,6 @@ public class SpecificAudioToggle : MonoBehaviour, IPointerEnterHandler, IPointer
     public enum AudioTargetType { SFX, Music }
 
     [Header("Setup")]
-    [Tooltip("בחרי האם הכפתור הזה שולט באפקטים (ההורה) או במוזיקה (הילד)")]
     [SerializeField] private AudioTargetType targetType;
 
     [Header("UI Elements")]
@@ -25,8 +24,7 @@ public class SpecificAudioToggle : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         originalScale = transform.localScale;
         targetScale = originalScale;
-
-        // מציאת השחקן מחדש בכל תחילת סצנה
+        
         FindTargetSource();
 
         if (targetAudioSource != null)
@@ -67,7 +65,7 @@ public class SpecificAudioToggle : MonoBehaviour, IPointerEnterHandler, IPointer
 
     private void Update()
     {
-        // אם השחקן עבר סצנה והקשר אבד, ננסה למצוא אותו שוב (ליתר ביטחון)
+
         if (targetAudioSource == null)
         {
             FindTargetSource();

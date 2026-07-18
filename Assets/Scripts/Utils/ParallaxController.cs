@@ -8,7 +8,7 @@ public class ParallaxController : MonoBehaviour
     Vector3 groupStartPos;
     public Vector3 cameraFix;
 
-    Renderer[] renderers;          // כל הרנדררים בכל הצאצאים
+    Renderer[] renderers;
     Material[] mats;
     float[] backSpeed;
     float farthestBack;
@@ -30,14 +30,14 @@ public class ParallaxController : MonoBehaviour
 
     void BuildLists()
     {
-        renderers = GetComponentsInChildren<Renderer>(true); // גם אם מושבת
+        renderers = GetComponentsInChildren<Renderer>(true);
         var matsList = new List<Material>();
         backSpeed = new float[renderers.Length];
 
         for (int i = 0; i < renderers.Length; i++)
         {
             var r = renderers[i];
-            var m = r.material; // אינסטנס פר רנדרר
+            var m = r.material;
             matsList.Add(m);
 
             if (i == 0)
@@ -74,7 +74,7 @@ public class ParallaxController : MonoBehaviour
         }
     }
 
-    public void Rebuild() // אם הוספת/הסרת שכבות בזמן ריצה
+    public void Rebuild()
     {
         BuildLists();
         BackSpeedCalculate();

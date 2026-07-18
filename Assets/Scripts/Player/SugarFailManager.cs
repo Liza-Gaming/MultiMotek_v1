@@ -26,8 +26,7 @@ public class SugarFailManager : MonoBehaviour
     
     private bool faintTriggered = false;
     private Coroutine fadeRoutine;
-
-    // הרפרנס ל-UI של הסצנה הנוכחית
+    
     private FailUIProvider currentUI;
 
     private void Awake()
@@ -61,20 +60,19 @@ public class SugarFailManager : MonoBehaviour
         if (currentUI.loseLowPanel != null) currentUI.loseLowPanel.SetActive(false);
         if (currentUI.loseHighPanel != null) currentUI.loseHighPanel.SetActive(false);
         
-        // כיבוי הכפתור המשותף בהתחלה
         if (currentUI.returnToMenuButton != null) currentUI.returnToMenuButton.gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        // אם כבר נפסלנו או שעדיין אין UI מחובר, לא ממשיכים
+
         if (faintTriggered || currentUI == null) return;
         if (SugarMeter.Instance == null || Timer.Instance == null) return;
 
         float sugar = SugarMeter.Instance.GetSugarLevel();
         float gameMinutesThisFrame = Time.deltaTime * (Timer.Instance.GameSecondsPerRealSecond / 60f);
         
-        // בדיקת סוכר נמוך
+
         if (sugar < lowSugarThreshold)
         {
             accumulatedGameMinutesLow += gameMinutesThisFrame;
@@ -88,7 +86,7 @@ public class SugarFailManager : MonoBehaviour
             accumulatedGameMinutesLow = 0f; 
         }
         
-        // בדיקת סוכר גבוה
+
         if (sugar >= highSugarThreshold)
         {
             accumulatedGameMinutesHigh += gameMinutesThisFrame;
@@ -149,20 +147,20 @@ public class SugarFailManager : MonoBehaviour
         if (text1 != null) yield return StartCoroutine(text1.PlayTypewriter());
         if (text2 != null) yield return StartCoroutine(text2.PlayTypewriter());
         
-        // הופעת הכפתור המשותף בסוף התהליך
+
         if (currentUI.returnToMenuButton != null) currentUI.returnToMenuButton.gameObject.SetActive(true);
     }
     
     public void ReturnToMenu()
     {
-        // שחרור הפוז לפני מעבר הסצנה! קריטי, אחרת התפריט יכול לקפוא
+
         if (Timer.Instance != null) Timer.Instance.PauseClock(false);
         if (SugarMeter.Instance != null) SugarMeter.Instance.SetSimulationPaused(false);
         Time.timeScale = 1f; 
         
-        faintTriggered = false; // איפוס לקראת המשחק הבא
+        faintTriggered = false;
         
-        // תחליפי את "MainMenu" בשם המדויק של סצנת התפריט שלך
+
         SceneManager.LoadScene("Intro"); 
     }
     

@@ -5,17 +5,14 @@ public class MusicManager : MonoBehaviour
     public static MusicManager Instance { get; private set; }
 
     [Header("Audio Settings")]
-    [Tooltip("ה-AudioSource שמנגן את מוזיקת הרקע")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private float normalVolume = 0.5f;
     [SerializeField] private float tutorialVolume = 0.05f;
     [SerializeField] private float fadeSpeed = 3f;
 
     [Header("Custom Loop Settings")]
-    [Tooltip("הפעילי כדי לחתוך את סוף השיר ולעשות לופ מותאם אישית")]
     [SerializeField] private bool useCustomLoop = false;
     
-    [Tooltip("מאיזו שנייה להתחיל את הלופ?")]
     [SerializeField] private float loopStartSeconds = 0f;
     
     [SerializeField] private float loopEndSeconds = 60f;

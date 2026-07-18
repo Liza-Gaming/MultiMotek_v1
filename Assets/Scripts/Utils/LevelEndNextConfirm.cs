@@ -16,15 +16,14 @@ public class LevelEndNextConfirm : MonoBehaviour
     [SerializeField] private float fadeOutDuration = 0.25f;
 
     [Header("Next Level Target")]
-    [Tooltip("אם true – נטען את הסצנה הבאה לפי Build Index. אם false – נשתמש בשם מפורש.")]
     [SerializeField] private bool loadNextByBuildIndex = true;
-    [Tooltip("כאשר loadNextByBuildIndex=false – זה שם הסצנה לטעינה (למשל \"Level 3\").")]
+
     [SerializeField] private string explicitNextSceneName = "";
 
     [Header("Progress / PlayerPrefs")]
-    [Tooltip("לעדכן את UnlockedLevel בסיום, בהתאם לשלב הבא")]
+
     [SerializeField] private bool updateUnlockedLevel = true;
-    [Tooltip("אם את קוראת לשלבים שלך \"Level 1\", \"Level 2\"... אפשר לעדכן לפי Build Index+1")]
+
     [SerializeField] private bool unlockedLevelMatchesBuildNumbering = true;
 
     private CanvasGroup _cg;
@@ -32,7 +31,7 @@ public class LevelEndNextConfirm : MonoBehaviour
 
     private void Awake()
     {
-        // חיווט כפתורים
+
         if (nextLevelButton) {
             nextLevelButton.onClick.RemoveAllListeners();
             nextLevelButton.onClick.AddListener(OpenConfirmPanel);
@@ -42,7 +41,7 @@ public class LevelEndNextConfirm : MonoBehaviour
             confirmContinueButton.onClick.AddListener(ConfirmAndLoad);
         }
 
-        // הכנה לפאנל
+
         if (confirmPanel)
         {
             _cg = confirmPanel.GetComponent<CanvasGroup>();
@@ -70,7 +69,7 @@ public class LevelEndNextConfirm : MonoBehaviour
     {
         if (_isFading) return;
 
-        // לנעול אינטראקציות ולפייד-אאוט
+
         if (_cg)
         {
             _cg.interactable = false;
@@ -95,20 +94,18 @@ public class LevelEndNextConfirm : MonoBehaviour
         {
             int cur = SceneManager.GetActiveScene().buildIndex;
             int next = cur + 1;
-
-            // עדכון UnlockedLevel אם נדרש
+            
             if (updateUnlockedLevel && unlockedLevelMatchesBuildNumbering)
             {
                 int prevUnlocked = PlayerPrefs.GetInt("UnlockedLevel", 1);
-                int nextAsLevelNumber = next; // בהנחה ש-Level 1 = BuildIndex 1 וכו'
+                int nextAsLevelNumber = next;
                 if (nextAsLevelNumber > prevUnlocked)
                 {
                     PlayerPrefs.SetInt("UnlockedLevel", nextAsLevelNumber);
                     PlayerPrefs.Save();
                 }
             }
-
-            // אם אין עוד סצנה – אפשר לטפל כאן (חזרה לתפריט/קרדיטים)
+            
             if (next >= SceneManager.sceneCountInBuildSettings)
             {
                 Debug.LogWarning("No next scene in build settings. Staying on current scene.");
@@ -174,7 +171,7 @@ public class LevelEndNextConfirm : MonoBehaviour
 
         while (t < duration)
         {
-            t += Time.unscaledDeltaTime; // לא מושפע מפאוז
+            t += Time.unscaledDeltaTime;
             float k = Mathf.Clamp01(t / duration);
             cg.alpha = Mathf.Lerp(from, to, k);
             yield return null;

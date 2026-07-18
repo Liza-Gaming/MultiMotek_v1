@@ -14,7 +14,6 @@ public class Level4SugarStart : MonoBehaviour
         {
             sm.StopAllCoroutines();
             
-            // אנחנו כופים את איפוס הסוכר והמגמות תמיד כשנכנסים לשלב הזה
             sm.ForceSetForLevel(levelStartSugar, clearTrends: true);
             Debug.Log($"Level4SugarStart: Set sugar to {levelStartSugar} and cleared all trends.");
         }

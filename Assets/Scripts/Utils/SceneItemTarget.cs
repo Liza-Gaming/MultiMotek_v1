@@ -20,7 +20,6 @@ public class SceneItemTarget : MonoBehaviour
 
     private void Start()
     {
-        // מצא את השחקן והחץ שלו
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         
         if (player != null)
@@ -30,7 +29,6 @@ public class SceneItemTarget : MonoBehaviour
             if (arrow != null && targetItem != null)
             {
                 arrow.SetTarget(targetItem);
-                Debug.Log($"[SceneItemTarget] הוגדרה מטרה חדשה לחץ: {targetItem.name}");
             }
             else if (arrow == null)
             {

@@ -9,7 +9,6 @@ public class SugarSummaryUI : MonoBehaviour
     public SugarMeter meter;
 
     [Header("Level Type Settings")]
-    [Tooltip("סמני כאן V רק אם זה מסך הסיכום של השלב האחרון")]
     public bool isFinalLevelSummary = false;
 
     [Header("Final Level Fade Settings")]
@@ -57,7 +56,6 @@ public class SugarSummaryUI : MonoBehaviour
 
         if (isFinalLevelSummary)
         {
-            // אם יש לנו נתונים מצטברים (השחקן שיחק מהתחלה)
             if (SugarStats.GlobalTotalTime > 0f)
             {
                 SugarStats.GetGlobalPercents(out inPct, out abovePct, out belowPct);
@@ -65,7 +63,6 @@ public class SugarSummaryUI : MonoBehaviour
             }
             else
             {
-                // אם השחקן שיחק רק את השלב האחרון (למשל טסט באדיטור), נציג 100% תקין
                 inPct = 100f;
                 abovePct = 0f;
                 belowPct = 0f;
@@ -74,7 +71,6 @@ public class SugarSummaryUI : MonoBehaviour
         }
         else
         {
-            // שליפת נתונים מקומיים של השלב הנוכחי בלבד (לשלבים 1-7)
             stats.GetLocalPercents(out inPct, out abovePct, out belowPct);
             if (stats) summaryHearts = stats.GetLocalSummaryHearts();
         }
@@ -135,15 +131,13 @@ public class SugarSummaryUI : MonoBehaviour
     {
         if (blurVolumeObject) blurVolumeObject.SetActive(false);
         Time.timeScale = 1f;
-
-        // אם אנחנו בשלב האחרון - נתחיל את קורוטינת הפייד חזרה לתפריט
+        
         if (isFinalLevelSummary)
         {
             StartCoroutine(FadeToMenuRoutine());
         }
         else
         {
-            // מעבר רגיל לשלב הבא
             if (!string.IsNullOrEmpty(nextSceneName))
             {
                 SceneManager.LoadScene(nextSceneName);
@@ -158,13 +152,11 @@ public class SugarSummaryUI : MonoBehaviour
             }
         }
     }
-
-    // הקורוטינה שאחראית למצוא את המסך השחור, לעשות לו פייד, ולחזור לתפריט
+    
     private IEnumerator FadeToMenuRoutine()
     {
         Image blackPanel = null;
         
-        // מחפשים את האובייקט לפי השם שהגדרת (VictoryEnd) מכל האובייקטים בסצנה
         GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
         foreach (GameObject obj in allObjects)
         {
@@ -196,12 +188,9 @@ public class SugarSummaryUI : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"SugarSummaryUI: לא נמצא אובייקט בשם '{fadePanelName}' בסצנה!");
-            // אם לא מצאנו את הפאנל, נחכה רגע בכל זאת כדי לא לקפוץ בפתאומיות
             yield return new WaitForSeconds(exitFadeDuration);
         }
         
-        // חזרה לסצנת התפריט (0)
         SceneManager.LoadScene(0);
     }
 }

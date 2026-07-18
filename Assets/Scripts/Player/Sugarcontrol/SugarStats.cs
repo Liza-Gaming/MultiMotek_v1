@@ -28,9 +28,7 @@ public class SugarStats : MonoBehaviour
     [SerializeField] private GameObject blurVolumeObject;
 
     private float uiTimer = 0f;
-
-    // --- Global Stats (Static) ---
-    // אלו המשתנים שישמרו את המידע לאורך כל השלבים
+    
     private static float globalTotalTime = 0f;
     private static float globalTimeInRange = 0f;
     private static float globalTimeAboveRange = 0f;
@@ -41,13 +39,11 @@ public class SugarStats : MonoBehaviour
     
     void OnSceneLoaded(Scene s, LoadSceneMode m)
     {
-        // איפוס של נתוני השלב הנוכחי בלבד
         ResetLocalStats(); 
         
         if (sugarMeter == null && SugarMeter.Instance != null)
             sugarMeter = SugarMeter.Instance;
 
-        // אם הגענו לתפריט הראשי (נפסלנו או התחלנו משחק חדש), נאפס את הנתונים המצטברים
         if (s.buildIndex == menuSceneBuildIndex)
         {
             ResetGlobalStats();
@@ -67,8 +63,7 @@ public class SugarStats : MonoBehaviour
         if (sugarMeter == null) return;
 
         float dt = Time.deltaTime;
-        
-        // --- עדכון סטטיסטיקה של השלב הנוכחי (Local) ---
+
         totalTime += dt;
         float s = sugarMeter.GetSugarLevel();
         float min = sugarMeter.minSugar;
@@ -78,8 +73,6 @@ public class SugarStats : MonoBehaviour
         else if (s > max)  timeAboveRange += dt;
         else               timeInRange   += dt;
 
-        // --- עדכון סטטיסטיקה מצטברת (Global) ---
-        // רק אם אנחנו בשלב שקטן או שווה לשלב המקסימלי (למשל שלב 7)
         int currentBuildIndex = SceneManager.GetActiveScene().buildIndex;
         if (currentBuildIndex <= maxSceneToAccumulate && currentBuildIndex != menuSceneBuildIndex)
         {
@@ -125,8 +118,7 @@ public class SugarStats : MonoBehaviour
         abovePct   = (timeAboveRange / totalTime) * 100f;
         belowPct   = (timeBelowRange / totalTime) * 100f;
     }
-
-    // פונקציה חדשה ששולפת את הנתונים המצטברים מכל השלבים
+    
     public static void GetGlobalPercents(out float inRangePct, out float abovePct, out float belowPct)
     {
         if (globalTotalTime <= 0f)
@@ -146,8 +138,7 @@ public class SugarStats : MonoBehaviour
         int hearts = Mathf.RoundToInt((inPct / 100f) * summaryHeartsMax);
         return Mathf.Clamp(hearts, 0, summaryHeartsMax);
     }
-
-    // פונקציה חדשה לחישוב הלבבות (הדירוג) על סמך כל השלבים
+    
     public int GetGlobalSummaryHearts()
     {
         GetGlobalPercents(out float inPct, out _, out _);

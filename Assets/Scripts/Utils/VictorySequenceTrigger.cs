@@ -9,8 +9,7 @@ public class VictorySequenceTrigger : MonoBehaviour
     public string victoryTrigger = "Victory";
     public float delayBeforeFade = 3f;
     public float fadeDuration = 2f;
-
-    // הגדרנו אותם כפרטיים כי הסקריפט ימצא אותם לבד
+    
     private Animator animator;
     private Image blackPanel;
     private bool hasTriggered = false;
@@ -36,10 +35,6 @@ public class VictorySequenceTrigger : MonoBehaviour
             c.a = 0f;
             blackPanel.color = c;
             blackPanel.gameObject.SetActive(false);
-        }
-        else
-        {
-            Debug.LogWarning("VictorySequenceTrigger: לא נמצא אובייקט בשם 'BlackPanel' בסצנה!");
         }
     }
     

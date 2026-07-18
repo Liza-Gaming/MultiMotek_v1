@@ -18,7 +18,6 @@ public class RequiredItem : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // מציאת ה-AudioSource שעל השחקן (ההורה)
             AudioSource playerAudio = other.GetComponent<AudioSource>();
             
             if (pickupSound != null && playerAudio != null)

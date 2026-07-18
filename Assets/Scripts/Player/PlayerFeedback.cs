@@ -94,7 +94,7 @@ public class PlayerFeedback : MonoBehaviour
 
         while (t < punchDuration)
         {
-            // שינוי כאן! Unscaled time
+
             t += Time.unscaledDeltaTime; 
             float a = punchCurve.Evaluate(Mathf.Clamp01(t / punchDuration));
             float s = Mathf.Lerp(1f, punchScale, a);

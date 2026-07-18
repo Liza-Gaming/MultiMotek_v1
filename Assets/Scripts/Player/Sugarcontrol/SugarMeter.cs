@@ -513,13 +513,11 @@ public class SugarMeter : MonoBehaviour
         }
         else if (sugarLevel <= 20f) 
         {
-            // אם הסוכר 20 ומטה - רשום LOW
             sugarText.text = "LOW";
             sugarText.color = Color.yellow;
         }
         else 
         {
-            // בכל מצב אחר (בין 21 ל-499) - הצג את המספר הלבן
             sugarText.color = Color.white;
             sugarText.text = Mathf.RoundToInt(sugarLevel).ToString();
         }

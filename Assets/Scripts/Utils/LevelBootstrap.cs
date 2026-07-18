@@ -25,12 +25,10 @@ public class LevelBootstrap : MonoBehaviour
 
     private void Awake()
     {
-        // אם applyOnStandaloneOnly כבוי—תמיד נפעיל; אחרת, נשתמש בדגל החד-פעמי
         _shouldApply = !applyOnStandaloneOnly || AppFlow.ConsumeStandaloneInitFlag();
 
         if (!_shouldApply) return;
-
-        // ← איפוס שכבות סטטיות רק כשבאמת נכנסנו מהתפריט
+        
         SugarMeter.RequestSkipRestoreOnNextStart();
         SugarMeter.ClearSavedState(clearTrends: true);
         Timer.ClearSavedState();

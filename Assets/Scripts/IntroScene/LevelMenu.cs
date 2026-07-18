@@ -54,23 +54,16 @@ public class LevelMenu : MonoBehaviour
         
         if (disclaimerManager != null)
         {
-            // קרא למנהל הדיסקליימר.
-            // הפונקציה ShowInitialStoryPanel תופעל רק בסיום.
             disclaimerManager.CheckDisclaimer(ShowInitialStoryPanel);
         }
         else
         {
-            // אם אין מנהל, פשוט הצג את הפאנל כרגיל.
             Debug.LogWarning("DisclaimerManager not assigned in LevelMenu!");
             ShowInitialStoryPanel();
         }
     }
     
     
-    /// <summary>
-    /// פונקציה זו נקראת *אחרי* שהדיסקליימר טופל.
-    /// היא מציגה את פאנל הסיפור הראשון.
-    /// </summary>
     private void ShowInitialStoryPanel()
     {
         narrationSource.Play();
@@ -246,13 +239,12 @@ public class LevelMenu : MonoBehaviour
         _isFading = true;
         float t = 0f;
         cg.alpha = from;
-
-        // אם מתחילים פייד-אין—להבטיח שהאובייקט פעיל
+        
         if (!cg.gameObject.activeSelf) cg.gameObject.SetActive(true);
 
         while (t < duration)
         {
-            t += Time.unscaledDeltaTime; // שלא יושפע מפאוז אם יש
+            t += Time.unscaledDeltaTime;
             float k = Mathf.Clamp01(t / duration);
             cg.alpha = Mathf.Lerp(from, to, k);
             yield return null;

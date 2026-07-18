@@ -31,7 +31,7 @@ public class Item
         Carrot,
         Tomato
         
-    } // add vegetables, milk products, No impact drinks
+    }
 
     public ItemType itemType;
     public int amount;

@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
- 
+
+
 // https://github.com/Maraakis/ChristinaCreatesGames/blob/main/Toggle%20Switch%20System/ToggleSwitch.cs
 
 namespace Christina.UI
@@ -31,9 +32,9 @@ namespace Christina.UI
         private Coroutine _animateSliderCoroutine;
 
         [Header("Color Transition")]
-        [SerializeField] private Image backgroundImage; // גרור לפה את ה-Background של הסליידר
-        [SerializeField] private Color offColor = new Color(0.8f, 0.8f, 0.8f, 1f); // צבע כשהמתג כבוי (למשל אפור)
-        [SerializeField] private Color onColor = Color.green; // צבע כשהמתג דלוק (ירוק)
+        [SerializeField] private Image backgroundImage;
+        [SerializeField] private Color offColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+        [SerializeField] private Color onColor = Color.green;
 
         [Header("Events")] 
         [SerializeField] private UnityEvent onToggleOn;
@@ -48,9 +49,8 @@ namespace Christina.UI
             SetupToggleComponents();
 
             _slider.value = sliderValue;
-            UpdateColor(sliderValue); // עדכון הצבע גם בתוך העורך של יוניטי
+            UpdateColor(sliderValue);
             
-            // עדכון חזותי של הטקסטים בעורך (מעל 0.5 נחשב מופעל לצורך תצוגה)
             UpdateTextVisibility(sliderValue >= 0.5f);
         }
 
@@ -71,8 +71,7 @@ namespace Christina.UI
                 Debug.Log("No slider found!", this);
                 return;
             }
-
-            // ניסיון אוטומטי למצוא את ה-Background אם שכחת לגרור אותו ב-Inspector
+            
             if (backgroundImage == null)
             {
                 Transform bgTransform = _slider.transform.Find("Background");
@@ -97,9 +96,9 @@ namespace Christina.UI
         protected virtual void Awake()
         {
             SetupSliderComponent();
-            CurrentValue = sliderValue >= 0.5f; // הגדרת מצב התחלתי
-            UpdateColor(_slider.value); // עדכון ראשוני של הצבע
-            UpdateTextVisibility(CurrentValue); // עדכון ראשוני של הטקסטים
+            CurrentValue = sliderValue >= 0.5f;
+            UpdateColor(_slider.value);
+            UpdateTextVisibility(CurrentValue);
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -125,7 +124,7 @@ namespace Christina.UI
             _previousValue = CurrentValue;
             CurrentValue = state;
 
-            // עדכון נראות הטקסטים מיד עם שינוי המצב
+
             UpdateTextVisibility(CurrentValue);
 
             if (_previousValue != CurrentValue)
@@ -157,7 +156,7 @@ namespace Christina.UI
                     float lerpFactor = slideEase.Evaluate(time / animationDuration);
                     _slider.value = sliderValue = Mathf.Lerp(startValue, endValue, lerpFactor);
 
-                    UpdateColor(_slider.value); // עדכון הצבע בהדרגה יחד עם תנועת הסליידר
+                    UpdateColor(_slider.value);
 
                     transitionEffect?.Invoke();
                         
@@ -166,10 +165,9 @@ namespace Christina.UI
             }
 
             _slider.value = endValue;
-            UpdateColor(_slider.value); // וידוא שהצבע מגיע ליעד הסופי שלו בסיום האנימציה
+            UpdateColor(_slider.value);
         }
 
-        // פונקציית עזר לשינוי הצבע לפי המיקום של הסליידר
         private void UpdateColor(float value)
         {
             if (backgroundImage != null)
@@ -177,17 +175,14 @@ namespace Christina.UI
                 backgroundImage.color = Color.Lerp(offColor, onColor, value);
             }
         }
-
-        // פונקציית עזר להדלקה וכיבוי של הטקסטים לפי מצב הסוויץ'
+        
         private void UpdateTextVisibility(bool isToggleOn)
         {
-            // כשהסוויץ' כבוי (!isToggleOn), נרצה ש-105 יהיה דלוק. כשהוא דלוק - יכובה.
             if (_target_105 != null)
             {
                 _target_105.gameObject.SetActive(!isToggleOn);
             }
 
-            // כשהסוויץ' דלוק (isToggleOn), נרצה ש-140 יהיה דלוק. כשהוא כבוי - יכובה.
             if (_target_140 != null)
             {
                 _target_140.gameObject.SetActive(isToggleOn);
